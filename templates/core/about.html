@@ -1,0 +1,724 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Haqqımızda - Acteezer{% endblock %}
+
+{% block content %}
+<!-- About Hero Section -->
+<section class="about-hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="about-hero-content">
+                    <h1 class="about-hero-title">Hər Macəranın <span class="text-primary">Başlanğıcı</span> Buradır</h1>
+                    <p class="about-hero-description">
+                        Acteezer ilə həmfikir insanları tapın, yeni təcrübələr əldə edin və unudulmaz xatirələr yaradın. 
+                        Biz sadəcə bir platforma deyil, birləşdirən bir icmayıq.
+                    </p>
+                    <div class="about-stats">
+                        <div class="stat-item">
+                            <h3>15K+</h3>
+                            <p>Aktiv Üzv</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>2.5K+</h3>
+                            <p>Təşkil Edilmiş Aktivitə</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>50+</h3>
+                            <p>Fərqli Maraq Sahəsi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="about-hero-image">
+                    <div class="image-wrapper">
+                        <img src="{% static 'about_main.jpg' %}" alt="Acteezer Community" class="img-fluid">
+                        <div class="floating-card card-1">
+                            <i class="fas fa-users text-primary"></i>
+                            <div>
+                                <h6>Icma</h6>
+                                <p>Həmfikir dostlar</p>
+                            </div>
+                        </div>
+                        <div class="floating-card card-2">
+                            <i class="fas fa-heart text-danger"></i>
+                            <div>
+                                <h6>Məhəbbət</h6>
+                                <p>Gözəl xatirələr</p>
+                            </div>
+                        </div>
+                        <div class="floating-card card-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <div>
+                                <h6>Keyfiyyət</h6>
+                                <p>Yüksək standart</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Story Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="section-title">Bizim Hekayəmiz</h2>
+                <p class="section-subtitle">Acteezer necə yarandı və hansı məqsədlə inkişaf edir</p>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="story-content">
+                    <div class="story-timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h5>2023 - İdeyanın Doğuşu</h5>
+                                <p>Bakıda həmfikir insanları bir araya gətirəcək bir platformun yaradılması ideyası ortaya çıxdı.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h5>2024 - Platformun Başlanğıcı</h5>
+                                <p>İlk aktivitələr təşkil edildi və icma yaranmağa başladı. İlk 1000 üzv qoşuldu.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h5>İndi - Sürətli İnkişaf</h5>
+                                <p>15000+ aktiv üzv və 2500+ uğurlu aktivitə ilə Azərbaycanda aparıcı platformayıq.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="story-image">
+                    <img src="{% static 'about.jpg' %}" alt="Our Story" class="img-fluid rounded-3">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission & Vision Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="section-title">Missiya və Vizyonumuz</h2>
+                <p class="section-subtitle">Gələcək üçün planlarımız və məqsədlərimiz</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h4>Missiyamız</h4>
+                    <p>
+                        İnsanları ortaq maraqları ətrafında birləşdirmək, həyatlarını zənginləşdirən təcrübələr yaşatmaq 
+                        və güçlü icma yaratmaq. Hər kəsin özünə uyğun aktivitə tapacağı və yeni dostluqlar quracağı 
+                        bir məkan yaratmaq.
+                    </p>
+                    <ul class="mission-features">
+                        <li><i class="fas fa-check text-primary me-2"></i>İnsanları birləşdirmək</li>
+                        <li><i class="fas fa-check text-primary me-2"></i>Yeni təcrübələr yaşatmaq</li>
+                        <li><i class="fas fa-check text-primary me-2"></i>Güçlü icma yaratmaq</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="vision-card">
+                    <div class="vision-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h4>Vizyonumuz</h4>
+                    <p>
+                        Azərbaycanda sosial aktivitələrin mərkəzi olmaq və regionda aparıcı platforma kimi tanınmaq. 
+                        Hər yaşdan və hər sosial təbəqədən insanın aktiv, keyfiyyətli və mənalı həyat yaşamasına 
+                        töhfə vermək.
+                    </p>
+                    <ul class="vision-features">
+                        <li><i class="fas fa-star text-warning me-2"></i>Regional lider olmaq</li>
+                        <li><i class="fas fa-star text-warning me-2"></i>Həyat keyfiyyətini artırmaq</li>
+                        <li><i class="fas fa-star text-warning me-2"></i>Sosial təsir yaratmaq</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="section-title">Dəyərlərimiz</h2>
+                <p class="section-subtitle">Fəaliyyətimizi istiqamətləndirən əsas prinsiplər</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h5>Güvən</h5>
+                    <p>Təhlükəsiz və etibarlı bir mühit yaratmaq hər aktivitəmizin əsasıdır.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h5>İnkluzivlik</h5>
+                    <p>Hər kəsin özünü xoş hiss etdiyi açıq və qəbul edici bir icma qururuq.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h5>Keyfiyyət</h5>
+                    <p>Hər aktivitədə yüksək standartlar və unudulmaz təcrübələr təmin edirik.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h5>Şəfqət</h5>
+                    <p>İnsan münasibətlərinin mərkəzində hörmət və qayğı durur.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-about-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="cta-title">Bizə Qoşulun!</h2>
+                <p class="cta-description">
+                    Acteezer ailəsinin bir parçası olun və həyatınızı daha maraqlı hala gətirin.
+                </p>
+                <div class="cta-buttons">
+                    <a href="{% url 'accounts:phone_registration' %}" class="btn btn-light btn-lg me-3">
+                        <i class="fas fa-user-plus me-2"></i>
+                        İndi Qoşul
+                    </a>
+                    <a href="{% url 'activities:activities_list' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-search me-2"></i>
+                        Aktivitələri Kəşf Et
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* About Hero Section */
+.about-hero-section {
+    background: linear-gradient(135deg, #f8fdfc 0%, #e0f2ef 100%);
+    padding: 5rem 0;
+    overflow: hidden;
+}
+
+.about-hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 2rem;
+    color: var(--dark-text);
+}
+
+.about-hero-title .text-primary {
+    color: var(--primary-color) !important;
+}
+
+.fas.fa-users {
+    color: var(--primary-color) !important;
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.about-hero-description {
+    font-size: 1.25rem;
+    color: var(--gray-text);
+    margin-bottom: 3rem;
+    line-height: 1.6;
+}
+
+.about-stats {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.about-stats .stat-item {
+    text-align: center;
+}
+
+.about-stats .stat-item h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    line-height: 1;
+}
+
+.about-stats .stat-item p {
+    color: var(--gray-text);
+    font-weight: 500;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* About Hero Image */
+.about-hero-image {
+    position: relative;
+    overflow: visible;
+    padding: 2rem;
+    margin: -2rem;
+}
+
+.image-wrapper {
+    position: relative;
+    border-radius: 20px;
+    overflow: visible;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.image-wrapper img {
+    border-radius: 20px;
+    transition: transform 0.3s ease;
+}
+
+.floating-card {
+    position: absolute;
+    background: white;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: float 3s ease-in-out infinite;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 10;
+    white-space: nowrap;
+}
+
+.floating-card i {
+    font-size: 1.5rem;
+}
+
+.floating-card h6 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--dark-text);
+    font-size: 0.9rem;
+}
+
+.floating-card p {
+    margin: 0;
+    color: var(--gray-text);
+    font-size: 0.8rem;
+}
+
+.card-1 {
+    top: 10%;
+    left: -8%;
+    animation-delay: 0s;
+}
+
+.card-2 {
+    top: 40%;
+    right: -12%;
+    animation-delay: 1s;
+}
+
+.card-3 {
+    bottom: 10%;
+    left: -3%;
+    animation-delay: 2s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+}
+
+/* Section Styling */
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: var(--gray-text);
+    margin-bottom: 0;
+}
+
+/* Story Timeline */
+.story-timeline {
+    position: relative;
+}
+
+.story-timeline::before {
+    content: '';
+    position: absolute;
+    left: 30px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--primary-color);
+}
+
+.timeline-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.timeline-icon {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    min-height: 60px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 2rem;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4px 15px rgba(93, 211, 190, 0.3);
+    flex-shrink: 0;
+}
+
+.timeline-content h5 {
+    font-weight: 600;
+    color: var(--dark-text);
+    margin-bottom: 0.75rem;
+}
+
+.timeline-content p {
+    color: var(--gray-text);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Mission & Vision Cards */
+.mission-card, .vision-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(93, 211, 190, 0.1);
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.mission-card:hover, .vision-card:hover {
+    transform: translateY(-5px);
+}
+
+.mission-icon, .vision-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+}
+
+.mission-card h4, .vision-card h4 {
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 1.5rem;
+}
+
+.mission-features, .vision-features {
+    list-style: none;
+    padding: 0;
+    margin-top: 1.5rem;
+}
+
+.mission-features li, .vision-features li {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+}
+
+/* Values Cards */
+.value-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(93, 211, 190, 0.1);
+    height: 100%;
+}
+
+.value-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.value-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(93, 211, 190, 0.1);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 1.25rem;
+}
+
+.value-card h5 {
+    font-weight: 600;
+    color: var(--dark-text);
+    margin-bottom: 1rem;
+}
+
+.value-card p {
+    color: var(--gray-text);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Team Cards */
+.team-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    height: 100%;
+}
+
+.team-card:hover {
+    transform: translateY(-5px);
+}
+
+.team-image {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+}
+
+.team-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.team-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(93, 211, 190, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.team-card:hover .team-overlay {
+    opacity: 1;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-links a {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.social-links a:hover {
+    transform: scale(1.1);
+}
+
+.team-content {
+    padding: 2rem;
+    text-align: center;
+}
+
+.team-content h5 {
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 0.5rem;
+}
+
+.team-position {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.team-bio {
+    color: var(--gray-text);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* CTA Section */
+.cta-about-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-about-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><path d="M0,50 C250,150 750,-50 1000,50 L1000,0 L0,0 Z"/></svg>');
+    background-size: cover;
+}
+
+.cta-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+}
+
+.cta-description {
+    font-size: 1.25rem;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .about-stats {
+        justify-content: center;
+        gap: 1.5rem;
+    }
+    
+    .floating-card {
+        position: static;
+        margin: 1rem 0;
+    }
+    
+    .card-1, .card-2, .card-3 {
+        position: static;
+        animation: none;
+    }
+    
+    .story-timeline::before {
+        left: 15px;
+    }
+    
+    .timeline-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 1rem;
+    }
+    
+    .cta-title {
+        font-size: 2.25rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .cta-buttons .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    .about-hero-section {
+        padding: 3rem 0;
+    }
+    
+    .mission-card, .vision-card {
+        padding: 2rem;
+    }
+    
+    .team-content {
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,748 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Məkanlar - Acteezer{% endblock %}
+
+{% block content %}
+<!-- Places Search Hero Section -->
+<section class="places-hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="places-hero-content text-center">
+                    <h1 class="places-hero-title">Bakıda Məkanlar</h1>
+                    <p class="places-hero-subtitle">Şəhərin ən yaxşı restoran, pub, klub və aktivlik məkanlarını kəşf edin</p>
+                    
+                    <!-- Main Search Bar -->
+                    <form method="GET" class="main-search-container">
+                        <div class="main-search-box">
+                            <div class="search-input-wrapper">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" name="search" class="search-input" 
+                                       placeholder="Hansı məkan axtarırsınız?" value="{{ search_query }}">
+                            </div>
+                            <div class="search-tabs">
+                                <button type="submit" name="category" value="" 
+                                        class="search-tab {% if not category_filter %}active{% endif %}">Bütün Məkanlar</button>
+                                <button type="submit" name="category" value="restaurant" 
+                                        class="search-tab {% if category_filter == 'restaurant' %}active{% endif %}">Restoranlar</button>
+                                <button type="submit" name="category" value="pub" 
+                                        class="search-tab {% if category_filter == 'pub' %}active{% endif %}">Publar</button>
+                                <button type="submit" name="category" value="club" 
+                                        class="search-tab {% if category_filter == 'club' %}active{% endif %}">Klublar</button>
+                                <button type="submit" name="category" value="cafe" 
+                                        class="search-tab {% if category_filter == 'cafe' %}active{% endif %}">Kafelər</button>
+                                <button type="submit" name="category" value="activity" 
+                                        class="search-tab {% if category_filter == 'activity' %}active{% endif %}">Aktivlik</button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <!-- Filter Buttons -->
+                    <div class="filter-buttons">
+                        <div class="dropdown">
+                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fas fa-map-marker-alt me-2"></i>Rayon
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="?district=">Bütün Rayonlar</a></li>
+                                {% for district_code, district_name in district_choices %}
+                                    <li><a class="dropdown-item" href="?district={{ district_code }}">{{ district_name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <div class="dropdown">
+                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fas fa-dollar-sign me-2"></i>Qiymət
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="?price=">Bütün Qiymətlər</a></li>
+                                {% for price_code, price_name in price_choices %}
+                                    <li><a class="dropdown-item" href="?price={{ price_code }}">{{ price_name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <div class="dropdown">
+                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fas fa-star me-2"></i>Reytinq
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="?sort=rating">Ən Yüksək Reytinq</a></li>
+                                <li><a class="dropdown-item" href="?sort=featured">Seçilmiş</a></li>
+                                <li><a class="dropdown-item" href="?sort=newest">Ən Yeni</a></li>
+                                <li><a class="dropdown-item" href="?sort=name">Ad (A-Z)</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="sort-section">
+                            <span class="sort-text">{{ total_count }} məkan tapıldı</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Places Section -->
+{% if featured_places and not search_query %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold mb-3">Seçilmiş Məkanlar</h2>
+                <p class="text-muted">Bakıda ən populyar və tövsiyə olunan məkanlar</p>
+            </div>
+        </div>
+        
+        <div class="row g-3">
+            {% for place in featured_places %}
+            <div class="col-lg-3 col-md-6">
+                <div class="place-card featured">
+                    <div class="place-image">
+                        {% if place.main_image %}
+                            <img src="{{ place.main_image.url }}" alt="{{ place.image_alt|default:place.name }}" class="img-fluid">
+                        {% else %}
+                            <img src="{% static '1.png' %}" alt="{{ place.name }}" class="img-fluid">
+                        {% endif %}
+                        <div class="place-badge">
+                            <span class="badge bg-warning">
+                                <i class="{{ place.category.icon }} me-1"></i>{{ place.category.name }}
+                            </span>
+                        </div>
+                        {% if place.is_verified %}
+                        <div class="place-verified">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        {% endif %}
+                        <div class="place-heart">
+                            <i class="far fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="place-content">
+                        <div class="place-meta">
+                            <span class="place-price">{{ place.get_price_display }}</span>
+                            <span class="place-district">{{ place.get_district_display }}</span>
+                        </div>
+                        <h5 class="place-title">
+                            <a href="{{ place.get_absolute_url }}">{{ place.name }}</a>
+                        </h5>
+                        <div class="place-rating mb-2">
+                            <span class="star-rating">
+                                {% for i in place.get_rating_stars.full %}
+                                    <i class="fas fa-star"></i>
+                                {% endfor %}
+                                {% if place.get_rating_stars.half %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                {% endif %}
+                                {% for i in place.get_rating_stars.empty %}
+                                    <i class="far fa-star"></i>
+                                {% endfor %}
+                                <span class="rating-score">{{ place.rating|floatformat:1 }}</span>
+                                <span class="rating-count">({{ place.review_count }} rəy)</span>
+                            </span>
+                        </div>
+                        <p class="place-description">{{ place.short_description|truncatechars:80 }}</p>
+                        <div class="place-footer">
+                            <span class="place-location">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                {{ place.address|truncatechars:25 }}
+                            </span>
+                            <a href="{{ place.get_absolute_url }}" class="btn btn-primary btn-sm place-view-btn">Ətraflı</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- All Places Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row text-center mb-4">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold mb-3">
+                    {% if search_query %}
+                        "{{ search_query }}" üçün axtarış nəticələri
+                    {% elif category_filter %}
+                        {{ category_filter|title }} Məkanları
+                    {% else %}
+                        Bütün Məkanlar
+                    {% endif %}
+                </h2>
+            </div>
+        </div>
+        
+        {% if places %}
+        <div class="row g-3">
+            {% for place in places %}
+            <div class="col-xl-20 col-lg-3 col-md-6 col-sm-6">
+                <div class="place-card">
+                    <div class="place-image">
+                        {% if place.main_image %}
+                            <img src="{{ place.main_image.url }}" alt="{{ place.image_alt|default:place.name }}" class="img-fluid">
+                        {% else %}
+                            <img src="{% static '1.png' %}" alt="{{ place.name }}" class="img-fluid">
+                        {% endif %}
+                        <div class="place-badge">
+                            <span class="badge" style="background-color: {{ place.category.color }};">
+                                <i class="{{ place.category.icon }} me-1"></i>{{ place.category.name }}
+                            </span>
+                        </div>
+                        {% if place.is_verified %}
+                        <div class="place-verified">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        {% endif %}
+                        <div class="place-heart">
+                            <i class="far fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="place-content">
+                        <div class="place-meta">
+                            <span class="place-price">{{ place.get_price_display }}</span>
+                            <span class="place-district">{{ place.get_district_display }}</span>
+                        </div>
+                        <h5 class="place-title">
+                            <a href="{{ place.get_absolute_url }}">{{ place.name }}</a>
+                        </h5>
+                        <div class="place-rating mb-2">
+                            <span class="star-rating">
+                                {% for i in place.get_rating_stars.full %}
+                                    <i class="fas fa-star"></i>
+                                {% endfor %}
+                                {% if place.get_rating_stars.half %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                {% endif %}
+                                {% for i in place.get_rating_stars.empty %}
+                                    <i class="far fa-star"></i>
+                                {% endfor %}
+                                <span class="rating-score">{{ place.rating|floatformat:1 }}</span>
+                                <span class="rating-count">({{ place.review_count }} rəy)</span>
+                            </span>
+                        </div>
+                        <p class="place-description">{{ place.short_description|truncatechars:70 }}</p>
+                        <div class="place-footer">
+                            <span class="place-location">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                {{ place.address|truncatechars:20 }}
+                            </span>
+                            <a href="{{ place.get_absolute_url }}" class="btn btn-primary btn-sm place-view-btn">Ətraflı</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <nav aria-label="Places pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if district_filter %}&district={{ district_filter }}{% endif %}{% if price_filter %}&price={{ price_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Əvvəlki</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if district_filter %}&district={{ district_filter }}{% endif %}{% if price_filter %}&price={{ price_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if district_filter %}&district={{ district_filter }}{% endif %}{% if price_filter %}&price={{ price_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Növbəti</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="row">
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h3 class="text-muted">Məkan tapılmadı</h3>
+                <p class="text-muted">Axtarış parametrlərini dəyişərək yenidən cəhd edin.</p>
+                <a href="{% url 'places:places_list' %}" class="btn btn-primary">Bütün məkanları gör</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Custom CSS for 5-column layout */
+@media (min-width: 1200px) {
+    .col-xl-20 {
+        flex: 0 0 20%;
+        max-width: 20%;
+    }
+}
+
+/* Places Search Hero Section */
+.places-hero-section {
+    background: linear-gradient(135deg, #f8fdfc 0%, #e0f2ef 100%);
+    padding: 4rem 0 5rem;
+    position: relative;
+}
+
+.places-hero-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.places-hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--dark-text);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.places-hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--gray-text);
+    margin-bottom: 3rem;
+    font-weight: 400;
+}
+
+/* Main Search Container */
+.main-search-container {
+    background: white;
+    border-radius: 24px;
+    padding: 1.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(93, 211, 190, 0.1);
+}
+
+.main-search-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.search-input-wrapper {
+    position: relative;
+    flex: 1;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-text);
+    font-size: 1.1rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 1.25rem 1.5rem 1.25rem 3.5rem;
+    border: 2px solid #f1f5f9;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    background: #f8fafc;
+    transition: all 0.3s ease;
+    color: var(--dark-text);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(93, 211, 190, 0.1);
+}
+
+.search-input::placeholder {
+    color: var(--gray-text);
+    font-weight: 400;
+}
+
+/* Search Tabs */
+.search-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.search-tab {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: #f1f5f9;
+    color: var(--gray-text);
+    border-radius: 24px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.search-tab.active {
+    background: var(--dark-text);
+    color: white;
+}
+
+.search-tab:hover:not(.active) {
+    background: #e2e8f0;
+    color: var(--dark-text);
+}
+
+/* Filter Buttons */
+.filter-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.filter-btn {
+    padding: 0.75rem 1.25rem;
+    border: 2px solid #e2e8f0;
+    background: white;
+    color: var(--dark-text);
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-color);
+    background: rgba(93, 211, 190, 0.05);
+    color: var(--primary-color);
+}
+
+.filter-btn i {
+    color: var(--primary-color);
+}
+
+.sort-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+}
+
+.sort-text {
+    font-size: 0.9rem;
+    color: var(--gray-text);
+    font-weight: 500;
+}
+
+/* Place Cards */
+.place-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #f1f5f9;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.place-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.place-card.featured {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 8px 30px rgba(93, 211, 190, 0.15);
+}
+
+.place-image {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+}
+
+.place-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.place-card:hover .place-image img {
+    transform: scale(1.05);
+}
+
+.place-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+}
+
+.place-badge .badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+}
+
+.place-verified {
+    position: absolute;
+    top: 12px;
+    right: 50px;
+    color: var(--primary-color);
+    background: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.place-heart {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: white;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.place-heart:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.place-content {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.place-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+}
+
+.place-price {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.place-district {
+    color: var(--gray-text);
+    font-weight: 500;
+}
+
+.place-title {
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.place-title a {
+    color: var(--dark-text);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.place-title a:hover {
+    color: var(--primary-color);
+}
+
+.place-rating {
+    margin-bottom: 0.75rem;
+}
+
+.star-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.star-rating i {
+    color: #ffc107;
+    font-size: 0.8rem;
+}
+
+.rating-score {
+    font-weight: 600;
+    color: var(--dark-text);
+    margin-left: 0.25rem;
+}
+
+.rating-count {
+    color: var(--gray-text);
+    font-size: 0.8rem;
+}
+
+.place-description {
+    color: var(--gray-text);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    flex: 1;
+}
+
+.place-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.place-location {
+    color: var(--gray-text);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.place-location i {
+    color: var(--primary-color);
+    margin-right: 0.25rem;
+}
+
+.place-view-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 1199px) {
+    .col-xl-20 {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+}
+
+@media (max-width: 991px) {
+    .place-image {
+        height: 160px;
+    }
+    
+    .place-content {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .places-hero-title {
+        font-size: 2.25rem;
+    }
+    
+    .places-hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .main-search-container {
+        padding: 1rem;
+        border-radius: 16px;
+    }
+    
+    .search-input {
+        padding: 1rem 1rem 1rem 3rem;
+        font-size: 1rem;
+    }
+    
+    .search-icon {
+        left: 1rem;
+    }
+    
+    .search-tabs {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+    
+    .search-tab {
+        white-space: nowrap;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    
+    .filter-buttons {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+    
+    .filter-btn {
+        white-space: nowrap;
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .sort-section {
+        margin-left: 0;
+        order: -1;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .places-hero-section {
+        padding: 3rem 0 4rem;
+    }
+    
+    .filter-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .sort-section {
+        order: 0;
+        margin-bottom: 1rem;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+

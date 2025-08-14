@@ -1,0 +1,719 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Şəkillər - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.auth-card {
+    max-width: 800px;
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 0 1rem;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+}
+
+.auth-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    backdrop-filter: blur(10px);
+}
+
+.step-progress {
+    padding: 1.5rem 2rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.step-indicator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e9ecef;
+    z-index: 1;
+}
+
+.step {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.step.active {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    transform: scale(1.1);
+}
+
+.step.completed {
+    background: #28a745;
+    color: white;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #e9ecef;
+}
+
+.progress-bar {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    transition: width 0.6s ease;
+}
+
+.auth-body {
+    padding: 2.5rem 2rem;
+}
+
+.step-title {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+}
+
+.upload-area {
+    border: 3px dashed #e9ecef;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 2rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-area:hover {
+    border-color: #28a745;
+    background: #f0f8f0;
+    transform: translateY(-2px);
+}
+
+.upload-area.dragover {
+    border-color: #28a745;
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%);
+    transform: scale(1.02);
+}
+
+.upload-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover .upload-icon {
+    transform: scale(1.1);
+}
+
+.image-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+    min-height: 100px;
+}
+
+.image-preview-item {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.image-preview-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-color: #28a745;
+}
+
+.image-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(220, 53, 69, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.image-preview-item:hover .image-remove-btn {
+    opacity: 1;
+}
+
+.image-remove-btn:hover {
+    background: #dc3545;
+    transform: scale(1.1);
+}
+
+.upload-status {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    text-align: center;
+    display: none;
+}
+
+.auth-btn {
+    height: 60px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+}
+
+.auth-btn:disabled {
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+.tips-box {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: none;
+    border-left: 4px solid #ffc107;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.tips-list {
+    margin: 0.5rem 0 0 0;
+    padding-left: 1.2rem;
+}
+
+.tips-list li {
+    margin-bottom: 0.5rem;
+    color: #856404;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.feature-item {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 12px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #6c757d;
+    color: #6c757d;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 1rem 0;
+    }
+    
+    .auth-card {
+        margin: 0 0.5rem;
+    }
+    
+    .auth-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .step {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+    
+    .image-preview-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .upload-area {
+        padding: 2rem 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .step-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .auth-btn {
+        height: 50px;
+        font-size: 1rem;
+    }
+    
+    .image-preview-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-camera fa-2x"></i>
+            </div>
+            <h2 class="mb-2">Şəkillərinizi Əlavə Edin</h2>
+            <p class="mb-0 opacity-90">Şəxsiyyətinizi gözəl şəkillərlə göstərin</p>
+        </div>
+                
+        <div class="step-progress">
+            <div class="step-indicator">
+                <div class="step completed">1</div>
+                <div class="step completed">2</div>
+                <div class="step completed">3</div>
+                <div class="step completed">4</div>
+                <div class="step completed">5</div>
+                <div class="step active">6</div>
+                <div class="step">7</div>
+                <div class="step">8</div>
+                <div class="step">9</div>
+            </div>
+                    
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+        
+        <div class="auth-body">
+            <div class="step-title">
+                <div class="step-icon">
+                    <i class="fas fa-images"></i>
+                </div>
+                <h4 class="fw-bold">Şəkillərinizi Yükləyin</h4>
+                <p class="text-muted">Başqalarının sizi tanıması üçün ən azı 2 şəkil əlavə edin</p>
+            </div>
+                    
+            <form method="post" enctype="multipart/form-data" id="images-form">
+                {% csrf_token %}
+                
+                <div class="upload-status" id="upload-status">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="status-text">Şəkillər yükləndi</span>
+                </div>
+                
+                <!-- Upload Area -->
+                <div class="upload-area" id="upload-area" onclick="document.getElementById('image-upload-input').click()">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h5 class="fw-bold">Şəkilləri Buraya Sürükləyin</h5>
+                    <p class="text-muted mb-3">və ya seçmək üçün klikləyin (minimum 2 tələb olunur)</p>
+                    <div class="btn btn-outline-success">
+                        <i class="fas fa-folder-open me-2"></i>
+                        Şəkil Seç
+                    </div>
+                    <input 
+                        type="file" 
+                        name="images" 
+                        id="image-upload-input" 
+                        multiple 
+                        accept="image/jpeg,image/jpg,image/png,image/gif"
+                        style="display: none;"
+                    >
+                </div>
+                
+                <!-- Image Preview -->
+                <div class="image-preview-grid" id="image-preview-grid">
+                    {% for image in user_images %}
+                    <div class="image-preview-item" data-image-id="{{ image.id }}">
+                        <img src="{{ image.image.url }}" alt="İstifadəçi Şəkli">
+                        <button type="button" class="image-remove-btn" onclick="removeExistingImage({{ image.id }})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+                        
+                <div class="tips-box">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    <strong>Şəkil Məsləhətləri:</strong>
+                    <ul class="tips-list">
+                        <li>Aydın, yaxşı işıqlandırılmış şəkillər istifadə edin</li>
+                        <li>Ən azı bir şəkildə üzünüzü göstərin</li>
+                        <li>Hobbilərinizi və maraqlarınızı əks etdirən şəkillər əlavə edin</li>
+                        <li>Əsas şəkil kimi qrup şəkillərindən qaçının</li>
+                        <li>5MB-dan kiçik, JPG, PNG və ya GIF formatında olsun</li>
+                    </ul>
+                </div>
+                        
+                <button type="submit" class="btn auth-btn w-100 text-white mb-3" id="submit-btn" disabled>
+                    <i class="fas fa-camera me-2"></i>
+                    2 şəkil daha əlavə edin
+                </button>
+                        
+                <div class="text-center">
+                    <a href="{% url 'accounts:birthday_registration' %}" class="back-link">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Geri
+                    </a>
+                </div>
+                        
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h6 class="fw-bold">İlk Təəssürat</h6>
+                        <small class="text-muted">Gözəl görünüş</small>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-thumbs-up"></i>
+                        </div>
+                        <h6 class="fw-bold">Daha Çox Əlaqə</h6>
+                        <small class="text-muted">İnsanlar sizinlə əlaqə qurar</small>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h6 class="fw-bold">Etimad Yaradır</h6>
+                        <small class="text-muted">İnanc artırır</small>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedFiles = [];
+let imageCount = 0;
+
+// Şəkilləri sürükləmə və buraxma
+function setupDragAndDrop() {
+    const uploadArea = document.getElementById('upload-area');
+    
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const files = Array.from(e.dataTransfer.files);
+        const imageFiles = files.filter(file => file.type.startsWith('image/'));
+        
+        if (imageFiles.length > 0) {
+            handleFileSelection(imageFiles);
+        }
+    });
+}
+
+// Fayl seçimi idarəetməsi
+function handleFileSelection(files) {
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    
+    for (const file of files) {
+        if (file.size > maxSize) {
+            alert(`${file.name} çox böyükdür. 5MB-dan kiçik şəkillər seçin.`);
+            continue;
+        }
+        
+        if (!allowedTypes.includes(file.type)) {
+            alert(`${file.name} dəstəklənən şəkil formatı deyil. JPG, PNG və ya GIF istifadə edin.`);
+            continue;
+        }
+        
+        // Önizləmə yaradırıq
+        createImagePreview(file);
+        selectedFiles.push(file);
+    }
+    
+    updateSubmitButton();
+    updateFileInput();
+}
+
+// Şəkil önizləməsi yaratmaq
+function createImagePreview(file) {
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        const previewGrid = document.getElementById('image-preview-grid');
+        const previewItem = document.createElement('div');
+        previewItem.className = 'image-preview-item';
+        previewItem.innerHTML = `
+            <img src="${e.target.result}" alt="Yeni Şəkil">
+            <button type="button" class="image-remove-btn" onclick="removeNewImage(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        previewGrid.appendChild(previewItem);
+        imageCount++;
+        updateSubmitButton();
+        
+        // Status göstər
+        showUploadStatus();
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+// Yeni şəkli silmək
+function removeNewImage(button) {
+    const previewItem = button.closest('.image-preview-item');
+    const img = previewItem.querySelector('img');
+    const imgSrc = img.src;
+    
+    // selectedFiles-dan sil
+    selectedFiles = selectedFiles.filter(file => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        return reader.result !== imgSrc;
+    });
+    
+    previewItem.remove();
+    imageCount--;
+    updateSubmitButton();
+    updateFileInput();
+}
+
+// Mövcud şəkli silmək
+function removeExistingImage(imageId) {
+    const imageElement = event.target.closest('.image-preview-item');
+    imageElement.remove();
+    
+    // Silinmiş şəkilləri izləmək üçün gizli input
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'deleted_images';
+    hiddenInput.value = imageId;
+    document.getElementById('images-form').appendChild(hiddenInput);
+    
+    imageCount--;
+    updateSubmitButton();
+}
+
+// Submit düyməsini yeniləmək
+function updateSubmitButton() {
+    const totalImages = document.querySelectorAll('.image-preview-item').length;
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (totalImages >= 2) {
+        submitBtn.innerHTML = '<i class="fas fa-arrow-right me-2"></i>Davam Et';
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('btn-outline-secondary');
+        submitBtn.classList.add('auth-btn');
+    } else {
+        const needed = 2 - totalImages;
+        submitBtn.innerHTML = `<i class="fas fa-camera me-2"></i>${needed} şəkil daha əlavə edin`;
+        submitBtn.disabled = true;
+        submitBtn.classList.add('btn-outline-secondary');
+        submitBtn.classList.remove('auth-btn');
+    }
+}
+
+// Fayl input-u yeniləmək
+function updateFileInput() {
+    const fileInput = document.getElementById('image-upload-input');
+    const dt = new DataTransfer();
+    
+    selectedFiles.forEach(file => dt.items.add(file));
+    fileInput.files = dt.files;
+}
+
+// Yükləmə statusu göstərmək
+function showUploadStatus() {
+    const statusDiv = document.getElementById('upload-status');
+    const statusText = document.getElementById('status-text');
+    const totalImages = document.querySelectorAll('.image-preview-item').length;
+    
+    statusText.textContent = `${totalImages} şəkil yükləndi`;
+    statusDiv.style.display = 'block';
+    
+    setTimeout(() => {
+        statusDiv.style.display = 'none';
+    }, 3000);
+}
+
+// Fayl seçimi hadisəsi
+document.getElementById('image-upload-input').addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    handleFileSelection(files);
+});
+
+// Form göndərmə yoxlaması
+document.getElementById('images-form').addEventListener('submit', function(e) {
+    const totalImages = document.querySelectorAll('.image-preview-item').length;
+    
+    if (totalImages < 2) {
+        e.preventDefault();
+        alert('Zəhmət olmasa ən azı 2 şəkil yükləyin.');
+        return;
+    }
+    
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yüklənir...';
+    submitBtn.disabled = true;
+    
+    // Əgər xəta olarsa, düyməni bərpa et
+    setTimeout(() => {
+        if (submitBtn.disabled) {
+            updateSubmitButton();
+        }
+    }, 10000);
+});
+
+// İlkin yükləmə
+document.addEventListener('DOMContentLoaded', function() {
+    imageCount = document.querySelectorAll('.image-preview-item').length;
+    updateSubmitButton();
+    setupDragAndDrop();
+});
+</script>
+{% endblock %}
+

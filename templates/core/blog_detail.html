@@ -1,0 +1,666 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.title }} - Acteezer Bloq{% endblock %}
+
+{% block content %}
+<!-- Blog Detail Hero -->
+<section class="blog-detail-hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <nav aria-label="breadcrumb" class="blog-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Ana səhifə</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'blog' %}">Bloq</a></li>
+                        <li class="breadcrumb-item active">{{ post.title|truncatewords:5 }}</li>
+                    </ol>
+                </nav>
+                
+                <div class="post-header">
+                    <div class="post-meta-top">
+                        <span class="category-tag">{{ post.category.name }}</span>
+                        <span class="post-date">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ post.published_at|date:"d F Y" }}
+                        </span>
+                        <span class="read-time">
+                            <i class="fas fa-clock me-1"></i>
+                            5 dəqiqə oxu
+                        </span>
+                    </div>
+                    
+                    <h1 class="post-title">{{ post.title }}</h1>
+                    
+                    <div class="post-meta-bottom">
+                        <div class="author-info">
+                            <div class="author-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="author-details">
+                                <span class="author-name">{{ post.author.get_full_name }}</span>
+                                <span class="author-role">Müəllif</span>
+                            </div>
+                        </div>
+                        
+                        <div class="post-stats">
+                            <span class="views">
+                                <i class="fas fa-eye me-1"></i>{{ post.views_count }} baxış
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Image -->
+{% if post.featured_image %}
+<section class="featured-image-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="featured-image-container">
+                    <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Blog Content -->
+<section class="blog-content-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <article class="blog-article">
+                    <div class="article-content">
+                        {{ post.content|linebreaks }}
+                    </div>
+                    
+                    <!-- Tags -->
+                    {% if post.tags.all %}
+                    <div class="article-tags">
+                        <h6>Etiketlər:</h6>
+                        <div class="tags-list">
+                            {% for tag_relation in post.tags.all %}
+                                <span class="tag-item">{{ tag_relation.tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Share Buttons -->
+                    <div class="article-share">
+                        <h6>Paylaşın:</h6>
+                        <div class="share-buttons">
+                            <a href="#" class="share-btn facebook" onclick="shareOnFacebook()">
+                                <i class="fab fa-facebook-f"></i>
+                                Facebook
+                            </a>
+                            <a href="#" class="share-btn twitter" onclick="shareOnTwitter()">
+                                <i class="fab fa-twitter"></i>
+                                Twitter
+                            </a>
+                            <a href="#" class="share-btn whatsapp" onclick="shareOnWhatsApp()">
+                                <i class="fab fa-whatsapp"></i>
+                                WhatsApp
+                            </a>
+                            <a href="#" class="share-btn copy" onclick="copyLink()">
+                                <i class="fas fa-link"></i>
+                                Linki kopyala
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Posts -->
+<section class="related-posts-section py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h3 class="related-title">Oxşar Məqalələr</h3>
+                <div class="row g-4">
+                    {% for related_post in related_posts %}
+                        <div class="col-md-6">
+                            <article class="related-card">
+                                <div class="related-image">
+                                    {% if related_post.featured_image %}
+                                        <img src="{{ related_post.featured_image.url }}" alt="{{ related_post.title }}" class="img-fluid">
+                                    {% else %}
+                                        <img src="{% static 'blog-default.jpg' %}" alt="{{ related_post.title }}" class="img-fluid">
+                                    {% endif %}
+                                </div>
+                                <div class="related-content">
+                                    <div class="related-meta">
+                                        <span class="category-tag">{{ related_post.category.name }}</span>
+                                        <span class="post-date">{{ related_post.published_at|date:"d M" }}</span>
+                                    </div>
+                                    <h5 class="related-title">
+                                        <a href="{{ related_post.get_absolute_url }}">{{ related_post.title }}</a>
+                                    </h5>
+                                    <p class="related-excerpt">{{ related_post.excerpt|truncatewords:10 }}</p>
+                                </div>
+                            </article>
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center">
+                            <p class="text-muted">Oxşar məqalə tapılmadı.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Back to Blog CTA -->
+<section class="back-to-blog-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <a href="{% url 'blog' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Bütün məqalələrə qayıt
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Blog Detail Hero */
+.blog-detail-hero {
+    background: linear-gradient(135deg, #f8fdfc 0%, #e0f2ef 100%);
+    padding: 2rem 0 4rem;
+}
+
+.blog-breadcrumb {
+    margin-bottom: 2rem;
+}
+
+.breadcrumb {
+    background: transparent;
+    margin-bottom: 0;
+    padding: 0;
+}
+
+.breadcrumb-item a {
+    color: var(--gray-text);
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--primary-color);
+}
+
+.breadcrumb-item.active {
+    color: var(--dark-text);
+}
+
+.post-header {
+    text-align: center;
+}
+
+.post-meta-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.category-tag {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.post-date,
+.read-time {
+    color: var(--gray-text);
+    font-size: 0.9rem;
+}
+
+.post-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--dark-text);
+    line-height: 1.2;
+    margin-bottom: 2rem;
+}
+
+.post-meta-bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.author-details {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.author-name {
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+.author-role {
+    font-size: 0.85rem;
+    color: var(--gray-text);
+}
+
+.post-stats .views {
+    color: var(--gray-text);
+    font-size: 0.9rem;
+}
+
+/* Featured Image */
+.featured-image-section {
+    padding: 2rem 0;
+    background: white;
+}
+
+.featured-image-container {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.featured-image-container img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+}
+
+/* Blog Content */
+.blog-content-section {
+    padding: 3rem 0;
+    background: white;
+}
+
+.blog-article {
+    background: white;
+}
+
+.article-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--dark-text);
+    margin-bottom: 3rem;
+}
+
+.article-content p {
+    margin-bottom: 1.5rem;
+}
+
+.article-content h2,
+.article-content h3,
+.article-content h4 {
+    color: var(--dark-text);
+    font-weight: 700;
+    margin: 2rem 0 1rem;
+}
+
+.article-content h2 {
+    font-size: 2rem;
+}
+
+.article-content h3 {
+    font-size: 1.5rem;
+}
+
+.article-content ul,
+.article-content ol {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+}
+
+.article-content li {
+    margin-bottom: 0.5rem;
+}
+
+/* Tags */
+.article-tags {
+    padding: 2rem 0;
+    border-top: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 2rem;
+}
+
+.article-tags h6 {
+    color: var(--dark-text);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.tags-list {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.tag-item {
+    background: rgba(93, 211, 190, 0.1);
+    color: var(--primary-color);
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Share Buttons */
+.article-share h6 {
+    color: var(--dark-text);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.share-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.share-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.share-btn.facebook {
+    background: #1877f2;
+    color: white;
+}
+
+.share-btn.twitter {
+    background: #1da1f2;
+    color: white;
+}
+
+.share-btn.whatsapp {
+    background: #25d366;
+    color: white;
+}
+
+.share-btn.copy {
+    background: #6c757d;
+    color: white;
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
+/* Related Posts */
+.related-posts-section {
+    margin-top: 3rem;
+}
+
+.related-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.related-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+    height: 100%;
+}
+
+.related-card:hover {
+    transform: translateY(-5px);
+}
+
+.related-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.related-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.related-card:hover .related-image img {
+    transform: scale(1.05);
+}
+
+.related-content {
+    padding: 1.5rem;
+}
+
+.related-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.related-meta .category-tag {
+    background: rgba(93, 211, 190, 0.1);
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+}
+
+.related-meta .post-date {
+    font-size: 0.85rem;
+}
+
+.related-content .related-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.related-content .related-title a {
+    color: var(--dark-text);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.related-content .related-title a:hover {
+    color: var(--primary-color);
+}
+
+.related-excerpt {
+    color: var(--gray-text);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Back to Blog */
+.back-to-blog-section {
+    padding: 3rem 0;
+    background: white;
+}
+
+.back-to-blog-section .btn-outline-primary {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+}
+
+.back-to-blog-section .btn-outline-primary:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* Ensure all primary buttons use green color */
+.btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+    color: white !important;
+}
+
+.btn-outline-primary {
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+    background: transparent !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* Fix text-primary class */
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .post-title {
+        font-size: 2rem;
+    }
+    
+    .post-meta-top,
+    .post-meta-bottom {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .author-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .author-details {
+        text-align: center;
+    }
+    
+    .featured-image-container img {
+        height: 300px;
+    }
+    
+    .article-content {
+        font-size: 1rem;
+    }
+    
+    .share-buttons {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .blog-detail-hero {
+        padding: 1.5rem 0 3rem;
+    }
+    
+    .post-title {
+        font-size: 1.75rem;
+    }
+    
+    .blog-content-section {
+        padding: 2rem 0;
+    }
+    
+    .share-btn {
+        flex: 1;
+        justify-content: center;
+        min-width: 120px;
+    }
+}
+</style>
+
+<script>
+function shareOnFacebook() {
+    const url = window.location.href;
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    window.open(facebookUrl, '_blank', 'width=600,height=400');
+}
+
+function shareOnTwitter() {
+    const url = window.location.href;
+    const title = "{{ post.title|escapejs }}";
+    const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+    window.open(twitterUrl, '_blank', 'width=600,height=400');
+}
+
+function shareOnWhatsApp() {
+    const url = window.location.href;
+    const title = "{{ post.title|escapejs }}";
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(title + ' - ' + url)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+        // Show success message
+        const btn = event.target.closest('.share-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check me-2"></i>Kopyalandı!';
+        btn.style.background = '#28a745';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = '#6c757d';
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}

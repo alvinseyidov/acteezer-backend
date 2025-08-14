@@ -1,0 +1,759 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profil - {{ user.get_full_name|default:user.phone }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.profile-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid white;
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+
+.profile-default-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid white;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.profile-stats {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #28a745;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.profile-section {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.activity-history-item {
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.activity-history-item:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.activity-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-joined {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-organized {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-completed {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.profile-info-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.profile-info-item:last-child {
+    border-bottom: none;
+}
+
+.profile-info-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 1rem;
+    font-size: 0.9rem;
+}
+
+.profile-info-content {
+    flex: 1;
+}
+
+.profile-info-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.profile-info-value {
+    font-weight: 600;
+    color: #333;
+}
+
+.edit-profile-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.edit-profile-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    {% if user.profile_image %}
+                        <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name }}" class="profile-avatar">
+                    {% else %}
+                        <div class="profile-default-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                    <div class="ms-4">
+                        <h1 class="mb-2">{{ user.get_full_name|default:"İstifadəçi" }}</h1>
+                        <p class="mb-2 opacity-90">
+                            <i class="fas fa-phone me-2"></i>
+                            {{ user.phone }}
+                        </p>
+                        {% if user.bio %}
+                            <p class="mb-0 opacity-80">{{ user.bio }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="#" class="btn edit-profile-btn">
+                    <i class="fas fa-edit me-2"></i>
+                    Profili Redaktə Et
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Profile Stats -->
+    <div class="profile-stats">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">{{ organized_activities_count }}</div>
+                    <div class="stat-label">Təşkil Etdiyi Aktivitə</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">{{ joined_activities_count }}</div>
+                    <div class="stat-label">Qoşulduğu Aktivitə</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">{{ completed_activities_count }}</div>
+                    <div class="stat-label">Tamamlanmış Aktivitə</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">{{ user.date_joined|date:"Y" }}</div>
+                    <div class="stat-label">Qoşulma Tarixi</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Activity History -->
+        <div class="col-lg-8">
+            <div class="profile-section">
+                <h3 class="section-title">
+                    <i class="fas fa-history"></i>
+                    Aktivitə Tarixçəsi
+                </h3>
+                
+                {% if recent_activities %}
+                    {% for activity_participation in recent_activities %}
+                        <div class="activity-history-item">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="mb-1">
+                                    <a href="{{ activity_participation.activity.get_absolute_url }}" class="text-decoration-none">
+                                        {{ activity_participation.activity.title }}
+                                    </a>
+                                </h5>
+                                <span class="activity-status {% if activity_participation.activity.organizer == user %}status-organized{% elif activity_participation.activity.is_past %}status-completed{% else %}status-joined{% endif %}">
+                                    {% if activity_participation.activity.organizer == user %}
+                                        Təşkilatçı
+                                    {% elif activity_participation.activity.is_past %}
+                                        Tamamlandı
+                                    {% else %}
+                                        Qoşuldu
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <p class="text-muted mb-2">{{ activity_participation.activity.short_description }}</p>
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span>
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ activity_participation.activity.start_date|date:"d M Y, H:i" }}
+                                </span>
+                                <span>
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    {{ activity_participation.activity.address }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    
+                    <div class="text-center mt-3">
+                        <a href="#" class="btn btn-outline-primary">
+                            Bütün Aktivitələri Gör
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <h4>Hələ aktivitə yoxdur</h4>
+                        <p>Aktivitələrə qoşulun və ya yeni aktivitə yaradın!</p>
+                        <a href="{% url 'activities:activities_list' %}" class="btn btn-primary">
+                            Aktivitələri Kəşf Et
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Profile Info -->
+        <div class="col-lg-4">
+            <div class="profile-section">
+                <h3 class="section-title">
+                    <i class="fas fa-user-circle"></i>
+                    Şəxsi Məlumatlar
+                </h3>
+                
+                <div class="profile-info-item">
+                    <div class="profile-info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="profile-info-content">
+                        <div class="profile-info-label">Email</div>
+                        <div class="profile-info-value">{{ user.email|default:"Əlavə edilməyib" }}</div>
+                    </div>
+                </div>
+                
+                <div class="profile-info-item">
+                    <div class="profile-info-icon">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div class="profile-info-content">
+                        <div class="profile-info-label">Doğum Tarixi</div>
+                        <div class="profile-info-value">{{ user.date_of_birth|date:"d M Y"|default:"Əlavə edilməyib" }}</div>
+                    </div>
+                </div>
+                
+                <div class="profile-info-item">
+                    <div class="profile-info-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <div class="profile-info-content">
+                        <div class="profile-info-label">Dillər</div>
+                        <div class="profile-info-value">
+                            {% if user.languages.all %}
+                                {% for language in user.languages.all %}
+                                    <span class="badge bg-light text-dark me-1">{{ language.name }}</span>
+                                {% endfor %}
+                            {% else %}
+                                Əlavə edilməyib
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-info-item">
+                    <div class="profile-info-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="profile-info-content">
+                        <div class="profile-info-label">Maraqlar</div>
+                        <div class="profile-info-value">
+                            {% if user.interests.all %}
+                                {% for interest in user.interests.all %}
+                                    <span class="badge bg-primary me-1">{{ interest.name }}</span>
+                                {% endfor %}
+                            {% else %}
+                                Əlavə edilməyib
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block title %}Profil - {{ user.get_full_name|default:user.phone }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.profile-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid white;
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+
+.profile-default-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid white;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.profile-stats {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #28a745;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.profile-section {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.activity-history-item {
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.activity-history-item:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.activity-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-joined {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-organized {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-completed {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.profile-info-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.profile-info-item:last-child {
+    border-bottom: none;
+}
+
+.profile-info-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 1rem;
+    font-size: 0.9rem;
+}
+
+.profile-info-content {
+    flex: 1;
+}
+
+.profile-info-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.profile-info-value {
+    font-weight: 600;
+    color: #333;
+}
+
+.edit-profile-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.edit-profile-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    {% if user.profile_image %}
+                        <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name }}" class="profile-avatar">
+                    {% else %}
+                        <div class="profile-default-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                    <div class="ms-4">
+                        <h1 class="mb-2">{{ user.get_full_name|default:"İstifadəçi" }}</h1>
+                        <p class="mb-2 opacity-90">
+                            <i class="fas fa-phone me-2"></i>
+                            {{ user.phone }}
+                        </p>
+                        {% if user.bio %}
+                            <p class="mb-0 opacity-80">{{ user.bio }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="#" class="btn edit-profile-btn">
+                    <i class="fas fa-edit me-2"></i>
+                    Profili Redaktə Et
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Profile Stats -->
+    <div class="profile-stats">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">{{ organized_activities_count }}</div>
+                    <div class="stat-label">Təşkil Etdiyi Aktivitə</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">{{ joined_activities_count }}</div>
+                    <div class="stat-label">Qoşulduğu Aktivitə</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">{{ completed_activities_count }}</div>
+                    <div class="stat-label">Tamamlanmış Aktivitə</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">{{ user.date_joined|date:"Y" }}</div>
+                    <div class="stat-label">Qoşulma Tarixi</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Activity History -->
+        <div class="col-lg-8">
+            <div class="profile-section">
+                <h3 class="section-title">
+                    <i class="fas fa-history"></i>
+                    Aktivitə Tarixçəsi
+                </h3>
+                
+                {% if recent_activities %}
+                    {% for activity_participation in recent_activities %}
+                        <div class="activity-history-item">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="mb-1">
+                                    <a href="{{ activity_participation.activity.get_absolute_url }}" class="text-decoration-none">
+                                        {{ activity_participation.activity.title }}
+                                    </a>
+                                </h5>
+                                <span class="activity-status {% if activity_participation.activity.organizer == user %}status-organized{% elif activity_participation.activity.is_past %}status-completed{% else %}status-joined{% endif %}">
+                                    {% if activity_participation.activity.organizer == user %}
+                                        Təşkilatçı
+                                    {% elif activity_participation.activity.is_past %}
+                                        Tamamlandı
+                                    {% else %}
+                                        Qoşuldu
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <p class="text-muted mb-2">{{ activity_participation.activity.short_description }}</p>
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span>
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ activity_participation.activity.start_date|date:"d M Y, H:i" }}
+                                </span>
+                                <span>
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    {{ activity_participation.activity.address }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    
+                    <div class="text-center mt-3">
+                        <a href="#" class="btn btn-outline-primary">
+                            Bütün Aktivitələri Gör
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <h4>Hələ aktivitə yoxdur</h4>
+                        <p>Aktivitələrə qoşulun və ya yeni aktivitə yaradın!</p>
+                        <a href="{% url 'activities:activities_list' %}" class="btn btn-primary">
+                            Aktivitələri Kəşf Et
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Profile Info -->
+        <div class="col-lg-4">
+            <div class="profile-section">
+                <h3 class="section-title">
+                    <i class="fas fa-user-circle"></i>
+                    Şəxsi Məlumatlar
+                </h3>
+                
+                <div class="profile-info-item">
+                    <div class="profile-info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="profile-info-content">
+                        <div class="profile-info-label">Email</div>
+                        <div class="profile-info-value">{{ user.email|default:"Əlavə edilməyib" }}</div>
+                    </div>
+                </div>
+                
+                <div class="profile-info-item">
+                    <div class="profile-info-icon">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div class="profile-info-content">
+                        <div class="profile-info-label">Doğum Tarixi</div>
+                        <div class="profile-info-value">{{ user.date_of_birth|date:"d M Y"|default:"Əlavə edilməyib" }}</div>
+                    </div>
+                </div>
+                
+                <div class="profile-info-item">
+                    <div class="profile-info-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <div class="profile-info-content">
+                        <div class="profile-info-label">Dillər</div>
+                        <div class="profile-info-value">
+                            {% if user.languages.all %}
+                                {% for language in user.languages.all %}
+                                    <span class="badge bg-light text-dark me-1">{{ language.name }}</span>
+                                {% endfor %}
+                            {% else %}
+                                Əlavə edilməyib
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-info-item">
+                    <div class="profile-info-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="profile-info-content">
+                        <div class="profile-info-label">Maraqlar</div>
+                        <div class="profile-info-value">
+                            {% if user.interests.all %}
+                                {% for interest in user.interests.all %}
+                                    <span class="badge bg-primary me-1">{{ interest.name }}</span>
+                                {% endfor %}
+                            {% else %}
+                                Əlavə edilməyib
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,608 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bizimlə Əlaqə - Acteezer{% endblock %}
+
+{% block content %}
+<!-- Contact Hero Section -->
+<section class="contact-hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="contact-hero-title">Bizimlə <span class="text-primary">Əlaqə</span> Saxlayın</h1>
+                <p class="contact-hero-subtitle">
+                    Suallarınız var? Köməyə ehtiyacınız var? Bizə müraciət edin və birlikdə həll edək.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Form Section -->
+<section class="contact-form-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="contact-form-card">
+                    <h3 class="form-title">Mesaj Göndərin</h3>
+                    <p class="form-subtitle">Bizimlə əlaqə saxlamaq üçün aşağıdakı formu doldurun</p>
+                    
+                    <form class="contact-form" method="post">
+                        {% csrf_token %}
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name" class="form-label">Ad Soyad</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone" class="form-label">Telefon</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="subject" class="form-label">Mövzu</label>
+                                    <select class="form-control" id="subject" name="subject" required>
+                                        <option value="">Mövzu seçin</option>
+                                        <option value="general">Ümumi sual</option>
+                                        <option value="technical">Texniki dəstək</option>
+                                        <option value="activity">Aktivitə ilə bağlı</option>
+                                        <option value="partnership">Partnyorluq</option>
+                                        <option value="feedback">Təklif və şikayət</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="message" class="form-label">Mesaj</label>
+                                    <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    Mesaj Göndər
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="contact-info-card">
+                    <h4 class="info-title">Əlaqə Məlumatları</h4>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h6>Ünvan</h6>
+                            <p>Azure Business Center<br>Bakı şəhəri, Azərbaycan</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h6>Telefon</h6>
+                            <p>+994 50 123 4567<br>+994 12 345 6789</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h6>Email</h6>
+                            <p>info@acteezer.com<br>support@acteezer.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h6>İş Saatları</h6>
+                            <p>Bazar ertəsi - Cümə: 09:00 - 18:00<br>Şənbə: 10:00 - 16:00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="social-section">
+                        <h6>Sosial Mediada Bizi İzləyin</h6>
+                        <div class="social-links">
+                            <a href="#" class="social-link">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="map-section">
+    <div class="container-fluid p-0">
+        <div class="map-container">
+            <div class="map-wrapper">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3038.8271891478785!2d49.8347454!3d40.3754545!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40307d077cc3e3b1%3A0x3b4c5e5a7b8d0c2f!2sAzure%20Business%20Center!5e0!3m2!1sen!2saz!4v1625097600000!5m2!1sen!2saz"
+                    class="grayscale-map"
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+                <div class="map-overlay">
+                    <div class="map-info">
+                        <div class="location-pin">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h5>Ofisimizin Yeri</h5>
+                        <p>Azure Business Center<br>Bakı şəhəri, Azərbaycan</p>
+                        <button class="btn btn-primary btn-sm" onclick="openDirections()">
+                            <i class="fas fa-directions me-2"></i>
+                            Yol Tarifi Al
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="section-title">Tez-tez Verilən Suallar</h2>
+                <p class="section-subtitle">Ən çox soruşulan sualların cavabları</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                Acteezer-ə necə qoşula bilərəm?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Acteezer-ə qoşulmaq çox asandır. Yalnız telefon nömrənizi daxil edin, doğrulama kodunu təsdiqləyin və profil məlumatlarınızı tamamlayın.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                Aktivitələr haqqında necə məlumat ala bilərəm?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Platformamızda bütün aktivitələr haqqında ətraflı məlumat, tarix, yer, iştirakçı sayı və qiymət göstərilir. Həmçinin aktivitə organizatorları ilə birbaşa əlaqə saxlaya bilərsiniz.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Öz aktivitəmi təşkil edə bilərəmmi?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Bəli! Qeydiyyatdan keçdikdən sonra öz aktivitələrinizi yarada və idarə edə bilərsiniz. Bu, digər istifadəçilərlə maraqlarınızı bölüşmək üçün əla fürsətdir.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                Təhlükəsizlik necə təmin edilir?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Bütün istifadəçilərimiz doğrulanmış telefon nömrələri ilə qeydiyyatdan keçir. Həmçinin aktivitələr moderasiyadan keçir və şikayət sistemi mövcuddur.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Contact Hero Section */
+.contact-hero-section {
+    background: linear-gradient(135deg, #f8fdfc 0%, #e0f2ef 100%);
+    padding: 4rem 0 5rem;
+    position: relative;
+}
+
+.contact-hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--dark-text);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.contact-hero-title .text-primary {
+    color: var(--primary-color) !important;
+}
+
+.contact-hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--gray-text);
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+/* Contact Form Section */
+.contact-form-section {
+    padding: 0 0 5rem;
+    margin-top: -3rem;
+    position: relative;
+    z-index: 10;
+}
+
+.contact-form-card {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(93, 211, 190, 0.1);
+    height: 100%;
+}
+
+.form-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 0.75rem;
+}
+
+.form-subtitle {
+    color: var(--gray-text);
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--dark-text);
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.form-control {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(93, 211, 190, 0.1);
+}
+
+.form-control::placeholder {
+    color: var(--gray-text);
+}
+
+/* Contact Info Card */
+.contact-info-card {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(93, 211, 190, 0.1);
+    height: 100%;
+    margin-top: 0;
+}
+
+.info-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 2rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.contact-item:last-of-type {
+    border-bottom: none;
+    margin-bottom: 2.5rem;
+}
+
+.contact-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(93, 211, 190, 0.1);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.25rem;
+    flex-shrink: 0;
+}
+
+.contact-details h6 {
+    font-weight: 600;
+    color: var(--dark-text);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.contact-details p {
+    color: var(--gray-text);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.social-section h6 {
+    font-weight: 600;
+    color: var(--dark-text);
+    margin-bottom: 1rem;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-link {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(93, 211, 190, 0.1);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.social-link:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Map Section */
+.map-section {
+    background: #f8fafc;
+    padding: 0;
+}
+
+.map-container {
+    height: 500px;
+    position: relative;
+}
+
+.map-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.grayscale-map {
+    width: 100%;
+    height: 100%;
+    border: none;
+    filter: grayscale(100%) contrast(1.2) brightness(0.9);
+    transition: filter 0.3s ease;
+}
+
+.map-wrapper:hover .grayscale-map {
+    filter: grayscale(50%) contrast(1.1) brightness(1);
+}
+
+.map-overlay {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    max-width: 300px;
+    z-index: 10;
+}
+
+.location-pin {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+    box-shadow: 0 8px 25px rgba(93, 211, 190, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 8px 25px rgba(93, 211, 190, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 12px 35px rgba(93, 211, 190, 0.5);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 8px 25px rgba(93, 211, 190, 0.3);
+    }
+}
+
+.map-info {
+    text-align: center;
+}
+
+.map-info h5 {
+    font-weight: 600;
+    color: var(--dark-text);
+    margin-bottom: 1rem;
+}
+
+.map-info p {
+    color: var(--gray-text);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+/* FAQ Section */
+.accordion-item {
+    border: none;
+    margin-bottom: 1rem;
+    border-radius: 12px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.accordion-button {
+    border: none;
+    background: white;
+    font-weight: 600;
+    color: var(--dark-text);
+    padding: 1.5rem;
+    border-radius: 12px !important;
+    box-shadow: none;
+}
+
+.accordion-button:not(.collapsed) {
+    background: var(--primary-color);
+    color: white;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: transparent;
+}
+
+.accordion-body {
+    padding: 1.5rem;
+    background: #f8fafc;
+    color: var(--gray-text);
+    line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .contact-hero-title {
+        font-size: 2.25rem;
+    }
+    
+    .contact-form-card,
+    .contact-info-card {
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .contact-form-section {
+        margin-top: -2rem;
+    }
+    
+    .contact-item {
+        text-align: center;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .contact-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .map-overlay {
+        position: static;
+        margin: 1rem;
+        max-width: none;
+    }
+    
+    .map-container {
+        height: 350px;
+    }
+}
+
+@media (max-width: 576px) {
+    .contact-hero-section {
+        padding: 3rem 0 4rem;
+    }
+    
+    .contact-form-card,
+    .contact-info-card {
+        padding: 1.5rem;
+    }
+    
+    .form-title {
+        font-size: 1.5rem;
+    }
+}
+</style>
+
+<script>
+function openDirections() {
+    // Open Google Maps with directions to Azure Business Center
+    const address = "Azure Business Center, Bakı, Azərbaycan";
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+    window.open(url, '_blank');
+}
+</script>
+{% endblock %}

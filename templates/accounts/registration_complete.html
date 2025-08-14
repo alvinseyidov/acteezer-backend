@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome to Acteezer!{% endblock %}
+
+{% block content %}
+<div class="registration-container">
+    <div class="container">
+        <div class="registration-card">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0 text-center">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Registration Complete!
+                    </h3>
+                    <p class="mb-0 mt-2 text-center opacity-75">Welcome to the Acteezer community</p>
+                </div>
+                
+                <div class="card-body text-center">
+                    <!-- Success Animation -->
+                    <div class="success-animation mb-4">
+                        <i class="fas fa-trophy fa-5x text-warning mb-3" style="animation: bounce 2s infinite;"></i>
+                        <h2 class="fw-bold text-success">Congratulations, {{ user.get_full_name }}!</h2>
+                        <p class="lead text-muted">Your profile is now complete and ready to explore</p>
+                    </div>
+                    
+                    <!-- Profile Summary -->
+                    <div class="profile-summary bg-light rounded-3 p-4 mb-4">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Profile Completeness</h6>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-success" style="width: 100%"></div>
+                                </div>
+                                <span class="badge bg-success">100% Complete</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Languages</h6>
+                                <div>
+                                    {% for language in user.languages.all %}
+                                        <span class="badge bg-primary me-1">{{ language.name }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Location</h6>
+                                <p class="mb-0">
+                                    <i class="fas fa-map-marker-alt text-primary me-1"></i>
+                                    {{ user.city }}
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Age</h6>
+                                <p class="mb-0">{{ user.age }} years old</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Next Steps -->
+                    <div class="next-steps mb-4">
+                        <h5 class="fw-bold mb-3">What's Next?</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="card border-primary">
+                                    <div class="card-body text-center py-3">
+                                        <i class="fas fa-search fa-2x text-primary mb-2"></i>
+                                        <h6 class="mb-1">Discover Activities</h6>
+                                        <p class="small text-muted mb-2">Find exciting events near you</p>
+                                        <button class="btn btn-outline-primary btn-sm">Explore</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-primary">
+                                    <div class="card-body text-center py-3">
+                                        <i class="fas fa-plus fa-2x text-primary mb-2"></i>
+                                        <h6 class="mb-1">Create Activity</h6>
+                                        <p class="small text-muted mb-2">Organize your own event</p>
+                                        <button class="btn btn-outline-primary btn-sm">Create</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-primary">
+                                    <div class="card-body text-center py-3">
+                                        <i class="fas fa-user-friends fa-2x text-primary mb-2"></i>
+                                        <h6 class="mb-1">Find People</h6>
+                                        <p class="small text-muted mb-2">Connect with adventurers</p>
+                                        <button class="btn btn-outline-primary btn-sm">Browse</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Main CTA -->
+                    <div class="main-cta">
+                        <a href="#" class="btn btn-primary btn-lg px-5">
+                            <i class="fas fa-rocket me-2"></i>
+                            Start Exploring
+                        </a>
+                    </div>
+                    
+                    <!-- Tips -->
+                    <div class="tips mt-4 pt-4 border-top">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                            Pro Tips for Getting Started
+                        </h6>
+                        <div class="row text-start">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Complete your profile to get better matches
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Upload clear photos to build trust
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Be active and engage with the community
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Follow safety guidelines for meetings
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Social Proof -->
+            <div class="social-proof mt-4">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h3 class="text-primary fw-bold">10K+</h3>
+                            <p class="text-muted mb-0">Active Members</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h3 class="text-primary fw-bold">500+</h3>
+                            <p class="text-muted mb-0">Activities Monthly</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h3 class="text-primary fw-bold">50+</h3>
+                            <p class="text-muted mb-0">Cities Worldwide</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.success-animation {
+    animation: fadeInUp 1s ease-out;
+}
+
+.profile-summary {
+    animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+.next-steps {
+    animation: fadeInUp 1s ease-out 0.6s both;
+}
+
+.main-cta {
+    animation: fadeInUp 1s ease-out 0.9s both;
+}
+
+.stat-card {
+    padding: 1rem;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+
+.card-primary {
+    border-color: var(--primary-color) !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Confetti animation (simple version)
+document.addEventListener('DOMContentLoaded', function() {
+    // Add some celebration particles
+    setTimeout(() => {
+        console.log('🎉 Welcome to Acteezer! 🎉');
+    }, 1000);
+});
+
+// Track completion event
+gtag && gtag('event', 'registration_complete', {
+    'event_category': 'user',
+    'event_label': 'registration_flow'
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,725 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }} - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.create-activity-container {
+    background: #f8f9fa;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.create-form-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.form-header-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+}
+
+.form-body {
+    padding: 2.5rem;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #28a745;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-floating {
+    margin-bottom: 1.5rem;
+}
+
+.form-floating > .form-control,
+.form-floating > .form-select {
+    height: 60px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-floating > .form-control:focus,
+.form-floating > .form-select:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.form-floating > label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.form-control-lg {
+    height: 60px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control-lg:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.datetime-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.image-upload-area {
+    border: 2px dashed #28a745;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    background: #f8fff9;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.image-upload-area:hover {
+    background: #e8f5e8;
+    border-color: #20c997;
+}
+
+.image-upload-area.dragover {
+    background: #d4edda;
+    border-color: #155724;
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: #28a745;
+    margin-bottom: 1rem;
+}
+
+.file-input {
+    display: none;
+}
+
+.preview-container {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.image-preview {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-footer {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-create {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+.btn-create:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+    color: white;
+}
+
+.btn-cancel {
+    background: #6c757d;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
+    color: white;
+}
+
+.form-help {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+}
+
+.required {
+    color: #dc3545;
+}
+
+.gender-selection {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+select[multiple] {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+    min-height: 200px;
+    line-height: 1.5;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+select[multiple]:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    background: white;
+    outline: none;
+}
+
+select[multiple] option {
+    padding: 0.7rem 0.5rem;
+    border-radius: 6px;
+    margin: 0.15rem 0;
+    line-height: 1.4;
+    font-size: 0.95rem;
+}
+
+select[multiple] option:checked {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    font-weight: 600;
+}
+
+select[multiple] option:hover {
+    background: rgba(40, 167, 69, 0.1);
+}
+
+/* Enhanced visual feedback for multiple select */
+select[multiple].has-selections {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.05);
+}
+
+/* Remove any default browser blue styling */
+select[multiple]:focus-visible {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+select[multiple] option:focus {
+    background: rgba(40, 167, 69, 0.1);
+    outline: none;
+}
+
+select[multiple] option:active {
+    background: rgba(40, 167, 69, 0.2);
+}
+
+.form-check-inline {
+    margin-right: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-check-input:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.form-check-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+.breadcrumb-custom {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.breadcrumb-custom .breadcrumb-item a {
+    color: #28a745;
+    text-decoration: none;
+}
+
+.breadcrumb-custom .breadcrumb-item.active {
+    color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    .create-activity-container {
+        padding: 1rem;
+    }
+    
+    .form-body {
+        padding: 1.5rem;
+    }
+    
+    .datetime-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-footer {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn-create,
+    .btn-cancel {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="create-activity-container">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-custom">
+                <li class="breadcrumb-item"><a href="{% url 'activities:activities_list' %}">Aktivitələr</a></li>
+                <li class="breadcrumb-item active">Yeni Aktivitə Yarat</li>
+            </ol>
+        </nav>
+
+        <div class="create-form-card">
+            <div class="form-header">
+                <div class="form-header-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <h1 class="mb-2">Yeni Aktivitə Yarat</h1>
+                <p class="mb-0 opacity-90">İnsanları bir araya gətirən aktivitə yaradın</p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" id="create-activity-form">
+                {% csrf_token %}
+                
+                <div class="form-body">
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            Əsas Məlumatlar
+                        </h3>
+                        
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="title" name="title" placeholder="Aktivitə adı" required maxlength="200">
+                            <label for="title">Aktivitə Adı <span class="required">*</span></label>
+                        </div>
+                        
+                        <div class="form-floating">
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">Kateqoriya seçin</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="category">Kateqoriya <span class="required">*</span></label>
+                        </div>
+                        
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="short_description" name="short_description" placeholder="Qısa təsvir" required maxlength="300">
+                            <label for="short_description">Qısa Təsvir <span class="required">*</span></label>
+                            <div class="form-help">Aktivitə kartında göstəriləcək qısa təsvir (maksimum 300 simvol)</div>
+                        </div>
+                        
+                        <div class="form-floating">
+                            <textarea class="form-control" id="description" name="description" placeholder="Ətraflı təsvir" required></textarea>
+                            <label for="description">Ətraflı Təsvir <span class="required">*</span></label>
+                            <div class="form-help">Aktivitə haqqında ətraflı məlumat verin</div>
+                        </div>
+                    </div>
+
+                    <!-- Date & Time -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Tarix və Vaxt
+                        </h3>
+                        
+                        <div class="datetime-row">
+                            <div>
+                                <label for="start_date" class="form-label">Başlama Tarixi <span class="required">*</span></label>
+                                <input type="date" class="form-control form-control-lg" id="start_date" name="start_date" required>
+                            </div>
+                            <div>
+                                <label for="start_time" class="form-label">Başlama Vaxtı <span class="required">*</span></label>
+                                <input type="time" class="form-control form-control-lg" id="start_time" name="start_time" required>
+                            </div>
+                        </div>
+                        
+                        <div class="datetime-row">
+                            <div>
+                                <label for="end_date" class="form-label">Bitmə Tarixi</label>
+                                <input type="date" class="form-control form-control-lg" id="end_date" name="end_date">
+                                <div class="form-help">Boş buraxırsanız, başlama tarixindən 3 saat sonra avtomatik təyin ediləcək</div>
+                            </div>
+                            <div>
+                                <label for="end_time" class="form-label">Bitmə Vaxtı</label>
+                                <input type="time" class="form-control form-control-lg" id="end_time" name="end_time">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location & Participants -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Yer və İştirakçılar
+                        </h3>
+                        
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="address" name="address" placeholder="Ünvan" required maxlength="300">
+                            <label for="address">Ünvan <span class="required">*</span></label>
+                            <div class="form-help">Aktivitənin keçiriləcəyi yer</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="max_participants" name="max_participants" placeholder="Maksimum iştirakçı sayı" required min="2" max="1000">
+                                    <label for="max_participants">Maksimum İştirakçı <span class="required">*</span></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="price" name="price" placeholder="Qiymət (AZN)" min="0" step="0.01">
+                                    <label for="price">Qiymət (AZN)</label>
+                                    <div class="form-help">Pulsuzsa boş buraxın və ya 0 yazın</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Participant Requirements -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-users"></i>
+                            İştirakçı Tələbləri
+                        </h3>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="min_age" class="form-label">Minimum Yaş</label>
+                                <input type="number" class="form-control form-control-lg" id="min_age" name="min_age" min="10" max="100" placeholder="Məs: 18">
+                                <div class="form-help">İsteğe bağlı - boş qoyub bütün yaşlara açığ ola bilər</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="max_age" class="form-label">Maksimum Yaş</label>
+                                <input type="number" class="form-control form-control-lg" id="max_age" name="max_age" min="10" max="100" placeholder="Məs: 65">
+                                <div class="form-help">İsteğe bağlı - boş qoyub yaş məhdudiyyəti olmaya bilər</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="required_languages" class="form-label">Tələb olunan Dillər</label>
+                            <select class="form-select form-control-lg" id="required_languages" name="required_languages" multiple size="8">
+                                <option value="">Dil seçin (isteğe bağlı)</option>
+                                {% for language in languages %}
+                                    <option value="{{ language.id }}">{{ language.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-help">Ctrl/Cmd basaraq bir neçə dil seçə bilərsiniz. İştirakçıların bilməli olduğu dillər</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">İcazə verilən Cinsiyyətlər</label>
+                            <div class="gender-selection">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="allowed_genders" value="male" id="gender_male" checked>
+                                    <label class="form-check-label" for="gender_male">
+                                        Kişi
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="allowed_genders" value="female" id="gender_female" checked>
+                                    <label class="form-check-label" for="gender_female">
+                                        Qadın
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="allowed_genders" value="other" id="gender_other" checked>
+                                    <label class="form-check-label" for="gender_other">
+                                        Digər
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="allowed_genders" value="prefer_not_to_say" id="gender_prefer_not_to_say" checked>
+                                    <label class="form-check-label" for="gender_prefer_not_to_say">
+                                        Deməyi üstün tutmuram
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-help">Aktivitəyə qoşula biləcək cinsiyyətlər (ən az biri seçilməlidir)</div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-list-ul"></i>
+                            Əlavə Məlumatlar
+                        </h3>
+                        
+                        <div class="form-floating">
+                            <textarea class="form-control" id="requirements" name="requirements" placeholder="Tələblər və qeydlər"></textarea>
+                            <label for="requirements">Tələblər və Qeydlər</label>
+                            <div class="form-help">İştirakçılar üçün xüsusi tələblər, gətirməli əşyalar və s.</div>
+                        </div>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-image"></i>
+                            Aktivitə Şəkli
+                        </h3>
+                        
+                        <div class="image-upload-area" onclick="document.getElementById('main_image').click()">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h5>Şəkil Yüklə</h5>
+                            <p class="text-muted mb-0">Aktivitəni daha cəlbedici etmək üçün şəkil əlavə edin</p>
+                            <input type="file" class="file-input" id="main_image" name="main_image" accept="image/*">
+                        </div>
+                        
+                        <div class="preview-container" id="preview-container" style="display: none;">
+                            <img id="image-preview" class="image-preview" alt="Preview">
+                            <div class="mt-2">
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeImage()">
+                                    <i class="fas fa-trash me-1"></i>Şəkli Sil
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <div>
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            <span class="required">*</span> olan sahələr məcburidir
+                        </small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'activities:activities_list' %}" class="btn btn-cancel">
+                            <i class="fas fa-times me-2"></i>Ləğv et
+                        </a>
+                        <button type="submit" class="btn btn-create">
+                            <i class="fas fa-plus me-2"></i>Aktivitə Yarat
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Image upload handling
+document.getElementById('main_image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('image-preview').src = e.target.result;
+            document.getElementById('preview-container').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+function removeImage() {
+    document.getElementById('main_image').value = '';
+    document.getElementById('preview-container').style.display = 'none';
+}
+
+// Drag and drop for image upload
+const uploadArea = document.querySelector('.image-upload-area');
+
+uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        document.getElementById('main_image').files = files;
+        document.getElementById('main_image').dispatchEvent(new Event('change'));
+    }
+});
+
+// Auto-fill end date based on start date
+document.getElementById('start_date').addEventListener('change', function() {
+    const startDate = this.value;
+    const endDateField = document.getElementById('end_date');
+    if (startDate && !endDateField.value) {
+        endDateField.value = startDate;
+    }
+});
+
+// Set minimum date to today
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('start_date').min = today;
+document.getElementById('end_date').min = today;
+
+// Enhanced multiple select for languages
+const languageSelect = document.getElementById('required_languages');
+if (languageSelect) {
+    // Add helper text on focus
+    languageSelect.addEventListener('focus', function() {
+        const helpText = this.parentNode.querySelector('.form-help');
+        helpText.style.color = '#28a745';
+        helpText.style.fontWeight = '600';
+    });
+    
+    languageSelect.addEventListener('blur', function() {
+        const helpText = this.parentNode.querySelector('.form-help');
+        helpText.style.color = '#6c757d';
+        helpText.style.fontWeight = '400';
+        
+        // Update help text based on selection count
+        const selectedCount = this.selectedOptions.length;
+        if (selectedCount > 0) {
+            helpText.innerHTML = `${selectedCount} dil seçildi. İştirakçıların bilməli olduğu dillər`;
+        } else {
+            helpText.innerHTML = 'Ctrl/Cmd basaraq bir neçə dil seçə bilərsiniz. İştirakçıların bilməli olduğu dillər';
+        }
+    });
+    
+    // Real-time selection count update
+    languageSelect.addEventListener('change', function() {
+        const selectedCount = this.selectedOptions.length;
+        const helpText = this.parentNode.querySelector('.form-help');
+        if (selectedCount > 0) {
+            helpText.innerHTML = `${selectedCount} dil seçildi. İştirakçıların bilməli olduğu dillər`;
+            helpText.style.color = '#28a745';
+            this.classList.add('has-selections');
+        } else {
+            helpText.innerHTML = 'Ctrl/Cmd basaraq bir neçə dil seçə bilərsiniz. İştirakçıların bilməli olduğu dillər';
+            helpText.style.color = '#6c757d';
+            this.classList.remove('has-selections');
+        }
+    });
+}
+
+// Form validation
+document.getElementById('create-activity-form').addEventListener('submit', function(e) {
+    const startDate = document.getElementById('start_date').value;
+    const startTime = document.getElementById('start_time').value;
+    const endDate = document.getElementById('end_date').value;
+    const endTime = document.getElementById('end_time').value;
+    
+    if (startDate && startTime) {
+        const startDateTime = new Date(startDate + 'T' + startTime);
+        const now = new Date();
+        
+        if (startDateTime <= now) {
+            e.preventDefault();
+            alert('Aktivitə tarixi indiki vaxtdan sonra olmalıdır.');
+            return;
+        }
+        
+        if (endDate && endTime) {
+            const endDateTime = new Date(endDate + 'T' + endTime);
+            if (endDateTime <= startDateTime) {
+                e.preventDefault();
+                alert('Bitmə tarixi başlama tarixindən sonra olmalıdır.');
+                return;
+            }
+        }
+    }
+    
+    // Validate age range
+    const minAge = document.getElementById('min_age').value;
+    const maxAge = document.getElementById('max_age').value;
+    
+    if (minAge && maxAge && parseInt(minAge) >= parseInt(maxAge)) {
+        e.preventDefault();
+        alert('Maksimum yaş minimum yaşdan böyük olmalıdır.');
+        return;
+    }
+    
+    // Validate gender selection
+    const genderCheckboxes = document.querySelectorAll('input[name="allowed_genders"]:checked');
+    if (genderCheckboxes.length === 0) {
+        e.preventDefault();
+        alert('Ən az bir cinsiyyət seçməlisiniz.');
+        return;
+    }
+    
+    // Show loading state
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yaradılır...';
+});
+</script>
+{% endblock %}
+

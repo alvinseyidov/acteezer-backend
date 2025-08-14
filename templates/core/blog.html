@@ -1,0 +1,612 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bloq - Acteezer{% endblock %}
+
+{% block content %}
+<!-- Blog Hero Section -->
+<section class="blog-hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="blog-hero-title">Acteezer <span class="text-primary">Bloqu</span></h1>
+                <p class="blog-hero-subtitle">
+                    Aktivitələr, səyahət təcrübələri və Bakı həyatı haqqında ən son məqalələr
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Post Section -->
+{% if featured_post %}
+<section class="featured-post-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="featured-post-card">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6">
+                            <div class="featured-image">
+                                {% if featured_post.featured_image %}
+                                    <img src="{{ featured_post.featured_image.url }}" alt="{{ featured_post.title }}" class="img-fluid">
+                                {% else %}
+                                    <img src="{% static 'blog-featured.jpg' %}" alt="{{ featured_post.title }}" class="img-fluid">
+                                {% endif %}
+                                <div class="featured-badge">
+                                    <i class="fas fa-star me-1"></i>Seçilmiş
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="featured-content">
+                                <div class="post-meta">
+                                    <span class="category-tag">{{ featured_post.category.name }}</span>
+                                    <span class="post-date">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ featured_post.published_at|date:"d M Y" }}
+                                    </span>
+                                </div>
+                                <h2 class="featured-title">{{ featured_post.title }}</h2>
+                                <p class="featured-excerpt">{{ featured_post.excerpt }}</p>
+                                <div class="post-stats">
+                                    <span class="views">
+                                        <i class="fas fa-eye me-1"></i>{{ featured_post.views_count }} baxış
+                                    </span>
+                                    <span class="author">
+                                        <i class="fas fa-user me-1"></i>{{ featured_post.author.get_full_name }}
+                                    </span>
+                                </div>
+                                <a href="{{ featured_post.get_absolute_url }}" class="btn btn-primary mt-3">
+                                    Oxuyun
+                                    <i class="fas fa-arrow-right ms-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Blog Posts Grid -->
+<section class="blog-posts-section py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="section-title">Son Məqalələr</h2>
+                <p class="section-subtitle">Aktivitələr və Bakı həyatı haqqında ən maraqlı yazılar</p>
+            </div>
+        </div>
+        
+        <!-- Category Filter -->
+        <div class="category-filter mb-5">
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-category="all">Hamısı</button>
+                {% for category in categories %}
+                    <button class="filter-tab" data-category="{{ category.slug }}">{{ category.name }}</button>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for post in posts %}
+                <div class="col-lg-4 col-md-6">
+                    <article class="blog-card" data-category="{{ post.category.slug }}">
+                        <div class="blog-image">
+                            {% if post.featured_image %}
+                                <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="img-fluid">
+                            {% else %}
+                                <img src="{% static 'blog-default.jpg' %}" alt="{{ post.title }}" class="img-fluid">
+                            {% endif %}
+                            <div class="blog-overlay">
+                                <a href="{{ post.get_absolute_url }}" class="read-more-btn">
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="blog-content">
+                            <div class="blog-meta">
+                                <span class="category-tag">{{ post.category.name }}</span>
+                                <span class="post-date">{{ post.published_at|date:"d M" }}</span>
+                            </div>
+                            <h4 class="blog-title">
+                                <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                            </h4>
+                            <p class="blog-excerpt">{{ post.excerpt|truncatewords:15 }}</p>
+                            <div class="blog-footer">
+                                <div class="author-info">
+                                    <span class="author-name">{{ post.author.get_full_name }}</span>
+                                </div>
+                                <div class="post-stats">
+                                    <span class="views">
+                                        <i class="fas fa-eye"></i> {{ post.views_count }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <div class="no-posts">
+                        <i class="fas fa-blog fa-3x text-muted mb-3"></i>
+                        <h4>Hələ məqalə yoxdur</h4>
+                        <p class="text-muted">Tezliklə maraqlı məqalələrlə qayıdacağıq!</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Load More Button -->
+        {% if posts.has_next %}
+            <div class="text-center mt-5">
+                <button class="btn btn-outline-primary btn-lg load-more-btn" data-page="{{ posts.next_page_number }}">
+                    <i class="fas fa-plus me-2"></i>
+                    Daha çox yüklə
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h3 class="newsletter-title">Bloq Yeniliklərindən Xəbərdar Olun</h3>
+                <p class="newsletter-subtitle">Yeni məqalələr və aktivitələr haqqında ilk siz öyrənin</p>
+                <div class="newsletter-form">
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Email adresinizi daxil edin">
+                        <button class="btn btn-primary" type="button">
+                            <i class="fas fa-bell me-2"></i>Abunə ol
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Blog Hero Section */
+.blog-hero-section {
+    background: linear-gradient(135deg, #f8fdfc 0%, #e0f2ef 100%);
+    padding: 4rem 0;
+    position: relative;
+}
+
+.blog-hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--dark-text);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.blog-hero-title .text-primary {
+    color: var(--primary-color) !important;
+}
+
+.blog-hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--gray-text);
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+/* Featured Post Section */
+.featured-post-section {
+    padding: 0 0 4rem;
+    margin-top: -3rem;
+    position: relative;
+    z-index: 10;
+}
+
+.featured-post-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(93, 211, 190, 0.1);
+}
+
+.featured-image {
+    position: relative;
+    height: 400px;
+    overflow: hidden;
+}
+
+.featured-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.featured-post-card:hover .featured-image img {
+    transform: scale(1.05);
+}
+
+.featured-badge {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    background: var(--accent-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.featured-content {
+    padding: 3rem;
+}
+
+.post-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.category-tag {
+    background: rgba(93, 211, 190, 0.1);
+    color: var(--primary-color);
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.post-date {
+    color: var(--gray-text);
+    font-size: 0.9rem;
+}
+
+.featured-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+}
+
+.featured-excerpt {
+    font-size: 1.1rem;
+    color: var(--gray-text);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.post-stats {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--gray-text);
+}
+
+/* Category Filter */
+.category-filter {
+    display: flex;
+    justify-content: center;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filter-tab {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #e2e8f0;
+    background: white;
+    color: var(--gray-text);
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.filter-tab.active,
+.filter-tab:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Blog Cards */
+.blog-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.blog-image {
+    position: relative;
+    height: 240px;
+    overflow: hidden;
+}
+
+.blog-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.blog-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(93, 211, 190, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.blog-card:hover .blog-overlay {
+    opacity: 1;
+}
+
+.read-more-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.read-more-btn:hover {
+    transform: scale(1.1);
+    color: var(--primary-color);
+}
+
+.blog-content {
+    padding: 2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.blog-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.blog-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.blog-title a {
+    color: var(--dark-text);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.blog-title a:hover {
+    color: var(--primary-color);
+}
+
+.blog-excerpt {
+    color: var(--gray-text);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+.blog-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.author-name {
+    font-weight: 500;
+    color: var(--dark-text);
+    font-size: 0.9rem;
+}
+
+.post-stats .views {
+    color: var(--gray-text);
+    font-size: 0.85rem;
+}
+
+/* Newsletter Section */
+.newsletter-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 1rem;
+}
+
+.newsletter-subtitle {
+    color: var(--gray-text);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.newsletter-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.newsletter-form .input-group {
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.newsletter-form .form-control {
+    border: none;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 0;
+}
+
+.newsletter-form .btn {
+    border-radius: 0;
+    padding: 1rem 2rem;
+    font-weight: 600;
+}
+
+/* No Posts State */
+.no-posts {
+    padding: 4rem 2rem;
+}
+
+/* Ensure all primary buttons use green color */
+.btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+    color: white !important;
+}
+
+.btn-outline-primary {
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+    background: transparent !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* Fix text-primary class */
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .blog-hero-title {
+        font-size: 2.25rem;
+    }
+    
+    .featured-post-card .row {
+        flex-direction: column-reverse;
+    }
+    
+    .featured-content {
+        padding: 2rem;
+    }
+    
+    .featured-title {
+        font-size: 1.5rem;
+    }
+    
+    .filter-tabs {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+    
+    .filter-tab {
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .blog-hero-section {
+        padding: 3rem 0;
+    }
+    
+    .featured-post-section {
+        margin-top: -2rem;
+    }
+    
+    .blog-content {
+        padding: 1.5rem;
+    }
+    
+    .newsletter-form .input-group {
+        flex-direction: column;
+        border-radius: 12px;
+    }
+    
+    .newsletter-form .form-control,
+    .newsletter-form .btn {
+        border-radius: 12px;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+
+<script>
+// Category filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    const blogCards = document.querySelectorAll('.blog-card');
+    
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const category = this.dataset.category;
+            
+            // Update active tab
+            filterTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter blog cards
+            blogCards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,445 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Maraqlarınızı Seçin - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.auth-card {
+    max-width: 800px;
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 0 1rem;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+}
+
+.auth-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    backdrop-filter: blur(10px);
+}
+
+.step-progress {
+    padding: 1.5rem 2rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.step-indicator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e9ecef;
+    z-index: 1;
+}
+
+.step {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.step.active {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    transform: scale(1.1);
+}
+
+.step.completed {
+    background: #28a745;
+    color: white;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #e9ecef;
+}
+
+.progress-bar {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    transition: width 0.6s ease;
+}
+
+.auth-body {
+    padding: 2.5rem 2rem;
+}
+
+.step-title {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+}
+
+.auth-btn {
+    height: 60px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+}
+
+.auth-btn:disabled {
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+.interests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.interest-item {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.interest-item:hover {
+    border-color: #28a745;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+}
+
+.interest-item.selected {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+}
+
+.interest-icon {
+    width: 60px;
+    height: 60px;
+    background: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #28a745;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.interest-item.selected .interest-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.interest-name {
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.interest-item.selected .interest-name {
+    color: white;
+}
+
+.interest-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.selected-count {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #155724;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .interests-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.75rem;
+    }
+    
+    .interest-item {
+        padding: 1rem;
+    }
+    
+    .interest-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .auth-container {
+        padding: 1rem 0;
+    }
+    
+    .auth-card {
+        margin: 0 0.5rem;
+    }
+    
+    .auth-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .step {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+    
+    .interests-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-heart fa-2x"></i>
+            </div>
+            <h2 class="mb-2">Maraqlarınızı Seçin</h2>
+            <p class="mb-0 opacity-90">Sizə uyğun aktivitələr tapmaq üçün</p>
+        </div>
+                
+        <div class="step-progress">
+            <div class="step-indicator">
+                <div class="step completed">1</div>
+                <div class="step completed">2</div>
+                <div class="step completed">3</div>
+                <div class="step completed">4</div>
+                <div class="step completed">5</div>
+                <div class="step completed">6</div>
+                <div class="step completed">7</div>
+                <div class="step active">8</div>
+                <div class="step">9</div>
+            </div>
+                    
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 88%" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+        
+        <div class="auth-body">
+            <div class="step-title">
+                <div class="step-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h4 class="fw-bold">Maraqlarınızı Seçin</h4>
+                <p class="text-muted">Ən azı 3 maraq seçin ki, sizə uyğun aktivitələr təklif edə bilək</p>
+            </div>
+                    
+            <form method="post" id="interests-form">
+                {% csrf_token %}
+                
+                <div class="selected-count" id="selected-count" style="display: none;">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="count-text">0 maraq seçildi</span>
+                </div>
+                
+                <div class="interests-grid">
+                    {% for interest in interests %}
+                    <div class="interest-item" onclick="toggleInterest({{ interest.id }})">
+                        <input type="checkbox" 
+                               name="interests" 
+                               value="{{ interest.id }}" 
+                               id="interest-{{ interest.id }}"
+                               class="interest-checkbox"
+                               {% if interest in user_interests %}checked{% endif %}>
+                        
+                        <div class="interest-icon">
+                            {% if interest.icon %}
+                                <i class="fas fa-{{ interest.icon }}"></i>
+                            {% else %}
+                                <i class="fas fa-star"></i>
+                            {% endif %}
+                        </div>
+                        
+                        <h6 class="interest-name">{{ interest.name }}</h6>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-heart fa-3x mb-3"></i>
+                            <h5>Hələ ki maraq sahələri yoxdur</h5>
+                            <p>Admin tərəfindən maraq sahələri əlavə ediləcək</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                        
+                <button type="submit" class="btn auth-btn w-100 text-white mt-4" id="submit-btn" disabled>
+                    <i class="fas fa-arrow-right me-2"></i>
+                    Davam Et
+                </button>
+                        
+                <div class="text-center mt-3">
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Bu məlumatları sonradan profildən dəyişə bilərsiniz
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedCount = 0;
+const minRequired = 3;
+
+function updateSelectedCount() {
+    const selectedCountDiv = document.getElementById('selected-count');
+    const countText = document.getElementById('count-text');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (selectedCount > 0) {
+        selectedCountDiv.style.display = 'block';
+        countText.textContent = `${selectedCount} maraq seçildi`;
+        
+        if (selectedCount >= minRequired) {
+            selectedCountDiv.className = 'selected-count';
+            countText.innerHTML = `<i class="fas fa-check-circle me-2"></i>${selectedCount} maraq seçildi - Əla!`;
+            submitBtn.disabled = false;
+        } else {
+            selectedCountDiv.className = 'selected-count';
+            selectedCountDiv.style.background = '#fff3cd';
+            selectedCountDiv.style.borderColor = '#ffc107';
+            selectedCountDiv.style.color = '#856404';
+            countText.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>${selectedCount} maraq seçildi - Ən azı ${minRequired} seçin`;
+            submitBtn.disabled = true;
+        }
+    } else {
+        selectedCountDiv.style.display = 'none';
+        submitBtn.disabled = true;
+    }
+}
+
+function toggleInterest(interestId) {
+    const checkbox = document.getElementById(`interest-${interestId}`);
+    const item = checkbox.closest('.interest-item');
+    
+    checkbox.checked = !checkbox.checked;
+    
+    if (checkbox.checked) {
+        item.classList.add('selected');
+        selectedCount++;
+    } else {
+        item.classList.remove('selected');
+        selectedCount--;
+    }
+    
+    updateSelectedCount();
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.interest-checkbox:checked');
+    selectedCount = checkboxes.length;
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.closest('.interest-item').classList.add('selected');
+    });
+    
+    updateSelectedCount();
+    
+    // Form submission
+    document.getElementById('interests-form').addEventListener('submit', function(e) {
+        if (selectedCount < minRequired) {
+            e.preventDefault();
+            alert(`Ən azı ${minRequired} maraq seçməlisiniz.`);
+            return;
+        }
+        
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yüklənir...';
+        submitBtn.disabled = true;
+    });
+});
+</script>
+{% endblock %}

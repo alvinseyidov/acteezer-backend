@@ -1,0 +1,663 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }} - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+
+.participation-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.participation-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.participation-header {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.participation-content {
+    padding: 1.5rem;
+}
+
+.activity-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.activity-organizer {
+    color: #28a745;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.participation-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.joined-badge {
+    background: #28a745;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.activity-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-upcoming {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-ongoing {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-completed {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.participation-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-action {
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: none;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    color: white;
+}
+
+.participation-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.breadcrumb-custom {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.breadcrumb-custom .breadcrumb-item a {
+    color: #28a745;
+    text-decoration: none;
+}
+
+.breadcrumb-custom .breadcrumb-item.active {
+    color: #6c757d;
+}
+
+.filter-tabs {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.filter-tabs .nav-link {
+    color: #6c757d;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    margin-right: 0.5rem;
+}
+
+.filter-tabs .nav-link.active {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="mb-2">{{ page_title }}</h1>
+                <p class="mb-0 opacity-90">Qoşulduğunuz bütün aktivitələr</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-custom">
+            <li class="breadcrumb-item"><a href="{% url 'accounts:profile' %}">Profil</a></li>
+            <li class="breadcrumb-item active">Qoşulduğum Aktivitələr</li>
+        </ol>
+    </nav>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link active" href="#all" data-bs-toggle="pill">
+                    <i class="fas fa-list me-1"></i>
+                    Hamısı
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#upcoming" data-bs-toggle="pill">
+                    <i class="fas fa-clock me-1"></i>
+                    Gələcək
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#completed" data-bs-toggle="pill">
+                    <i class="fas fa-check me-1"></i>
+                    Tamamlanmış
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    {% if participations %}
+        <div class="row">
+            {% for participation in participations %}
+                <div class="col-12">
+                    <div class="participation-card">
+                        <div class="participation-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="joined-badge">
+                                        <i class="fas fa-check me-1"></i>
+                                        Qoşulmuş
+                                    </span>
+                                </div>
+                                <div class="text-muted small">
+                                    Qoşulma tarixi: {{ participation.join_requested_at|date:"d M Y, H:i" }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="participation-content">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="activity-title">{{ participation.activity.title }}</h5>
+                                    <p class="activity-organizer">
+                                        <i class="fas fa-user me-1"></i>
+                                        Təşkilatçı: {{ participation.activity.organizer.get_full_name|default:participation.activity.organizer.phone }}
+                                    </p>
+                                    
+                                    <div class="participation-meta">
+                                        <span>
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ participation.activity.start_date|date:"d M Y, H:i" }}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            {{ participation.activity.address|truncatechars:40 }}
+                                        </span>
+                                        <span class="activity-status {% if participation.activity.is_upcoming %}status-upcoming{% elif participation.activity.is_ongoing %}status-ongoing{% else %}status-completed{% endif %}">
+                                            {% if participation.activity.is_upcoming %}
+                                                Gələcək
+                                            {% elif participation.activity.is_ongoing %}
+                                                Davam edir
+                                            {% else %}
+                                                Tamamlandı
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    
+                                    <p class="text-muted mb-3">{{ participation.activity.short_description|truncatechars:120 }}</p>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="participation-info">
+                                        <div class="mb-2">
+                                            <strong>İştirakçı sayı:</strong><br>
+                                            {{ participation.activity.participants_count }}/{{ participation.activity.max_participants }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Status:</strong><br>
+                                            {% if participation.status == 'approved' %}
+                                                <span class="text-success">Təsdiqlənib</span>
+                                            {% elif participation.status == 'pending' %}
+                                                <span class="text-warning">Gözləyir</span>
+                                            {% else %}
+                                                <span class="text-danger">Rədd edilib</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="participation-actions mt-3">
+                                        <a href="{{ participation.activity.get_absolute_url }}" class="btn btn-action btn-primary-custom">
+                                            <i class="fas fa-eye me-1"></i>
+                                            Ətraflı
+                                        </a>
+                                        {% if participation.activity.is_upcoming %}
+                                            <a href="#" class="btn btn-action btn-outline-danger">
+                                                <i class="fas fa-times me-1"></i>
+                                                Çıx
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'activities:activities_list' %}" class="btn btn-success btn-lg">
+                <i class="fas fa-search me-2"></i>
+                Daha Çox Aktivitə Tap
+            </a>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-calendar-times"></i>
+            </div>
+            <h3>Hələ heç bir aktivitəyə qoşulmamısınız</h3>
+            <p class="mb-4">Maraqlandığınız aktivitələri tapın və qoşulun!</p>
+            <a href="{% url 'activities:activities_list' %}" class="btn btn-success btn-lg">
+                <i class="fas fa-search me-2"></i>
+                Aktivitələri Kəşf Et
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+{% block title %}{{ page_title }} - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+
+.participation-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.participation-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.participation-header {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.participation-content {
+    padding: 1.5rem;
+}
+
+.activity-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.activity-organizer {
+    color: #28a745;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.participation-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.joined-badge {
+    background: #28a745;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.activity-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-upcoming {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-ongoing {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-completed {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.participation-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-action {
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: none;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    color: white;
+}
+
+.participation-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.breadcrumb-custom {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.breadcrumb-custom .breadcrumb-item a {
+    color: #28a745;
+    text-decoration: none;
+}
+
+.breadcrumb-custom .breadcrumb-item.active {
+    color: #6c757d;
+}
+
+.filter-tabs {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.filter-tabs .nav-link {
+    color: #6c757d;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    margin-right: 0.5rem;
+}
+
+.filter-tabs .nav-link.active {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="mb-2">{{ page_title }}</h1>
+                <p class="mb-0 opacity-90">Qoşulduğunuz bütün aktivitələr</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-custom">
+            <li class="breadcrumb-item"><a href="{% url 'accounts:profile' %}">Profil</a></li>
+            <li class="breadcrumb-item active">Qoşulduğum Aktivitələr</li>
+        </ol>
+    </nav>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link active" href="#all" data-bs-toggle="pill">
+                    <i class="fas fa-list me-1"></i>
+                    Hamısı
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#upcoming" data-bs-toggle="pill">
+                    <i class="fas fa-clock me-1"></i>
+                    Gələcək
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#completed" data-bs-toggle="pill">
+                    <i class="fas fa-check me-1"></i>
+                    Tamamlanmış
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    {% if participations %}
+        <div class="row">
+            {% for participation in participations %}
+                <div class="col-12">
+                    <div class="participation-card">
+                        <div class="participation-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="joined-badge">
+                                        <i class="fas fa-check me-1"></i>
+                                        Qoşulmuş
+                                    </span>
+                                </div>
+                                <div class="text-muted small">
+                                    Qoşulma tarixi: {{ participation.join_requested_at|date:"d M Y, H:i" }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="participation-content">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="activity-title">{{ participation.activity.title }}</h5>
+                                    <p class="activity-organizer">
+                                        <i class="fas fa-user me-1"></i>
+                                        Təşkilatçı: {{ participation.activity.organizer.get_full_name|default:participation.activity.organizer.phone }}
+                                    </p>
+                                    
+                                    <div class="participation-meta">
+                                        <span>
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ participation.activity.start_date|date:"d M Y, H:i" }}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            {{ participation.activity.address|truncatechars:40 }}
+                                        </span>
+                                        <span class="activity-status {% if participation.activity.is_upcoming %}status-upcoming{% elif participation.activity.is_ongoing %}status-ongoing{% else %}status-completed{% endif %}">
+                                            {% if participation.activity.is_upcoming %}
+                                                Gələcək
+                                            {% elif participation.activity.is_ongoing %}
+                                                Davam edir
+                                            {% else %}
+                                                Tamamlandı
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    
+                                    <p class="text-muted mb-3">{{ participation.activity.short_description|truncatechars:120 }}</p>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="participation-info">
+                                        <div class="mb-2">
+                                            <strong>İştirakçı sayı:</strong><br>
+                                            {{ participation.activity.participants_count }}/{{ participation.activity.max_participants }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Status:</strong><br>
+                                            {% if participation.status == 'approved' %}
+                                                <span class="text-success">Təsdiqlənib</span>
+                                            {% elif participation.status == 'pending' %}
+                                                <span class="text-warning">Gözləyir</span>
+                                            {% else %}
+                                                <span class="text-danger">Rədd edilib</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="participation-actions mt-3">
+                                        <a href="{{ participation.activity.get_absolute_url }}" class="btn btn-action btn-primary-custom">
+                                            <i class="fas fa-eye me-1"></i>
+                                            Ətraflı
+                                        </a>
+                                        {% if participation.activity.is_upcoming %}
+                                            <a href="#" class="btn btn-action btn-outline-danger">
+                                                <i class="fas fa-times me-1"></i>
+                                                Çıx
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'activities:activities_list' %}" class="btn btn-success btn-lg">
+                <i class="fas fa-search me-2"></i>
+                Daha Çox Aktivitə Tap
+            </a>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-calendar-times"></i>
+            </div>
+            <h3>Hələ heç bir aktivitəyə qoşulmamısınız</h3>
+            <p class="mb-4">Maraqlandığınız aktivitələri tapın və qoşulun!</p>
+            <a href="{% url 'activities:activities_list' %}" class="btn btn-success btn-lg">
+                <i class="fas fa-search me-2"></i>
+                Aktivitələri Kəşf Et
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

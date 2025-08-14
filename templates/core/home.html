@@ -1,0 +1,923 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Acteezer - Connect Through Activities{% endblock %}
+
+{% block content %}
+
+<style>
+.search-form {
+    display: flex !important;
+}
+</style>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7 hero-content">
+                <h1 class="hero-title fade-in-up">
+                    Macəra yoldaşlarınızı 
+                    <span style="color: #FFB84D;">tapın</span>
+                </h1>
+                <p class="hero-subtitle fade-in-up">
+                    Maraqlı fəaliyyətlər kəşf edin, həmfikir insanlarla tanış olun və unudulmaz xatirələr yaradın. 
+                    Həyatın birlikdə daha gözəl olduğuna inanan insanlar icmasına qoşulun.
+                </p>
+                <div class="hero-buttons fade-in-up">
+                    <a href="{% url 'activities:activities_list' %}" class="btn btn-light btn-lg me-3">
+                        <i class="fas fa-search me-2"></i>
+                        Aktivitə Axtarın
+                    </a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        Daxil olun
+                    </a>
+                </div>
+                
+                <!-- Stats -->
+                <div class="hero-stats mt-5 fade-in-up">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <h3 class="mb-0">10K+</h3>
+                                <small class="opacity-75">Aktiv üzvlər</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <h3 class="mb-0">500+</h3>
+                                <small class="opacity-75">Aylıq fəaliyyət</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <h3 class="mb-0">50+</h3>
+                                <small class="opacity-75">Şəhər</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="hero-image fade-in-up" style="animation-delay: 0.3s;">
+                    <!-- Modern illustration placeholder -->
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Activity Search Section (Overlapping) -->
+<section class="search-overlay-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="search-overlay-card">
+                    <h3 class="search-title">Bakıda Aktivitə Axtarın</h3>
+                    <p class="search-subtitle">Həmfikir insanlarla tanış olun və maraqlı təcrübələr yaşayın</p>
+                    
+                    <!-- Search Form -->
+                    <div class="search-form">
+                        <div class="search-input-group">
+                            <div class="search-field">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Aktivitə növü axtarın..." class="search-input">
+                            </div>
+                            <div class="search-field">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <select class="search-select">
+                                    <option>Rayon seçin</option>
+                                    <option>Nəsimi</option>
+                                    <option>Yasamal</option>
+                                    <option>Nərimanov</option>
+                                    <option>Səbail</option>
+                                    <option>Binəqədi</option>
+                                    <option>Nizami</option>
+                                </select>
+                            </div>
+                            <div class="search-field">
+                                <i class="fas fa-calendar-alt"></i>
+                                <input type="date" class="search-input">
+                            </div>
+                            <button class="search-btn">
+                                <i class="fas fa-search"></i>
+                                Axtar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Category Tags -->
+                    <div class="quick-categories">
+                        <span class="category-label">Populyar:</span>
+                        <button class="category-tag">İdman</button>
+                        <button class="category-tag">Mədəniyyət</button>
+                        <button class="category-tag">Təbiət</button>
+                        <button class="category-tag">Yemək</button>
+                        <button class="category-tag">Sənət</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Categories Slider -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold mb-3">Populyar Kateqoriyalar</h2>
+                <p class="text-muted">Dünyaya əmin addımlarla səyahət edin</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="category-slider-container">
+            <div class="category-slider">
+                <div class="category-slide">
+                    <div class="category-circle">
+                        <img src="{% static '1.png' %}" alt="Dağ və Təbiət" class="category-img">
+                    </div>
+                    <h6 class="category-name">Dağ və Təbiət</h6>
+                    <p class="category-count">156 Fəaliyyət</p>
+                </div>
+                
+                <div class="category-slide">
+                    <div class="category-circle">
+                        <img src="{% static '2.png' %}" alt="Mədəniyyət" class="category-img">
+                    </div>
+                    <h6 class="category-name">Mədəniyyət</h6>
+                    <p class="category-count">243 Fəaliyyət</p>
+                </div>
+                
+                <div class="category-slide">
+                    <div class="category-circle">
+                        <img src="{% static '3.png' %}" alt="Şəhər Turları" class="category-img">
+                    </div>
+                    <h6 class="category-name">Şəhər Turları</h6>
+                    <p class="category-count">189 Fəaliyyət</p>
+                </div>
+                
+                <div class="category-slide">
+                    <div class="category-circle">
+                        <img src="{% static '4.png' %}" alt="Sağlamlıq" class="category-img">
+                    </div>
+                    <h6 class="category-name">Sağlamlıq</h6>
+                    <p class="category-count">127 Fəaliyyət</p>
+                </div>
+                
+                <div class="category-slide">
+                    <div class="category-circle">
+                        <img src="{% static '5.png' %}" alt="Macəra" class="category-img">
+                    </div>
+                    <h6 class="category-name">Macəra</h6>
+                    <p class="category-count">198 Fəaliyyət</p>
+                </div>
+                
+                <div class="category-slide">
+                    <div class="category-circle">
+                        <img src="{% static '6.png' %}" alt="Yemək" class="category-img">
+                    </div>
+                    <h6 class="category-name">Yemək</h6>
+                    <p class="category-count">165 Fəaliyyət</p>
+                </div>
+                
+                <div class="category-slide">
+                    <div class="category-circle">
+                        <img src="{% static '1.png' %}" alt="İdman" class="category-img">
+                    </div>
+                    <h6 class="category-name">İdman</h6>
+                    <p class="category-count">134 Fəaliyyət</p>
+                </div>
+                
+                <div class="category-slide">
+                    <div class="category-circle">
+                        <img src="{% static '2.png' %}" alt="Sənət" class="category-img">
+                    </div>
+                    <h6 class="category-name">Sənət</h6>
+                    <p class="category-count">89 Fəaliyyət</p>
+                </div>
+            </div>
+            
+            <button class="slider-btn slider-btn-prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="slider-btn slider-btn-next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+</section>
+
+<!-- Latest Activities Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold mb-3">Ən son fəaliyyətlər</h2>
+                <p class="text-muted">Bu həftə ən populyar olan macəralar və fəaliyyətlər</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="{% static '1.png' %}" alt="Dağ gəzintisi" class="img-fluid">
+                        <div class="activity-badge">
+                            <span class="badge bg-success">Aktiv</span>
+                        </div>
+                        <div class="activity-heart">
+                            <i class="far fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-meta">
+                            <span class="activity-date">
+                                <i class="fas fa-calendar me-1"></i>
+                                15 Dekabr
+                            </span>
+                            <span class="activity-participants">
+                                <i class="fas fa-users me-1"></i>
+                                8/12
+                            </span>
+                        </div>
+                        <h5 class="activity-title">Şahdağ Milli Parkı Gəzintisi</h5>
+                        <div class="activity-rating mb-2">
+                            <span class="star-rating">
+                                <i class="fas fa-star"></i>
+                                <span class="rating-score">4.85</span>
+                                <span class="rating-count">(124 rəy)</span>
+                            </span>
+                        </div>
+                        <p class="activity-description">Təbiətin qoynunda gözəl gün keçirmək və yeni dostlar tapmaq üçün</p>
+                        <div class="activity-footer">
+                            <span class="activity-location">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                Quba
+                            </span>
+                            <button class="btn btn-primary btn-sm activity-join-btn">İndi qoşul</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="{% static '2.png' %}" alt="Yemək festivalı" class="img-fluid">
+                        <div class="activity-badge">
+                            <span class="badge bg-warning">Populyar</span>
+                        </div>
+                        <div class="activity-heart">
+                            <i class="far fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-meta">
+                            <span class="activity-date">
+                                <i class="fas fa-calendar me-1"></i>
+                                17 Dekabr
+                            </span>
+                            <span class="activity-participants">
+                                <i class="fas fa-users me-1"></i>
+                                15/20
+                            </span>
+                        </div>
+                        <h5 class="activity-title">Milli Mətbəx Festivalı</h5>
+                        <div class="activity-rating mb-2">
+                            <span class="star-rating">
+                                <i class="fas fa-star"></i>
+                                <span class="rating-score">4.72</span>
+                                <span class="rating-count">(89 rəy)</span>
+                            </span>
+                        </div>
+                        <p class="activity-description">Azərbaycan mətbəxinin ləzzətlərini dadmaq və öyrənmək</p>
+                        <div class="activity-footer">
+                            <span class="activity-location">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                Bakı Bulvarı
+                            </span>
+                            <button class="btn btn-primary btn-sm activity-join-btn">İndi qoşul</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="{% static '3.png' %}" alt="Fotoqrafiya turu" class="img-fluid">
+                        <div class="activity-badge">
+                            <span class="badge bg-info">Yeni</span>
+                        </div>
+                        <div class="activity-heart">
+                            <i class="far fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-meta">
+                            <span class="activity-date">
+                                <i class="fas fa-calendar me-1"></i>
+                                18 Dekabr
+                            </span>
+                            <span class="activity-participants">
+                                <i class="fas fa-users me-1"></i>
+                                5/10
+                            </span>
+                        </div>
+                        <h5 class="activity-title">İçəri Şəhər Fotoqrafiya Turu</h5>
+                        <div class="activity-rating mb-2">
+                            <span class="star-rating">
+                                <i class="fas fa-star"></i>
+                                <span class="rating-score">4.91</span>
+                                <span class="rating-count">(56 rəy)</span>
+                            </span>
+                        </div>
+                        <p class="activity-description">Tarixi İçəri Şəhərin gözəl küncələrini fotoqraflamaq</p>
+                        <div class="activity-footer">
+                            <span class="activity-location">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                İçəri Şəhər
+                            </span>
+                            <button class="btn btn-primary btn-sm activity-join-btn">İndi qoşul</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="{% static '4.png' %}" alt="Yoga səhər" class="img-fluid">
+                        <div class="activity-badge">
+                            <span class="badge bg-success">Aktiv</span>
+                        </div>
+                        <div class="activity-heart">
+                            <i class="far fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-meta">
+                            <span class="activity-date">
+                                <i class="fas fa-calendar me-1"></i>
+                                19 Dekabr
+                            </span>
+                            <span class="activity-participants">
+                                <i class="fas fa-users me-1"></i>
+                                12/15
+                            </span>
+                        </div>
+                        <h5 class="activity-title">Səhər Yoga Seansı</h5>
+                        <div class="activity-rating mb-2">
+                            <span class="star-rating">
+                                <i class="fas fa-star"></i>
+                                <span class="rating-score">4.68</span>
+                                <span class="rating-count">(142 rəy)</span>
+                            </span>
+                        </div>
+                        <p class="activity-description">Gün ərzində enerjili olmaq üçün səhər yoga məşğələsi</p>
+                        <div class="activity-footer">
+                            <span class="activity-location">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                Dənizkənarı Park
+                            </span>
+                            <button class="btn btn-primary btn-sm activity-join-btn">İndi qoşul</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="{% static '5.png' %}" alt="Kitab klubu" class="img-fluid">
+                        <div class="activity-badge">
+                            <span class="badge bg-primary">Həftəlik</span>
+                        </div>
+                        <div class="activity-heart">
+                            <i class="far fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-meta">
+                            <span class="activity-date">
+                                <i class="fas fa-calendar me-1"></i>
+                                20 Dekabr
+                            </span>
+                            <span class="activity-participants">
+                                <i class="fas fa-users me-1"></i>
+                                8/12
+                            </span>
+                        </div>
+                        <h5 class="activity-title">Kitab Klubu Görüşü</h5>
+                        <div class="activity-rating mb-2">
+                            <span class="star-rating">
+                                <i class="fas fa-star"></i>
+                                <span class="rating-score">4.83</span>
+                                <span class="rating-count">(67 rəy)</span>
+                            </span>
+                        </div>
+                        <p class="activity-description">Oxuduğumuz kitabları müzakirə edib yeni dostlar tapırıq</p>
+                        <div class="activity-footer">
+                            <span class="activity-location">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                Mərkəzi Kitabxana
+                            </span>
+                            <button class="btn btn-primary btn-sm activity-join-btn">İndi qoşul</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="{% static '6.png' %}" alt="Konsert" class="img-fluid">
+                        <div class="activity-badge">
+                            <span class="badge bg-danger">Məhdud</span>
+                        </div>
+                        <div class="activity-heart">
+                            <i class="far fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-meta">
+                            <span class="activity-date">
+                                <i class="fas fa-calendar me-1"></i>
+                                21 Dekabr
+                            </span>
+                            <span class="activity-participants">
+                                <i class="fas fa-users me-1"></i>
+                                18/20
+                            </span>
+                        </div>
+                        <h5 class="activity-title">Jazz Konsert Gecəsi</h5>
+                        <div class="activity-rating mb-2">
+                            <span class="star-rating">
+                                <i class="fas fa-star"></i>
+                                <span class="rating-score">4.76</span>
+                                <span class="rating-count">(198 rəy)</span>
+                            </span>
+                        </div>
+                        <p class="activity-description">Canlı jazz musiqisi dinləyərək keyfiyyətli vaxt keçirmək</p>
+                        <div class="activity-footer">
+                            <span class="activity-location">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                Jazz Club
+                            </span>
+                            <button class="btn btn-primary btn-sm activity-join-btn">İndi qoşul</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="#" class="btn btn-primary btn-lg">
+                <i class="fas fa-search me-2"></i>
+                Bütün fəaliyyətləri gör
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold mb-3">Macəraya hazırsınız?</h2>
+                <p class="lead text-muted mb-4">Artıq icmasını tapan minlərlə macəraçıya qoşulun</p>
+                <a href="{% url 'accounts:phone_registration' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i>
+                    Acteezer-ə qoşulun
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Enhanced search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInputs = document.querySelectorAll('.search-input, .search-select');
+    const searchBtn = document.querySelector('.search-btn');
+    
+    // Add focus enhancement to search fields
+    searchInputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.closest('.search-field').style.transform = 'translateY(-2px)';
+            this.closest('.search-field').style.boxShadow = '0 6px 20px rgba(93, 211, 190, 0.25)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.closest('.search-field').style.transform = '';
+            this.closest('.search-field').style.boxShadow = '';
+        });
+        
+        // Add typing animation to search input
+        if (input.type === 'text') {
+            input.addEventListener('input', function() {
+                const field = this.closest('.search-field');
+                field.style.borderColor = this.value.length > 0 ? 'var(--primary-color)' : '';
+            });
+        }
+    });
+    
+    // Enhanced search button interaction
+    if (searchBtn) {
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Add loading state
+            const originalContent = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Axtarılır...';
+            this.style.pointerEvents = 'none';
+            
+            // Simulate search (replace with actual search logic)
+            setTimeout(() => {
+                this.innerHTML = originalContent;
+                this.style.pointerEvents = 'auto';
+                
+                // Add success animation
+                this.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            }, 1500);
+        });
+    }
+    
+    // Quick category interactions
+    const categoryTags = document.querySelectorAll('.category-tag');
+    categoryTags.forEach(tag => {
+        tag.addEventListener('click', function() {
+            // Remove active from others
+            categoryTags.forEach(t => t.classList.remove('active'));
+            // Add active to clicked
+            this.classList.add('active');
+            
+            // Update search input with category
+            const searchInput = document.querySelector('.search-input');
+            if (searchInput) {
+                searchInput.value = this.textContent.trim();
+                searchInput.focus();
+            }
+        });
+    });
+    
+    // Add subtle animations on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe search overlay card
+    const searchCard = document.querySelector('.search-overlay-card');
+    if (searchCard) {
+        searchCard.style.opacity = '0';
+        searchCard.style.transform = 'translateY(30px)';
+        searchCard.style.transition = 'all 0.6s ease';
+        observer.observe(searchCard);
+    }
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.step-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(79, 70, 229, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--primary-color);
+}
+
+.feature-icon {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-image {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+/* Search Overlay Section */
+.search-overlay-section {
+    margin-top: -80px;
+    position: relative;
+    z-index: 10;
+    padding-bottom: 4rem;
+}
+
+.search-overlay-card {
+    background: white;
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(93, 211, 190, 0.1);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 100%;
+}
+
+.search-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 0.75rem;
+    text-align: center;
+}
+
+.search-subtitle {
+    color: var(--gray-text);
+    text-align: center;
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+}
+
+.search-form {
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+.search-input-group {
+    display: flex;
+    align-items: stretch;
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 0.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: none;
+}
+
+.search-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    background: white;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.search-field:first-child {
+    flex: 2;
+}
+
+.search-field:nth-child(2),
+.search-field:nth-child(3) {
+    flex: 1.2;
+}
+
+.search-field:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-field:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(93, 211, 190, 0.2);
+    border: 1px solid var(--primary-color);
+}
+
+.search-field i {
+    position: absolute;
+    left: 1rem;
+    color: #64748b;
+    z-index: 2;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.search-field:focus-within i {
+    color: var(--primary-color);
+}
+
+.search-input, .search-select {
+    width: 100%;
+    min-width: 0;
+    flex: 1;
+    padding: 1.25rem 1rem 1.25rem 2.75rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: transparent;
+    transition: all 0.3s ease;
+    color: #1e293b;
+    box-sizing: border-box;
+    font-weight: 500;
+}
+
+.search-input:focus, .search-select:focus {
+    outline: none;
+    background: white;
+}
+
+.search-input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.search-select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 1rem center;
+    background-repeat: no-repeat;
+    background-size: 1rem;
+    padding-right: 3rem;
+}
+
+.search-select:focus {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%235dd3be' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+}
+
+.search-btn {
+    padding: 1.25rem 2rem;
+    background: linear-gradient(135deg, #5dd3be 0%, #4fd1c7 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(93, 211, 190, 0.3);
+    min-width: 120px;
+    justify-content: center;
+}
+
+.search-btn:hover {
+    background: linear-gradient(135deg, #4fd1c7 0%, #3b82f6 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(93, 211, 190, 0.4);
+}
+
+.search-btn:active {
+    transform: translateY(0px);
+}
+
+/* Responsive improvements */
+@media (max-width: 992px) {
+    .search-input-group {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+    
+    .search-field {
+        flex: none;
+    }
+    
+    .search-btn {
+        min-width: auto;
+        padding: 1rem 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .search-input-group {
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+    
+    .search-input, .search-select {
+        padding: 1rem 0.75rem 1rem 2.5rem;
+        font-size: 0.95rem;
+    }
+    
+    .search-field i {
+        left: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .search-btn {
+        padding: 1rem 1.5rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Quick Categories */
+.quick-categories {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.category-label {
+    color: var(--gray-text);
+    font-weight: 500;
+    margin-right: 0.5rem;
+}
+
+.category-tag {
+    padding: 0.5rem 1rem;
+    background: rgba(93, 211, 190, 0.1);
+    color: var(--primary-color);
+    border: 1px solid rgba(93, 211, 190, 0.2);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.category-tag:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.category-tag.active {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #4fd1c7 100%);
+    color: white;
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(93, 211, 190, 0.4);
+}
+
+.category-tag:active {
+    transform: translateY(0);
+}
+
+/* Responsive Design for Search */
+@media (max-width: 768px) {
+    .search-overlay-section {
+        margin-top: -60px;
+        padding-bottom: 3rem;
+    }
+    
+    .search-overlay-card {
+        padding: 2rem;
+        border-radius: 16px;
+    }
+    
+    .search-title {
+        font-size: 1.5rem;
+    }
+    
+    .search-input-group {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .search-btn {
+        justify-content: center;
+        padding: 1rem;
+    }
+    
+    .quick-categories {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 576px) {
+    .search-overlay-card {
+        padding: 1.5rem;
+    }
+    
+    .search-input, .search-select {
+        padding: 0.875rem 0.875rem 0.875rem 2.5rem;
+    }
+    
+    .category-tag {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+}
+</style>
+{% endblock %}

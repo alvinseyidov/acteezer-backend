@@ -1,0 +1,555 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }} - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+
+.activity-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.activity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.activity-image {
+    height: 200px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.activity-content {
+    padding: 1.5rem;
+}
+
+.activity-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.activity-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.activity-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-upcoming {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-ongoing {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-past {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.activity-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    background: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    text-align: center;
+    flex: 1;
+}
+
+.stat-number {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #28a745;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.activity-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-action {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: none;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.breadcrumb-custom {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.breadcrumb-custom .breadcrumb-item a {
+    color: #28a745;
+    text-decoration: none;
+}
+
+.breadcrumb-custom .breadcrumb-item.active {
+    color: #6c757d;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="mb-2">{{ page_title }}</h1>
+                <p class="mb-0 opacity-90">Sizin təşkil etdiyiniz bütün aktivitələr</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-custom">
+            <li class="breadcrumb-item"><a href="{% url 'accounts:profile' %}">Profil</a></li>
+            <li class="breadcrumb-item active">Təşkil Etdiyim Aktivitələr</li>
+        </ol>
+    </nav>
+
+    {% if activities %}
+        <div class="row">
+            {% for activity in activities %}
+                <div class="col-lg-6">
+                    <div class="activity-card">
+                        <div class="activity-image">
+                            {% if activity.main_image %}
+                                <img src="{{ activity.main_image.url }}" alt="{{ activity.title }}" class="img-fluid w-100 h-100" style="object-fit: cover;">
+                            {% else %}
+                                <i class="fas fa-calendar-alt"></i>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="activity-content">
+                            <h5 class="activity-title">{{ activity.title }}</h5>
+                            
+                            <div class="activity-meta">
+                                <span>
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ activity.start_date|date:"d M Y, H:i" }}
+                                </span>
+                                <span>
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    {{ activity.address|truncatechars:30 }}
+                                </span>
+                                <span class="activity-status {% if activity.is_upcoming %}status-upcoming{% elif activity.is_ongoing %}status-ongoing{% else %}status-past{% endif %}">
+                                    {% if activity.is_upcoming %}
+                                        Gələcək
+                                    {% elif activity.is_ongoing %}
+                                        Davam edir
+                                    {% else %}
+                                        Bitib
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            <div class="activity-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">{{ activity.participants_count }}</div>
+                                    <div class="stat-label">İştirakçı</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">{{ activity.max_participants }}</div>
+                                    <div class="stat-label">Maksimum</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">{{ activity.available_spots }}</div>
+                                    <div class="stat-label">Boş yer</div>
+                                </div>
+                            </div>
+                            
+                            <p class="text-muted mb-3">{{ activity.short_description|truncatechars:100 }}</p>
+                            
+                            <div class="activity-actions">
+                                <a href="{{ activity.get_absolute_url }}" class="btn btn-action btn-primary-custom">
+                                    <i class="fas fa-eye me-1"></i>
+                                    Bax
+                                </a>
+                                <a href="#" class="btn btn-action btn-outline-secondary">
+                                    <i class="fas fa-edit me-1"></i>
+                                    Redaktə
+                                </a>
+                                <a href="#" class="btn btn-action btn-outline-danger">
+                                    <i class="fas fa-users me-1"></i>
+                                    İdarə et
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination if needed -->
+        <div class="text-center mt-4">
+            <a href="{% url 'activities:activities_list' %}" class="btn btn-outline-success">
+                <i class="fas fa-plus me-2"></i>
+                Yeni Aktivitə Yarat
+            </a>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-calendar-plus"></i>
+            </div>
+            <h3>Hələ aktivitə yaratmamısınız</h3>
+            <p class="mb-4">İlk aktivitənizi yaradın və insanlarla tanış olun!</p>
+            <a href="{% url 'activities:activities_list' %}" class="btn btn-success btn-lg">
+                <i class="fas fa-plus me-2"></i>
+                İlk Aktivitəmi Yarat
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% load static %}
+
+{% block title %}{{ page_title }} - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+
+.activity-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.activity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.activity-image {
+    height: 200px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.activity-content {
+    padding: 1.5rem;
+}
+
+.activity-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.activity-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.activity-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-upcoming {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-ongoing {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-past {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.activity-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    background: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    text-align: center;
+    flex: 1;
+}
+
+.stat-number {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #28a745;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.activity-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-action {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: none;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.breadcrumb-custom {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.breadcrumb-custom .breadcrumb-item a {
+    color: #28a745;
+    text-decoration: none;
+}
+
+.breadcrumb-custom .breadcrumb-item.active {
+    color: #6c757d;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="mb-2">{{ page_title }}</h1>
+                <p class="mb-0 opacity-90">Sizin təşkil etdiyiniz bütün aktivitələr</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-custom">
+            <li class="breadcrumb-item"><a href="{% url 'accounts:profile' %}">Profil</a></li>
+            <li class="breadcrumb-item active">Təşkil Etdiyim Aktivitələr</li>
+        </ol>
+    </nav>
+
+    {% if activities %}
+        <div class="row">
+            {% for activity in activities %}
+                <div class="col-lg-6">
+                    <div class="activity-card">
+                        <div class="activity-image">
+                            {% if activity.main_image %}
+                                <img src="{{ activity.main_image.url }}" alt="{{ activity.title }}" class="img-fluid w-100 h-100" style="object-fit: cover;">
+                            {% else %}
+                                <i class="fas fa-calendar-alt"></i>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="activity-content">
+                            <h5 class="activity-title">{{ activity.title }}</h5>
+                            
+                            <div class="activity-meta">
+                                <span>
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ activity.start_date|date:"d M Y, H:i" }}
+                                </span>
+                                <span>
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    {{ activity.address|truncatechars:30 }}
+                                </span>
+                                <span class="activity-status {% if activity.is_upcoming %}status-upcoming{% elif activity.is_ongoing %}status-ongoing{% else %}status-past{% endif %}">
+                                    {% if activity.is_upcoming %}
+                                        Gələcək
+                                    {% elif activity.is_ongoing %}
+                                        Davam edir
+                                    {% else %}
+                                        Bitib
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            <div class="activity-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">{{ activity.participants_count }}</div>
+                                    <div class="stat-label">İştirakçı</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">{{ activity.max_participants }}</div>
+                                    <div class="stat-label">Maksimum</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">{{ activity.available_spots }}</div>
+                                    <div class="stat-label">Boş yer</div>
+                                </div>
+                            </div>
+                            
+                            <p class="text-muted mb-3">{{ activity.short_description|truncatechars:100 }}</p>
+                            
+                            <div class="activity-actions">
+                                <a href="{{ activity.get_absolute_url }}" class="btn btn-action btn-primary-custom">
+                                    <i class="fas fa-eye me-1"></i>
+                                    Bax
+                                </a>
+                                <a href="#" class="btn btn-action btn-outline-secondary">
+                                    <i class="fas fa-edit me-1"></i>
+                                    Redaktə
+                                </a>
+                                <a href="#" class="btn btn-action btn-outline-danger">
+                                    <i class="fas fa-users me-1"></i>
+                                    İdarə et
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination if needed -->
+        <div class="text-center mt-4">
+            <a href="{% url 'activities:activities_list' %}" class="btn btn-outline-success">
+                <i class="fas fa-plus me-2"></i>
+                Yeni Aktivitə Yarat
+            </a>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-calendar-plus"></i>
+            </div>
+            <h3>Hələ aktivitə yaratmamısınız</h3>
+            <p class="mb-4">İlk aktivitənizi yaradın və insanlarla tanış olun!</p>
+            <a href="{% url 'activities:activities_list' %}" class="btn btn-success btn-lg">
+                <i class="fas fa-plus me-2"></i>
+                İlk Aktivitəmi Yarat
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

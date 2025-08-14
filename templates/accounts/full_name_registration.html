@@ -1,0 +1,515 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ad və Soyad - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.auth-card {
+    max-width: 700px;
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 0 1rem;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+}
+
+.auth-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    backdrop-filter: blur(10px);
+}
+
+.step-progress {
+    padding: 1.5rem 2rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.step-indicator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e9ecef;
+    z-index: 1;
+}
+
+.step {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.step.active {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    transform: scale(1.1);
+}
+
+.step.completed {
+    background: #28a745;
+    color: white;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #e9ecef;
+}
+
+.progress-bar {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    transition: width 0.6s ease;
+}
+
+.auth-body {
+    padding: 2.5rem 2rem;
+}
+
+.step-title {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+}
+
+.form-floating {
+    margin-bottom: 1.5rem;
+}
+
+.form-floating > .form-control {
+    height: 60px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-floating > .form-control:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.form-floating > label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.auth-btn {
+    height: 60px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+}
+
+.auth-btn:disabled {
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+.info-box {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: none;
+    border-left: 4px solid #ffc107;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.feature-item {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 12px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+}
+
+.name-preview {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 1rem 0;
+    text-align: center;
+    display: none;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #6c757d;
+    color: #6c757d;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 1rem 0;
+    }
+    
+    .auth-card {
+        margin: 0 0.5rem;
+    }
+    
+    .auth-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .step {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .step-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .auth-btn {
+        height: 50px;
+        font-size: 1rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-user fa-2x"></i>
+            </div>
+            <h2 class="mb-2">Ad və Soyadınız</h2>
+            <p class="mb-0 opacity-90">Digər istifadəçilər sizi necə görsün?</p>
+        </div>
+                
+        <div class="step-progress">
+            <div class="step-indicator">
+                <div class="step completed">1</div>
+                <div class="step completed">2</div>
+                <div class="step active">3</div>
+                <div class="step">4</div>
+                <div class="step">5</div>
+                <div class="step">6</div>
+                <div class="step">7</div>
+                <div class="step">8</div>
+                <div class="step">9</div>
+            </div>
+                    
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 33%" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+        
+        <div class="auth-body">
+            <div class="step-title">
+                <div class="step-icon">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <h4 class="fw-bold">Adınızı Daxil Edin</h4>
+                <p class="text-muted">Bu məlumat profilinizdə və aktivitələrdə göstəriləcək</p>
+            </div>
+                    
+            <form method="post" id="name-form">
+                {% csrf_token %}
+                
+                <div class="name-preview" id="name-preview">
+                    <i class="fas fa-user-circle me-2"></i>
+                    <strong>Sizin adınız:</strong> <span id="preview-name">Ad Soyad</span>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="first_name" 
+                                name="first_name" 
+                                placeholder="Adınız"
+                                required
+                                value="{{ user.first_name|default:'' }}"
+                            >
+                            <label for="first_name">
+                                <i class="fas fa-user me-2"></i>
+                                Adınız
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="last_name" 
+                                name="last_name" 
+                                placeholder="Soyadınız"
+                                required
+                                value="{{ user.last_name|default:'' }}"
+                            >
+                            <label for="last_name">
+                                <i class="fas fa-user me-2"></i>
+                                Soyadınız
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                        
+                <div class="info-box">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    <strong>Məsləhət:</strong> Digər istifadəçilərlə etimad qurmaq üçün həqiqi adınızı istifadə edin. Sonradan ləqəb əlavə edə bilərsiniz!
+                </div>
+                        
+                <button type="submit" class="btn auth-btn w-100 text-white mb-3">
+                    <i class="fas fa-arrow-right me-2"></i>
+                    Davam Et
+                </button>
+                        
+                <div class="text-center">
+                    <a href="{% url 'accounts:otp_verification' %}" class="back-link">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Geri
+                    </a>
+                </div>
+                        
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h6 class="fw-bold">Görünən</h6>
+                        <small class="text-muted">Digərləri görəcək</small>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <h6 class="fw-bold">Dəyişdirilə Bilər</h6>
+                        <small class="text-muted">Sonradan dəyişə bilərsiniz</small>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h6 class="fw-bold">Etimad Yaradır</h6>
+                        <small class="text-muted">İnanc artırır</small>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Ad-soyad önizləməsi
+function updateNamePreview() {
+    const firstName = document.getElementById('first_name').value.trim();
+    const lastName = document.getElementById('last_name').value.trim();
+    const fullName = `${firstName} ${lastName}`.trim();
+    
+    const previewDiv = document.getElementById('name-preview');
+    const previewSpan = document.getElementById('preview-name');
+    
+    if (fullName && fullName !== '') {
+        previewSpan.textContent = fullName;
+        previewDiv.style.display = 'block';
+    } else {
+        previewDiv.style.display = 'none';
+    }
+}
+
+// Input sahələrinə dinləyici əlavə et
+document.getElementById('first_name').addEventListener('input', updateNamePreview);
+document.getElementById('last_name').addEventListener('input', updateNamePreview);
+
+// Form göndərmə
+document.getElementById('name-form').addEventListener('submit', function(e) {
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const firstName = document.getElementById('first_name').value.trim();
+    const lastName = document.getElementById('last_name').value.trim();
+    
+    // Boş sahələri yoxla
+    if (!firstName || !lastName) {
+        e.preventDefault();
+        alert('Zəhmət olmasa ad və soyadınızı daxil edin.');
+        return;
+    }
+    
+    // Minimum uzunluq yoxla
+    if (firstName.length < 2 || lastName.length < 2) {
+        e.preventDefault();
+        alert('Ad və soyad ən azı 2 hərf olmalıdır.');
+        return;
+    }
+    
+    // Yüklənmə vəziyyəti
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yadda saxlanılır...';
+    submitBtn.disabled = true;
+    
+    // Əgər xəta olarsa, düyməni bərpa et
+    setTimeout(() => {
+        if (submitBtn.disabled) {
+            submitBtn.innerHTML = '<i class="fas fa-arrow-right me-2"></i>Davam Et';
+            submitBtn.disabled = false;
+        }
+    }, 5000);
+});
+
+// Adlarda rəqəm və xüsusi simvolları məhdudlaşdır
+function restrictNameInput(inputElement) {
+    inputElement.addEventListener('input', function(e) {
+        // Yalnız hərflər, boşluq və tire icazə verilir
+        this.value = this.value.replace(/[^a-zA-ZəƏıİöÖüÜçÇğĞşŞ\s\-]/g, '');
+    });
+}
+
+// Avtomatik fokus və input məhdudiyyətləri
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('first_name').focus();
+    
+    // Ad və soyad sahələrinə məhdudiyyət əlavə et
+    restrictNameInput(document.getElementById('first_name'));
+    restrictNameInput(document.getElementById('last_name'));
+    
+    // İlkin önizləmə yenilə
+    updateNamePreview();
+    
+    // Enter düyməsi ilə növbəti sahəyə keç
+    document.getElementById('first_name').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('last_name').focus();
+        }
+    });
+    
+    document.getElementById('last_name').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('name-form').submit();
+        }
+    });
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,552 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Yerin Məlumatı - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.auth-card {
+    max-width: 800px;
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 0 1rem;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+}
+
+.auth-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    backdrop-filter: blur(10px);
+}
+
+.step-progress {
+    padding: 1.5rem 2rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.step-indicator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e9ecef;
+    z-index: 1;
+}
+
+.step {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.step.active {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    transform: scale(1.1);
+}
+
+.step.completed {
+    background: #28a745;
+    color: white;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #e9ecef;
+}
+
+.progress-bar {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    transition: width 0.6s ease;
+}
+
+.auth-body {
+    padding: 2.5rem 2rem;
+}
+
+.step-title {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+}
+
+.form-floating {
+    margin-bottom: 1.5rem;
+}
+
+.form-floating > .form-control {
+    height: 60px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-floating > .form-control:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.form-floating > label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.auth-btn {
+    height: 60px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+}
+
+.auth-btn:disabled {
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+.map-container {
+    height: 300px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.map-placeholder {
+    text-align: center;
+    color: #6c757d;
+}
+
+.location-info {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #155724;
+}
+
+.location-selected {
+    background: #d1ecf1;
+    border-left: 4px solid #17a2b8;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    color: #0c5460;
+    display: none;
+}
+
+.quick-locations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.quick-location {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.quick-location:hover {
+    border-color: #28a745;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+}
+
+.quick-location.selected {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.quick-location-icon {
+    width: 50px;
+    height: 50px;
+    background: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #28a745;
+    margin: 0 auto 0.5rem;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.quick-location.selected .quick-location-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .quick-locations {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+    
+    .map-container {
+        height: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .auth-container {
+        padding: 1rem 0;
+    }
+    
+    .auth-card {
+        margin: 0 0.5rem;
+    }
+    
+    .auth-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .step {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+    
+    .quick-locations {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-map-marker-alt fa-2x"></i>
+            </div>
+            <h2 class="mb-2">Yerinizi Müəyyən Edin</h2>
+            <p class="mb-0 opacity-90">Son addım!</p>
+        </div>
+                
+        <div class="step-progress">
+            <div class="step-indicator">
+                <div class="step completed">1</div>
+                <div class="step completed">2</div>
+                <div class="step completed">3</div>
+                <div class="step completed">4</div>
+                <div class="step completed">5</div>
+                <div class="step completed">6</div>
+                <div class="step completed">7</div>
+                <div class="step completed">8</div>
+                <div class="step active">9</div>
+            </div>
+                    
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+        
+        <div class="auth-body">
+            <div class="step-title">
+                <div class="step-icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <h4 class="fw-bold">Yerinizi Seçin</h4>
+                <p class="text-muted">Yaxınlıqdakı aktivitələri sizə göstərək</p>
+            </div>
+                    
+            <form method="post" id="location-form">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="city" 
+                                name="city" 
+                                placeholder="Şəhər"
+                                required
+                            >
+                            <label for="city">
+                                <i class="fas fa-city me-2"></i>
+                                Şəhər
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="address" 
+                                name="address" 
+                                placeholder="Ünvan (ixtiyari)"
+                            >
+                            <label for="address">
+                                <i class="fas fa-map me-2"></i>
+                                Ünvan (ixtiyari)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6 class="fw-bold mb-3">
+                    <i class="fas fa-lightning-bolt me-2"></i>
+                    Tez seçim
+                </h6>
+                
+                <div class="quick-locations">
+                    <div class="quick-location" onclick="selectQuickLocation('Bakı', 40.4093, 49.8671)">
+                        <div class="quick-location-icon">
+                            <i class="fas fa-city"></i>
+                        </div>
+                        <strong>Bakı</strong>
+                    </div>
+                    <div class="quick-location" onclick="selectQuickLocation('Gəncə', 40.6828, 46.3611)">
+                        <div class="quick-location-icon">
+                            <i class="fas fa-mountain"></i>
+                        </div>
+                        <strong>Gəncə</strong>
+                    </div>
+                    <div class="quick-location" onclick="selectQuickLocation('Sumqayıt', 40.5892, 49.6684)">
+                        <div class="quick-location-icon">
+                            <i class="fas fa-industry"></i>
+                        </div>
+                        <strong>Sumqayıt</strong>
+                    </div>
+                    <div class="quick-location" onclick="selectQuickLocation('Mingəçevir', 40.7696, 47.0587)">
+                        <div class="quick-location-icon">
+                            <i class="fas fa-water"></i>
+                        </div>
+                        <strong>Mingəçevir</strong>
+                    </div>
+                </div>
+                
+                <div class="map-container" id="map-container">
+                    <div class="map-placeholder">
+                        <i class="fas fa-map fa-3x mb-3 text-muted"></i>
+                        <h5 class="text-muted">Xəritə yüklənir...</h5>
+                        <p class="text-muted mb-0">
+                            Yuxarıdakı tez seçim düymələrindən birini seçin<br>
+                            və ya məkan adı yazın
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="location-selected" id="location-selected">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Seçilmiş məkan:</strong> <span id="selected-location"></span>
+                </div>
+                
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+                
+                <div class="location-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Bu məlumat yalnız sizə uyğun aktivitələri göstərmək üçün istifadə olunur və heç kimə göstərilməz.
+                </div>
+                        
+                <button type="submit" class="btn auth-btn w-100 text-white mt-4" id="submit-btn" disabled>
+                    <i class="fas fa-check me-2"></i>
+                    Qeydiyyatı Tamamla
+                </button>
+                        
+                <div class="text-center mt-3">
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-heart me-1"></i>
+                        Təbriklər! Artıq Acteezer ailəsinə qoşuldunuz
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedLatitude = null;
+let selectedLongitude = null;
+
+function selectQuickLocation(cityName, lat, lng) {
+    // Clear previous selections
+    document.querySelectorAll('.quick-location').forEach(loc => {
+        loc.classList.remove('selected');
+    });
+    
+    // Select current location
+    event.target.closest('.quick-location').classList.add('selected');
+    
+    // Update form fields
+    document.getElementById('city').value = cityName;
+    document.getElementById('latitude').value = lat;
+    document.getElementById('longitude').value = lng;
+    
+    selectedLatitude = lat;
+    selectedLongitude = lng;
+    
+    // Show selected location
+    const selectedDiv = document.getElementById('location-selected');
+    const selectedText = document.getElementById('selected-location');
+    selectedText.textContent = `${cityName} (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+    selectedDiv.style.display = 'block';
+    
+    // Enable submit button
+    document.getElementById('submit-btn').disabled = false;
+    
+    // Update map placeholder
+    const mapContainer = document.getElementById('map-container');
+    mapContainer.innerHTML = `
+        <div class="text-center text-success">
+            <i class="fas fa-map-marked-alt fa-3x mb-3"></i>
+            <h5>Məkan seçildi: ${cityName}</h5>
+            <p class="mb-0">Koordinatlar: ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
+        </div>
+    `;
+}
+
+function validateForm() {
+    const city = document.getElementById('city').value.trim();
+    const lat = document.getElementById('latitude').value;
+    const lng = document.getElementById('longitude').value;
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (city && lat && lng) {
+        submitBtn.disabled = false;
+    } else {
+        submitBtn.disabled = true;
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const cityInput = document.getElementById('city');
+    
+    // Validate form when city input changes
+    cityInput.addEventListener('input', function() {
+        const city = this.value.trim();
+        
+        if (city && !selectedLatitude) {
+            // If user types a city manually, we need coordinates
+            // For simplicity, we'll use Baku coordinates as default
+            document.getElementById('latitude').value = 40.4093;
+            document.getElementById('longitude').value = 49.8671;
+            validateForm();
+        } else if (!city) {
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+            document.getElementById('location-selected').style.display = 'none';
+            validateForm();
+        }
+    });
+    
+    // Form submission
+    document.getElementById('location-form').addEventListener('submit', function(e) {
+        const city = document.getElementById('city').value.trim();
+        const lat = document.getElementById('latitude').value;
+        const lng = document.getElementById('longitude').value;
+        
+        if (!city || !lat || !lng) {
+            e.preventDefault();
+            alert('Zəhmət olmasa şəhər seçin və ya məkan koordinatlarını təyin edin.');
+            return;
+        }
+        
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Qeydiyyat tamamlanır...';
+        submitBtn.disabled = true;
+        
+        // Recovery mechanism - restore button after 10 seconds if still disabled
+        setTimeout(() => {
+            if (submitBtn.disabled) {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }, 10000);
+    });
+});
+</script>
+{% endblock %}

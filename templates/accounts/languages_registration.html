@@ -1,0 +1,626 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dillər - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.auth-card {
+    max-width: 800px;
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 0 1rem;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+}
+
+.auth-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    backdrop-filter: blur(10px);
+}
+
+.step-progress {
+    padding: 1.5rem 2rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.step-indicator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e9ecef;
+    z-index: 1;
+}
+
+.step {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.step.active {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    transform: scale(1.1);
+}
+
+.step.completed {
+    background: #28a745;
+    color: white;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #e9ecef;
+}
+
+.progress-bar {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    transition: width 0.6s ease;
+}
+
+.auth-body {
+    padding: 2.5rem 2rem;
+}
+
+.step-title {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+}
+
+.search-container {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.search-input {
+    width: 100%;
+    height: 60px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 0 50px 0 20px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    outline: none;
+}
+
+.search-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.selected-count {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    display: none;
+}
+
+.languages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 2rem;
+    padding: 0.5rem;
+}
+
+.language-item {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    position: relative;
+}
+
+.language-item:hover {
+    border-color: #28a745;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+}
+
+.language-item.selected {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+}
+
+.language-item.hidden {
+    display: none;
+}
+
+.language-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.language-flag {
+    width: 50px;
+    height: 50px;
+    background: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #28a745;
+    margin: 0 auto 1rem;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.language-item.selected .language-flag {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.language-name {
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.language-item.selected .language-name {
+    color: white;
+}
+
+.language-code {
+    font-size: 0.8rem;
+    color: #6c757d;
+    transition: color 0.3s ease;
+}
+
+.language-item.selected .language-code {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.auth-btn {
+    height: 60px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+}
+
+.auth-btn:disabled {
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+.info-box {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border: none;
+    border-left: 4px solid #17a2b8;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.feature-item {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 12px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #6c757d;
+    color: #6c757d;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 1rem 0;
+    }
+    
+    .auth-card {
+        margin: 0 0.5rem;
+    }
+    
+    .auth-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .step {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+    
+    .languages-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .step-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .auth-btn {
+        height: 50px;
+        font-size: 1rem;
+    }
+    
+    .languages-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-globe fa-2x"></i>
+            </div>
+            <h2 class="mb-2">Bildiyiniz Dillər</h2>
+            <p class="mb-0 opacity-90">Hansı dillərdə danışa bilirsiniz?</p>
+                </div>
+                
+        <div class="step-progress">
+                    <div class="step-indicator">
+                        <div class="step completed">1</div>
+                        <div class="step completed">2</div>
+                        <div class="step completed">3</div>
+                        <div class="step active">4</div>
+                        <div class="step">5</div>
+                        <div class="step">6</div>
+                        <div class="step">7</div>
+                        <div class="step">8</div>
+                        <div class="step">9</div>
+                    </div>
+                    
+            <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: 44%" aria-valuenow="44" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+        </div>
+        
+        <div class="auth-body">
+            <div class="step-title">
+                <div class="step-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h4 class="fw-bold">Dillərinizi Seçin</h4>
+                <p class="text-muted">Rahat danışdığınız bütün dilləri seçin</p>
+            </div>
+                    
+                    <form method="post" id="languages-form">
+                        {% csrf_token %}
+                        
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="language-search" 
+                        placeholder="Dil axtarın..."
+                        autocomplete="off"
+                    >
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                
+                <div class="selected-count" id="selected-count">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="count-text">0 dil seçildi</span>
+                        </div>
+                        
+                <div class="languages-grid" id="languages-grid">
+                            {% for language in languages %}
+                    <div class="language-item {% if language in user_languages %}selected{% endif %}" 
+                         data-name="{{ language.name|lower }}" 
+                         onclick="toggleLanguage({{ language.id }})">
+                                <input 
+                                    type="checkbox" 
+                                    name="languages" 
+                                    value="{{ language.id }}" 
+                                    id="lang_{{ language.id }}"
+                            class="language-checkbox"
+                                    {% if language in user_languages %}checked{% endif %}
+                                >
+                        
+                        <div class="language-flag">
+                                <i class="fas fa-flag"></i>
+                        </div>
+                        
+                        <h6 class="language-name">{{ language.name }}</h6>
+                        <small class="language-code">{{ language.code|upper }}</small>
+                            </div>
+                            {% empty %}
+                            <div class="col-12 text-center">
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-globe fa-3x mb-3"></i>
+                            <h5>Hələ ki dil seçimləri yoxdur</h5>
+                            <p>Admin tərəfindən dillər əlavə ediləcək</p>
+                        </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                <div class="info-box">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Dilinizi görmürsünüz?</strong> Narahat olmayın! Biz daima yeni dillər əlavə edirik. Sonradan yeniləyə bilərsiniz.
+                        </div>
+                        
+                <button type="submit" class="btn auth-btn w-100 text-white mb-3" id="submit-btn" disabled>
+                                <i class="fas fa-arrow-right me-2"></i>
+                    Davam Et
+                            </button>
+                        
+                        <div class="text-center">
+                    <a href="{% url 'accounts:full_name_registration' %}" class="back-link">
+                                <i class="fas fa-arrow-left me-2"></i>
+                        Geri
+                    </a>
+                </div>
+                        
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h6 class="fw-bold">Daha Yaxşı Uyğunluq</h6>
+                        <small class="text-muted">Uyğun insanlar tapın</small>
+                            </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-globe"></i>
+                            </div>
+                        <h6 class="fw-bold">Qlobal İcma</h6>
+                        <small class="text-muted">Dünya ilə əlaqə</small>
+                            </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h6 class="fw-bold">Mədəni Mübadiləh</h6>
+                        <small class="text-muted">Mədəniyyət paylaşımı</small>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Seçilmiş dillər sayı
+let selectedCount = 0;
+
+// Dil seçmə/ləğv etmə
+function toggleLanguage(languageId) {
+    const checkbox = document.getElementById(`lang_${languageId}`);
+    const item = checkbox.closest('.language-item');
+    
+    checkbox.checked = !checkbox.checked;
+    
+    if (checkbox.checked) {
+        item.classList.add('selected');
+        selectedCount++;
+    } else {
+        item.classList.remove('selected');
+        selectedCount--;
+    }
+    
+    updateSelectionCount();
+}
+
+// Seçim sayını yenilə
+function updateSelectionCount() {
+    const selectedCountDiv = document.getElementById('selected-count');
+    const countText = document.getElementById('count-text');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (selectedCount > 0) {
+        selectedCountDiv.style.display = 'block';
+        countText.textContent = `${selectedCount} dil seçildi`;
+        submitBtn.disabled = false;
+    } else {
+        selectedCountDiv.style.display = 'none';
+        submitBtn.disabled = true;
+    }
+}
+
+// Dil axtarışı
+function setupLanguageSearch() {
+    const searchInput = document.getElementById('language-search');
+    const languageItems = document.querySelectorAll('.language-item');
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase().trim();
+        
+        languageItems.forEach(item => {
+            const languageName = item.getAttribute('data-name');
+            
+            if (languageName.includes(searchTerm)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    });
+}
+
+// Form göndərmə
+document.getElementById('languages-form').addEventListener('submit', function(e) {
+    const checkedBoxes = document.querySelectorAll('input[name="languages"]:checked');
+    
+    if (checkedBoxes.length === 0) {
+        e.preventDefault();
+        alert('Zəhmət olmasa ən azı bir dil seçin.');
+        return;
+    }
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yadda saxlanılır...';
+    submitBtn.disabled = true;
+    
+    // Əgər xəta olarsa, düyməni bərpa et
+    setTimeout(() => {
+        if (submitBtn.disabled) {
+            submitBtn.innerHTML = '<i class="fas fa-arrow-right me-2"></i>Davam Et';
+            submitBtn.disabled = selectedCount > 0 ? false : true;
+        }
+    }, 5000);
+});
+
+// İlkin yükləmə
+document.addEventListener('DOMContentLoaded', function() {
+    // Əvvəlcədən seçilmiş dilləri say
+    const checkedBoxes = document.querySelectorAll('input[name="languages"]:checked');
+    selectedCount = checkedBoxes.length;
+    
+    checkedBoxes.forEach(checkbox => {
+        checkbox.closest('.language-item').classList.add('selected');
+    });
+    
+    updateSelectionCount();
+    setupLanguageSearch();
+    
+    // Axtarış sahəsinə fokus
+    document.getElementById('language-search').focus();
+});
+</script>
+{% endblock %}
+

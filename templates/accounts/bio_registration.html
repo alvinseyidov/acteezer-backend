@@ -1,0 +1,578 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Haqqınızda - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.auth-card {
+    max-width: 800px;
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 0 1rem;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+}
+
+.auth-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    backdrop-filter: blur(10px);
+}
+
+.step-progress {
+    padding: 1.5rem 2rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.step-indicator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e9ecef;
+    z-index: 1;
+}
+
+.step {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.step.active {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    transform: scale(1.1);
+}
+
+.step.completed {
+    background: #28a745;
+    color: white;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #e9ecef;
+}
+
+.progress-bar {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    transition: width 0.6s ease;
+}
+
+.auth-body {
+    padding: 2.5rem 2rem;
+}
+
+.step-title {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+}
+
+.form-floating {
+    margin-bottom: 1.5rem;
+}
+
+.bio-textarea {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.5rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    resize: vertical;
+    min-height: 150px;
+    background: #f8f9fa;
+}
+
+.bio-textarea:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    background: white;
+    outline: none;
+}
+
+.bio-textarea::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.bio-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.char-counter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.char-count {
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.char-count.warning {
+    color: #ffc107;
+}
+
+.char-count.danger {
+    color: #dc3545;
+}
+
+.bio-preview {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    display: none;
+}
+
+.auth-btn {
+    height: 60px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+}
+
+.auth-btn:disabled {
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+.tips-box {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: none;
+    border-left: 4px solid #ffc107;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.tips-list {
+    margin: 0.5rem 0 0 0;
+    padding-left: 1.2rem;
+}
+
+.tips-list li {
+    margin-bottom: 0.5rem;
+    color: #856404;
+}
+
+.progress-indicator {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    text-align: center;
+    display: none;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #6c757d;
+    color: #6c757d;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 1rem 0;
+    }
+    
+    .auth-card {
+        margin: 0 0.5rem;
+    }
+    
+    .auth-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .step {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+    
+    .bio-textarea {
+        min-height: 120px;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .step-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .auth-btn {
+        height: 50px;
+        font-size: 1rem;
+    }
+    
+    .char-counter {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-user-edit fa-2x"></i>
+            </div>
+            <h2 class="mb-2">Özünüz Haqqında</h2>
+            <p class="mb-0 opacity-90">Sizi unikal edən şeyləri paylaşın</p>
+        </div>
+                
+        <div class="step-progress">
+            <div class="step-indicator">
+                <div class="step completed">1</div>
+                <div class="step completed">2</div>
+                <div class="step completed">3</div>
+                <div class="step completed">4</div>
+                <div class="step completed">5</div>
+                <div class="step completed">6</div>
+                <div class="step active">7</div>
+                <div class="step">8</div>
+                <div class="step">9</div>
+            </div>
+                    
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 77%" aria-valuenow="77" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+        
+        <div class="auth-body">
+            <div class="step-title">
+                <div class="step-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h4 class="fw-bold">Biografiyanızı Yazın</h4>
+                <p class="text-muted">Şəxsiyyətiniz, hobbiləriniz və axtardıqlarınız haqqında danışın</p>
+            </div>
+                    
+            <form method="post" id="bio-form">
+                {% csrf_token %}
+                
+                <div class="bio-preview" id="bio-preview">
+                    <i class="fas fa-eye me-2"></i>
+                    <strong>Səhifənizdə belə görünəcək:</strong>
+                    <div id="preview-text" class="mt-2" style="font-style: italic;"></div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="bio" class="bio-label">
+                        <i class="fas fa-pen me-2"></i>
+                        Haqqınızda məlumat
+                    </label>
+                    <textarea 
+                        class="form-control bio-textarea" 
+                        id="bio" 
+                        name="bio" 
+                        rows="6"
+                        placeholder="Özünüz haqqında danışın... Nə etməyi sevirsiniz? Hansı aktivitələrə marağınız var? Sizi unikal edən nədir? Yeni dostlar tapmaq və maraqlı vaxtlar keçirmək istəyirsiniz?"
+                        maxlength="500"
+                        required
+                    >{{ user.bio|default:'' }}</textarea>
+                    <div class="char-counter">
+                        <span>
+                            <i class="fas fa-info-circle me-1"></i>
+                            Həqiqi və pozitiv olun ki, həmfikir insanları cəlb edəsiniz
+                        </span>
+                        <span id="char-count" class="char-count">0/500</span>
+                    </div>
+                </div>
+                
+                <div class="progress-indicator" id="progress-indicator">
+                    <div class="text-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Əla!</strong> Biografiyanız kifayət qədər təfərrüatlıdır
+                    </div>
+                </div>
+                        
+                <div class="tips-box">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    <strong>Biografiya Məsləhətləri:</strong>
+                    <ul class="tips-list">
+                        <li>Sevimli aktivitələrinizi və hobbilərinizi qeyd edin</li>
+                        <li>Ehtiraslı olduğunuz şeyləri paylaşın</li>
+                        <li>Aktivitələrdə nə axtardığınızı daxil edin</li>
+                        <li>Pozitiv və həqiqi olun</li>
+                        <li>Mənfi dil və ya şikayətlərdən qaçının</li>
+                        <li>Unikal xüsusiyyətlərinizi vurğulayın</li>
+                    </ul>
+                </div>
+                        
+                <button type="submit" class="btn auth-btn w-100 text-white mb-3" id="submit-btn" disabled>
+                    <i class="fas fa-pen me-2"></i>
+                    Ən azı 50 hərf yazın
+                </button>
+                        
+                <div class="text-center">
+                    <a href="{% url 'accounts:images_registration' %}" class="back-link">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Geri
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Hərf sayğacı və dinamik yeniləmə
+function updateCharCount() {
+    const textarea = document.getElementById('bio');
+    const counter = document.getElementById('char-count');
+    const submitBtn = document.getElementById('submit-btn');
+    const progressIndicator = document.getElementById('progress-indicator');
+    const bioPreview = document.getElementById('bio-preview');
+    const previewText = document.getElementById('preview-text');
+    
+    const text = textarea.value.trim();
+    const length = text.length;
+    
+    // Hərf sayı göstərmək
+    counter.textContent = `${length}/500`;
+    
+    // Rəng kodlaması
+    counter.classList.remove('warning', 'danger');
+    if (length > 450) {
+        counter.classList.add('warning');
+    }
+    if (length >= 500) {
+        counter.classList.remove('warning');
+        counter.classList.add('danger');
+    }
+    
+    // Submit düyməsini yeniləmək
+    if (length >= 50) {
+        submitBtn.innerHTML = '<i class="fas fa-arrow-right me-2"></i>Davam Et';
+        submitBtn.disabled = false;
+        progressIndicator.style.display = 'block';
+        
+        // Önizləmə göstərmək
+        if (length >= 100) {
+            bioPreview.style.display = 'block';
+            previewText.textContent = text.substring(0, 150) + (text.length > 150 ? '...' : '');
+        } else {
+            bioPreview.style.display = 'none';
+        }
+    } else {
+        const needed = 50 - length;
+        submitBtn.innerHTML = `<i class="fas fa-pen me-2"></i>Ən azı ${needed} hərf daha yazın`;
+        submitBtn.disabled = true;
+        progressIndicator.style.display = 'none';
+        bioPreview.style.display = 'none';
+    }
+}
+
+// Textarea avtomatik böyütmə
+function autoResizeTextarea(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 300) + 'px';
+}
+
+// Bio mətninin keyfiyyətini yoxlamaq
+function analyzeBioQuality(text) {
+    const words = text.split(/\s+/).filter(word => word.length > 0);
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    
+    let score = 0;
+    let suggestions = [];
+    
+    // Uzunluq yoxlaması
+    if (words.length >= 20) score += 20;
+    else suggestions.push('Daha ətraflı yazın');
+    
+    // Cümlə sayı
+    if (sentences.length >= 3) score += 20;
+    else suggestions.push('Bir neçə cümlə əlavə edin');
+    
+    // Həvəskar sözlər
+    const enthusiasticWords = ['sevirəm', 'istəyirəm', 'marağım', 'həvəsliyəm', 'çox', 'çoxu'];
+    if (enthusiasticWords.some(word => text.toLowerCase().includes(word))) {
+        score += 20;
+    }
+    
+    return { score, suggestions };
+}
+
+// Input hadisələri
+document.getElementById('bio').addEventListener('input', function(e) {
+    updateCharCount();
+    autoResizeTextarea(this);
+});
+
+// Form göndərmə
+document.getElementById('bio-form').addEventListener('submit', function(e) {
+    const bio = document.getElementById('bio').value.trim();
+    
+    if (bio.length < 50) {
+        e.preventDefault();
+        alert('Başqalarının sizi daha yaxşı tanıması üçün ən azı 50 hərf yazın.');
+        return;
+    }
+    
+    // Çox qısa cümlələr yoxla
+    const words = bio.split(/\s+/).filter(word => word.length > 0);
+    if (words.length < 10) {
+        e.preventDefault();
+        alert('Zəhmət olmasa daha ətraflı yazın. Ən azı 10 söz istifadə edin.');
+        return;
+    }
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yadda saxlanılır...';
+    submitBtn.disabled = true;
+    
+    // Əgər xəta olarsa, düyməni bərpa et
+    setTimeout(() => {
+        if (submitBtn.disabled) {
+            updateCharCount();
+        }
+    }, 10000);
+});
+
+// İlkin yükləmə
+document.addEventListener('DOMContentLoaded', function() {
+    updateCharCount();
+    document.getElementById('bio').focus();
+    
+    // Klaviatura qısayolları
+    document.getElementById('bio').addEventListener('keydown', function(e) {
+        // Ctrl+Enter ilə göndərmə
+        if (e.ctrlKey && e.key === 'Enter') {
+            const bio = this.value.trim();
+            if (bio.length >= 50) {
+                document.getElementById('bio-form').submit();
+            }
+        }
+    });
+    
+    // Mətn yapışdırma hadisəsi
+    document.getElementById('bio').addEventListener('paste', function(e) {
+        setTimeout(() => {
+            updateCharCount();
+            autoResizeTextarea(this);
+        }, 100);
+    });
+});
+
+// Placeholder mətnini dinamik olaraq dəyişmək
+const placeholders = [
+    "Mən kitab oxumağı və yürüş etməyi sevirəm. Təbiətdə vaxt keçirmək və yeni dostlar tapmaq istəyirəm...",
+    "Musiqi həyatımın bir hissəsidir. Konsertlərə getməyi və maraqlı insanlarla tanış olmağı sevirəm...",
+    "İdman etməyi və aktiv həyat tərzi sürməyi sevirəm. Yeni çağırışlar və macəralar axtarıram...",
+    "Səyahət etmək və yeni mədəniyyətləri kəşf etmək həvəsindəyəm. Həmfikir insanlarla tanış olmaq istəyirəm..."
+];
+
+let placeholderIndex = 0;
+setInterval(() => {
+    const textarea = document.getElementById('bio');
+    if (textarea.value.length === 0) {
+        textarea.placeholder = placeholders[placeholderIndex];
+        placeholderIndex = (placeholderIndex + 1) % placeholders.length;
+    }
+}, 8000);
+</script>
+{% endblock %}
+

@@ -1,0 +1,1553 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ place.name }} - Acteezer{% endblock %}
+
+{% block content %}
+<!-- Place Hero Section -->
+<section class="place-hero-section">
+    <div class="container-fluid p-0">
+        <div class="place-hero-image">
+            {% if place.main_image %}
+                <img src="{{ place.main_image.url }}" alt="{{ place.image_alt|default:place.name }}" class="img-fluid w-100">
+            {% else %}
+                <img src="{% static '1.png' %}" alt="{{ place.name }}" class="img-fluid w-100">
+            {% endif %}
+            <div class="place-hero-overlay">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="place-hero-content">
+                                <div class="place-badges mb-3">
+                                    <span class="badge place-category-badge" style="background-color: {{ place.category.color }};">
+                                        <i class="{{ place.category.icon }} me-1"></i>{{ place.category.name }}
+                                    </span>
+                                    {% if place.is_verified %}
+                                    <span class="badge bg-success ms-2">
+                                        <i class="fas fa-check-circle me-1"></i>Təsdiqlənmiş
+                                    </span>
+                                    {% endif %}
+                                    {% if place.is_featured %}
+                                    <span class="badge bg-warning ms-2">
+                                        <i class="fas fa-star me-1"></i>Seçilmiş
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <h1 class="place-hero-title">{{ place.name }}</h1>
+                                <div class="place-hero-meta">
+                                    <div class="place-rating-large">
+                                        {% for i in place.get_rating_stars.full %}
+                                            <i class="fas fa-star"></i>
+                                        {% endfor %}
+                                        {% if place.get_rating_stars.half %}
+                                            <i class="fas fa-star-half-alt"></i>
+                                        {% endif %}
+                                        {% for i in place.get_rating_stars.empty %}
+                                            <i class="far fa-star"></i>
+                                        {% endfor %}
+                                        <span class="rating-score">{{ place.rating|floatformat:1 }}</span>
+                                        <span class="rating-count">({{ place.review_count }} rəy)</span>
+                                    </div>
+                                    <div class="place-price-large">{{ place.get_price_display }}</div>
+                                </div>
+                                <p class="place-hero-description">{{ place.short_description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Place Details Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- About Section -->
+                <div class="place-section mb-5">
+                    <h3 class="section-title">Haqqında</h3>
+                    <p class="place-description">{{ place.description }}</p>
+                    
+                    {% if place.features %}
+                    <div class="place-features mt-4">
+                        <h5>Xüsusiyyətlər</h5>
+                        <p class="text-muted">{{ place.features }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Gallery Section -->
+                {% if place.images.all %}
+                <div class="place-section mb-5">
+                    <h3 class="section-title">Şəkillər</h3>
+                    <div class="row g-3">
+                        {% for image in place.images.all %}
+                        <div class="col-md-4">
+                            <div class="gallery-item">
+                                <img src="{{ image.image.url }}" alt="{{ image.alt_text }}" class="img-fluid rounded">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Reviews Section -->
+                {% if reviews %}
+                <div class="place-section mb-5">
+                    <h3 class="section-title">Rəylər ({{ place.review_count }})</h3>
+                    <div class="reviews-list">
+                        {% for review in reviews %}
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <div class="reviewer-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="reviewer-name">{{ review.reviewer_name }}</h6>
+                                        <div class="review-rating">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= review.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <small class="review-date text-muted">{{ review.created_at|date:"d M Y" }}</small>
+                            </div>
+                            <p class="review-comment">{{ review.comment }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="place-sidebar">
+                    <!-- Contact Information -->
+                    <div class="sidebar-section">
+                        <h5 class="sidebar-title">Əlaqə Məlumatları</h5>
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>
+                                    <strong>Ünvan</strong>
+                                    <p>{{ place.address }}</p>
+                                </div>
+                            </div>
+                            
+                            {% if place.phone %}
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <strong>Telefon</strong>
+                                    <p><a href="tel:{{ place.phone }}">{{ place.phone }}</a></p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if place.email %}
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <strong>Email</strong>
+                                    <p><a href="mailto:{{ place.email }}">{{ place.email }}</a></p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if place.website %}
+                            <div class="contact-item">
+                                <i class="fas fa-globe"></i>
+                                <div>
+                                    <strong>Vebsayt</strong>
+                                    <p><a href="{{ place.website }}" target="_blank">{{ place.website }}</a></p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if place.instagram %}
+                            <div class="contact-item">
+                                <i class="fab fa-instagram"></i>
+                                <div>
+                                    <strong>Instagram</strong>
+                                    <p><a href="https://instagram.com/{{ place.instagram }}" target="_blank">@{{ place.instagram }}</a></p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Opening Hours -->
+                    <div class="sidebar-section">
+                        <h5 class="sidebar-title">İş Saatları</h5>
+                        <p class="opening-hours">{{ place.opening_hours }}</p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="sidebar-section">
+                        <div class="action-buttons">
+                            <button class="btn btn-primary btn-lg w-100 mb-3">
+                                <i class="fas fa-heart me-2"></i>Bəyən
+                            </button>
+                            <button class="btn btn-outline-primary btn-lg w-100 mb-3">
+                                <i class="fas fa-share me-2"></i>Paylaş
+                            </button>
+                            {% if place.phone %}
+                            <a href="tel:{{ place.phone }}" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-phone me-2"></i>Zəng et
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Places Section -->
+{% if related_places %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold mb-3">Oxşar Məkanlar</h2>
+                <p class="text-muted">{{ place.category.name }} kateqoriyasından digər məkanlar</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for related_place in related_places %}
+            <div class="col-lg-3 col-md-6">
+                <div class="place-card">
+                    <div class="place-image">
+                        {% if related_place.main_image %}
+                            <img src="{{ related_place.main_image.url }}" alt="{{ related_place.image_alt|default:related_place.name }}" class="img-fluid">
+                        {% else %}
+                            <img src="{% static '1.png' %}" alt="{{ related_place.name }}" class="img-fluid">
+                        {% endif %}
+                        <div class="place-badge">
+                            <span class="badge" style="background-color: {{ related_place.category.color }};">
+                                <i class="{{ related_place.category.icon }} me-1"></i>{{ related_place.category.name }}
+                            </span>
+                        </div>
+                        <div class="place-heart">
+                            <i class="far fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="place-content">
+                        <div class="place-meta">
+                            <span class="place-price">{{ related_place.get_price_display }}</span>
+                            <span class="place-district">{{ related_place.get_district_display }}</span>
+                        </div>
+                        <h5 class="place-title">
+                            <a href="{{ related_place.get_absolute_url }}">{{ related_place.name }}</a>
+                        </h5>
+                        <div class="place-rating mb-2">
+                            <span class="star-rating">
+                                {% for i in related_place.get_rating_stars.full %}
+                                    <i class="fas fa-star"></i>
+                                {% endfor %}
+                                {% if related_place.get_rating_stars.half %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                {% endif %}
+                                {% for i in related_place.get_rating_stars.empty %}
+                                    <i class="far fa-star"></i>
+                                {% endfor %}
+                                <span class="rating-score">{{ related_place.rating|floatformat:1 }}</span>
+                                <span class="rating-count">({{ related_place.review_count }} rəy)</span>
+                            </span>
+                        </div>
+                        <p class="place-description">{{ related_place.short_description|truncatechars:70 }}</p>
+                        <div class="place-footer">
+                            <span class="place-location">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                {{ related_place.address|truncatechars:20 }}
+                            </span>
+                            <a href="{{ related_place.get_absolute_url }}" class="btn btn-primary btn-sm place-view-btn">Ətraflı</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'places:places_list' %}?category={{ place.category.category_type }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-search me-2"></i>
+                Bütün {{ place.category.name }} görüntülə
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Place Hero Section */
+.place-hero-section {
+    position: relative;
+    margin-top: -76px; /* Offset for navbar */
+    padding-top: 76px;
+}
+
+.place-hero-image {
+    position: relative;
+    height: 500px;
+    overflow: hidden;
+}
+
+.place-hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.place-hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 3rem 0 2rem;
+}
+
+.place-hero-content {
+    color: white;
+}
+
+.place-category-badge {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+.place-hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.place-hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+
+.place-rating-large {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.place-rating-large i {
+    color: #ffc107;
+    font-size: 1.2rem;
+}
+
+.place-price-large {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.place-hero-description {
+    font-size: 1.2rem;
+    margin-bottom: 0;
+    opacity: 0.9;
+}
+
+/* Place Details */
+.place-section {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.place-description {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--gray-text);
+}
+
+.place-features h5 {
+    color: var(--dark-text);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+/* Gallery */
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    aspect-ratio: 1;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+/* Reviews */
+.reviews-list {
+    space-y: 1.5rem;
+}
+
+.review-item {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.reviewer-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.reviewer-name {
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+.review-rating i {
+    color: #ffc107;
+    font-size: 0.9rem;
+}
+
+.review-comment {
+    color: var(--gray-text);
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+/* Sidebar */
+.place-sidebar {
+    position: sticky;
+    top: 100px;
+}
+
+.sidebar-section {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.contact-info {
+    space-y: 1rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.contact-item i {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-top: 0.2rem;
+    width: 20px;
+}
+
+.contact-item strong {
+    display: block;
+    color: var(--dark-text);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.contact-item p {
+    color: var(--gray-text);
+    margin-bottom: 0;
+    line-height: 1.4;
+}
+
+.contact-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.contact-item a:hover {
+    text-decoration: underline;
+}
+
+.opening-hours {
+    color: var(--gray-text);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.action-buttons .btn {
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+}
+
+/* Place Cards (reused from places.html) */
+.place-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #f1f5f9;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.place-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.place-image {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+}
+
+.place-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.place-card:hover .place-image img {
+    transform: scale(1.05);
+}
+
+.place-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+}
+
+.place-badge .badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+}
+
+.place-heart {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: white;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.place-heart:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.place-content {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.place-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+}
+
+.place-price {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.place-district {
+    color: var(--gray-text);
+    font-weight: 500;
+}
+
+.place-title {
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.place-title a {
+    color: var(--dark-text);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.place-title a:hover {
+    color: var(--primary-color);
+}
+
+.place-rating {
+    margin-bottom: 0.75rem;
+}
+
+.star-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.star-rating i {
+    color: #ffc107;
+    font-size: 0.8rem;
+}
+
+.rating-score {
+    font-weight: 600;
+    color: var(--dark-text);
+    margin-left: 0.25rem;
+}
+
+.rating-count {
+    color: var(--gray-text);
+    font-size: 0.8rem;
+}
+
+.place-description {
+    color: var(--gray-text);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    flex: 1;
+}
+
+.place-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.place-location {
+    color: var(--gray-text);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.place-location i {
+    color: var(--primary-color);
+    margin-right: 0.25rem;
+}
+
+.place-view-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .place-hero-title {
+        font-size: 2rem;
+    }
+    
+    .place-hero-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .place-hero-description {
+        font-size: 1rem;
+    }
+    
+    .place-section {
+        padding: 1.5rem;
+    }
+    
+    .place-sidebar {
+        position: static;
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .place-hero-overlay {
+        padding: 2rem 0 1.5rem;
+    }
+    
+    .place-hero-title {
+        font-size: 1.75rem;
+    }
+    
+    .place-section {
+        padding: 1rem;
+    }
+    
+    .sidebar-section {
+        padding: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% load static %}
+
+{% block title %}{{ place.name }} - Acteezer{% endblock %}
+
+{% block content %}
+<!-- Place Hero Section -->
+<section class="place-hero-section">
+    <div class="container-fluid p-0">
+        <div class="place-hero-image">
+            {% if place.main_image %}
+                <img src="{{ place.main_image.url }}" alt="{{ place.image_alt|default:place.name }}" class="img-fluid w-100">
+            {% else %}
+                <img src="{% static '1.png' %}" alt="{{ place.name }}" class="img-fluid w-100">
+            {% endif %}
+            <div class="place-hero-overlay">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="place-hero-content">
+                                <div class="place-badges mb-3">
+                                    <span class="badge place-category-badge" style="background-color: {{ place.category.color }};">
+                                        <i class="{{ place.category.icon }} me-1"></i>{{ place.category.name }}
+                                    </span>
+                                    {% if place.is_verified %}
+                                    <span class="badge bg-success ms-2">
+                                        <i class="fas fa-check-circle me-1"></i>Təsdiqlənmiş
+                                    </span>
+                                    {% endif %}
+                                    {% if place.is_featured %}
+                                    <span class="badge bg-warning ms-2">
+                                        <i class="fas fa-star me-1"></i>Seçilmiş
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <h1 class="place-hero-title">{{ place.name }}</h1>
+                                <div class="place-hero-meta">
+                                    <div class="place-rating-large">
+                                        {% for i in place.get_rating_stars.full %}
+                                            <i class="fas fa-star"></i>
+                                        {% endfor %}
+                                        {% if place.get_rating_stars.half %}
+                                            <i class="fas fa-star-half-alt"></i>
+                                        {% endif %}
+                                        {% for i in place.get_rating_stars.empty %}
+                                            <i class="far fa-star"></i>
+                                        {% endfor %}
+                                        <span class="rating-score">{{ place.rating|floatformat:1 }}</span>
+                                        <span class="rating-count">({{ place.review_count }} rəy)</span>
+                                    </div>
+                                    <div class="place-price-large">{{ place.get_price_display }}</div>
+                                </div>
+                                <p class="place-hero-description">{{ place.short_description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Place Details Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- About Section -->
+                <div class="place-section mb-5">
+                    <h3 class="section-title">Haqqında</h3>
+                    <p class="place-description">{{ place.description }}</p>
+                    
+                    {% if place.features %}
+                    <div class="place-features mt-4">
+                        <h5>Xüsusiyyətlər</h5>
+                        <p class="text-muted">{{ place.features }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Gallery Section -->
+                {% if place.images.all %}
+                <div class="place-section mb-5">
+                    <h3 class="section-title">Şəkillər</h3>
+                    <div class="row g-3">
+                        {% for image in place.images.all %}
+                        <div class="col-md-4">
+                            <div class="gallery-item">
+                                <img src="{{ image.image.url }}" alt="{{ image.alt_text }}" class="img-fluid rounded">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Reviews Section -->
+                {% if reviews %}
+                <div class="place-section mb-5">
+                    <h3 class="section-title">Rəylər ({{ place.review_count }})</h3>
+                    <div class="reviews-list">
+                        {% for review in reviews %}
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <div class="reviewer-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="reviewer-name">{{ review.reviewer_name }}</h6>
+                                        <div class="review-rating">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= review.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <small class="review-date text-muted">{{ review.created_at|date:"d M Y" }}</small>
+                            </div>
+                            <p class="review-comment">{{ review.comment }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="place-sidebar">
+                    <!-- Contact Information -->
+                    <div class="sidebar-section">
+                        <h5 class="sidebar-title">Əlaqə Məlumatları</h5>
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>
+                                    <strong>Ünvan</strong>
+                                    <p>{{ place.address }}</p>
+                                </div>
+                            </div>
+                            
+                            {% if place.phone %}
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <strong>Telefon</strong>
+                                    <p><a href="tel:{{ place.phone }}">{{ place.phone }}</a></p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if place.email %}
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <strong>Email</strong>
+                                    <p><a href="mailto:{{ place.email }}">{{ place.email }}</a></p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if place.website %}
+                            <div class="contact-item">
+                                <i class="fas fa-globe"></i>
+                                <div>
+                                    <strong>Vebsayt</strong>
+                                    <p><a href="{{ place.website }}" target="_blank">{{ place.website }}</a></p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if place.instagram %}
+                            <div class="contact-item">
+                                <i class="fab fa-instagram"></i>
+                                <div>
+                                    <strong>Instagram</strong>
+                                    <p><a href="https://instagram.com/{{ place.instagram }}" target="_blank">@{{ place.instagram }}</a></p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Opening Hours -->
+                    <div class="sidebar-section">
+                        <h5 class="sidebar-title">İş Saatları</h5>
+                        <p class="opening-hours">{{ place.opening_hours }}</p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="sidebar-section">
+                        <div class="action-buttons">
+                            <button class="btn btn-primary btn-lg w-100 mb-3">
+                                <i class="fas fa-heart me-2"></i>Bəyən
+                            </button>
+                            <button class="btn btn-outline-primary btn-lg w-100 mb-3">
+                                <i class="fas fa-share me-2"></i>Paylaş
+                            </button>
+                            {% if place.phone %}
+                            <a href="tel:{{ place.phone }}" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-phone me-2"></i>Zəng et
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Places Section -->
+{% if related_places %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold mb-3">Oxşar Məkanlar</h2>
+                <p class="text-muted">{{ place.category.name }} kateqoriyasından digər məkanlar</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for related_place in related_places %}
+            <div class="col-lg-3 col-md-6">
+                <div class="place-card">
+                    <div class="place-image">
+                        {% if related_place.main_image %}
+                            <img src="{{ related_place.main_image.url }}" alt="{{ related_place.image_alt|default:related_place.name }}" class="img-fluid">
+                        {% else %}
+                            <img src="{% static '1.png' %}" alt="{{ related_place.name }}" class="img-fluid">
+                        {% endif %}
+                        <div class="place-badge">
+                            <span class="badge" style="background-color: {{ related_place.category.color }};">
+                                <i class="{{ related_place.category.icon }} me-1"></i>{{ related_place.category.name }}
+                            </span>
+                        </div>
+                        <div class="place-heart">
+                            <i class="far fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="place-content">
+                        <div class="place-meta">
+                            <span class="place-price">{{ related_place.get_price_display }}</span>
+                            <span class="place-district">{{ related_place.get_district_display }}</span>
+                        </div>
+                        <h5 class="place-title">
+                            <a href="{{ related_place.get_absolute_url }}">{{ related_place.name }}</a>
+                        </h5>
+                        <div class="place-rating mb-2">
+                            <span class="star-rating">
+                                {% for i in related_place.get_rating_stars.full %}
+                                    <i class="fas fa-star"></i>
+                                {% endfor %}
+                                {% if related_place.get_rating_stars.half %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                {% endif %}
+                                {% for i in related_place.get_rating_stars.empty %}
+                                    <i class="far fa-star"></i>
+                                {% endfor %}
+                                <span class="rating-score">{{ related_place.rating|floatformat:1 }}</span>
+                                <span class="rating-count">({{ related_place.review_count }} rəy)</span>
+                            </span>
+                        </div>
+                        <p class="place-description">{{ related_place.short_description|truncatechars:70 }}</p>
+                        <div class="place-footer">
+                            <span class="place-location">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                {{ related_place.address|truncatechars:20 }}
+                            </span>
+                            <a href="{{ related_place.get_absolute_url }}" class="btn btn-primary btn-sm place-view-btn">Ətraflı</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'places:places_list' %}?category={{ place.category.category_type }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-search me-2"></i>
+                Bütün {{ place.category.name }} görüntülə
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Place Hero Section */
+.place-hero-section {
+    position: relative;
+    margin-top: -76px; /* Offset for navbar */
+    padding-top: 76px;
+}
+
+.place-hero-image {
+    position: relative;
+    height: 500px;
+    overflow: hidden;
+}
+
+.place-hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.place-hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 3rem 0 2rem;
+}
+
+.place-hero-content {
+    color: white;
+}
+
+.place-category-badge {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+.place-hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.place-hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+
+.place-rating-large {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.place-rating-large i {
+    color: #ffc107;
+    font-size: 1.2rem;
+}
+
+.place-price-large {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.place-hero-description {
+    font-size: 1.2rem;
+    margin-bottom: 0;
+    opacity: 0.9;
+}
+
+/* Place Details */
+.place-section {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.place-description {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--gray-text);
+}
+
+.place-features h5 {
+    color: var(--dark-text);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+/* Gallery */
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    aspect-ratio: 1;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+/* Reviews */
+.reviews-list {
+    space-y: 1.5rem;
+}
+
+.review-item {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.reviewer-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.reviewer-name {
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+.review-rating i {
+    color: #ffc107;
+    font-size: 0.9rem;
+}
+
+.review-comment {
+    color: var(--gray-text);
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+/* Sidebar */
+.place-sidebar {
+    position: sticky;
+    top: 100px;
+}
+
+.sidebar-section {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.contact-info {
+    space-y: 1rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.contact-item i {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-top: 0.2rem;
+    width: 20px;
+}
+
+.contact-item strong {
+    display: block;
+    color: var(--dark-text);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.contact-item p {
+    color: var(--gray-text);
+    margin-bottom: 0;
+    line-height: 1.4;
+}
+
+.contact-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.contact-item a:hover {
+    text-decoration: underline;
+}
+
+.opening-hours {
+    color: var(--gray-text);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.action-buttons .btn {
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+}
+
+/* Place Cards (reused from places.html) */
+.place-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #f1f5f9;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.place-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.place-image {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+}
+
+.place-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.place-card:hover .place-image img {
+    transform: scale(1.05);
+}
+
+.place-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+}
+
+.place-badge .badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+}
+
+.place-heart {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: white;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.place-heart:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.place-content {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.place-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+}
+
+.place-price {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.place-district {
+    color: var(--gray-text);
+    font-weight: 500;
+}
+
+.place-title {
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.place-title a {
+    color: var(--dark-text);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.place-title a:hover {
+    color: var(--primary-color);
+}
+
+.place-rating {
+    margin-bottom: 0.75rem;
+}
+
+.star-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.star-rating i {
+    color: #ffc107;
+    font-size: 0.8rem;
+}
+
+.rating-score {
+    font-weight: 600;
+    color: var(--dark-text);
+    margin-left: 0.25rem;
+}
+
+.rating-count {
+    color: var(--gray-text);
+    font-size: 0.8rem;
+}
+
+.place-description {
+    color: var(--gray-text);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    flex: 1;
+}
+
+.place-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.place-location {
+    color: var(--gray-text);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.place-location i {
+    color: var(--primary-color);
+    margin-right: 0.25rem;
+}
+
+.place-view-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .place-hero-title {
+        font-size: 2rem;
+    }
+    
+    .place-hero-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .place-hero-description {
+        font-size: 1rem;
+    }
+    
+    .place-section {
+        padding: 1.5rem;
+    }
+    
+    .place-sidebar {
+        position: static;
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .place-hero-overlay {
+        padding: 2rem 0 1.5rem;
+    }
+    
+    .place-hero-title {
+        font-size: 1.75rem;
+    }
+    
+    .place-section {
+        padding: 1rem;
+    }
+    
+    .sidebar-section {
+        padding: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
