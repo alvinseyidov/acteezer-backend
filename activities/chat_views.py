@@ -126,3 +126,4 @@ def delete_message(request, activity_id, message_id):
     message.delete()
     
     return JsonResponse({'success': True})
+

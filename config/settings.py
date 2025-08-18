@@ -12,6 +12,16 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import warnings
+
+# Suppress Django model reload warnings during development
+if os.environ.get('DJANGO_DEVELOPMENT') != 'False':
+    warnings.filterwarnings(
+        'ignore',
+        message=r'Model .* was already registered\. Reloading models is not advised.*',
+        category=RuntimeWarning,
+        module='django.db.models.base'
+    )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -163,4 +173,20 @@ AUTHENTICATION_BACKENDS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.models.base': {
+            'handlers': ['console'],
+            'level': 'ERROR',  # Only show errors, suppress warnings
+            'propagate': False,
+        },
+    },
+}
