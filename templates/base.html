@@ -140,11 +140,845 @@
             margin: 0.5rem 0 !important;
             border-color: #e9ecef !important;
         }
+        
+        /* App Store Section */
+        .app-store-section {
+            text-align: center;
+        }
+        .app-store-combined-img {
+            max-width: 50%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .app-store-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-store-text small {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            line-height: 1;
+            color: #6c757d;
+        }
+        .app-store-text span {
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.2;
+            color: #333;
+        }
+        
+        /* Contact Info Styling */
+        .help-email {
+            font-weight: 600;
+            color: #28a745;
+            font-size: 0.9rem;
+        }
+        .help-number {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .contact-row {
+            line-height: 1.2;
+        }
+        .contact-icon {
+            color: #28a745;
+            width: 16px;
+            margin-right: 8px;
+            display: inline-flex;
+            justify-content: center;
+        }
+        
+        /* Mobile Sidebar Styles */
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 320px;
+            height: 100vh;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .mobile-sidebar.active {
+            left: 0;
+        }
+        
+        .mobile-sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: white;
+        }
+        
+        .mobile-logo img {
+            height: 40px;
+        }
+        
+        .mobile-sidebar-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-sidebar-close:hover {
+            background: #f1f5f9;
+            color: #e11d48;
+        }
+        
+        .mobile-sidebar-content {
+            padding: 1rem 0;
+        }
+        
+        .mobile-user-profile {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #5dd3be 0%, #4fd1c7 100%);
+            margin: 0 1rem 1rem 1rem;
+            border-radius: 12px;
+            color: white;
+        }
+        
+        .mobile-user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            overflow: hidden;
+        }
+        
+        .mobile-user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .mobile-user-avatar i {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .mobile-user-info h5 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .mobile-user-info p {
+            margin: 0;
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        .mobile-nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0 1rem 1rem 1rem;
+        }
+        
+        .mobile-nav-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .mobile-nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1rem;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .mobile-nav-links a:hover {
+            background: #f1f5f9;
+            color: #5dd3be;
+        }
+        
+        .mobile-nav-links a i {
+            width: 20px;
+            margin-right: 0.75rem;
+            text-align: center;
+        }
+        
+        .mobile-action-buttons {
+            padding: 0 1rem 1rem 1rem;
+        }
+        
+        .mobile-create-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-create-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .mobile-create-btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .mobile-user-links {
+            list-style: none;
+            padding: 0;
+            margin: 1rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1rem;
+        }
+        
+        .mobile-user-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .mobile-user-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1rem;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .mobile-user-links a:hover {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .mobile-user-links a i {
+            width: 20px;
+            margin-right: 0.75rem;
+            text-align: center;
+        }
+        
+        .mobile-auth-buttons {
+            padding: 0 1rem;
+        }
+        
+        .mobile-join-btn, .mobile-login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.875rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 0.75rem;
+        }
+        
+        .mobile-join-btn {
+            background: linear-gradient(135deg, #5dd3be 0%, #4fd1c7 100%);
+            color: white;
+        }
+        
+        .mobile-join-btn:hover {
+            background: linear-gradient(135deg, #4fd1c7 0%, #3b82f6 100%);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .mobile-login-btn {
+            background: white;
+            color: #5dd3be;
+            border: 2px solid #5dd3be;
+        }
+        
+        .mobile-login-btn:hover {
+            background: #5dd3be;
+            color: white;
+        }
+        
+        .mobile-join-btn i, .mobile-login-btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .mobile-sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .mobile-menu-btn {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+        
+        .mobile-menu-btn span {
+            width: 100%;
+            height: 3px;
+            background: #5dd3be;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-btn:hover span {
+            background: #4fd1c7;
+        }
+        
+        /* Hide mobile sidebar on desktop */
+        @media (min-width: 992px) {
+            .mobile-sidebar,
+            .mobile-sidebar-overlay,
+            .mobile-menu-btn {
+                display: none !important;
+            }
+        }
+
+        /* Mobile Footer Improvements */
+        @media (max-width: 768px) {
+            /* Footer Help Section Mobile */
+            .footer-help {
+                background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%);
+                border-radius: 15px;
+                padding: 1.5rem;
+                border: 1px solid rgba(40, 167, 69, 0.2);
+                box-shadow: 0 4px 15px rgba(40, 167, 69, 0.1);
+                margin-bottom: 1rem;
+            }
+            
+            .footer-help .help-text {
+                font-size: 0.85rem;
+                color: #666;
+                margin-bottom: 1rem;
+                text-align: center;
+                font-weight: 500;
+            }
+            
+            .footer-help .contact-info {
+                gap: 12px;
+            }
+            
+            .footer-help .contact-row {
+                background: white;
+                padding: 12px 15px;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+            }
+            
+            .footer-help .contact-row:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+            }
+            
+            .footer-help .contact-icon {
+                font-size: 1.1rem;
+                width: 20px;
+                color: #28a745;
+            }
+            
+            .footer-help .help-number {
+                color: #333;
+                font-size: 1rem;
+                font-weight: 600;
+            }
+            
+            .footer-help .help-email {
+                color: #28a745;
+                font-size: 0.95rem;
+                font-weight: 600;
+            }
+            
+            /* Newsletter Form Mobile */
+            .newsletter-form {
+                background: linear-gradient(135deg, rgba(32, 201, 151, 0.1) 0%, rgba(40, 167, 69, 0.1) 100%);
+                border-radius: 15px;
+                padding: 1.5rem;
+                border: 1px solid rgba(32, 201, 151, 0.2);
+                box-shadow: 0 4px 15px rgba(32, 201, 151, 0.1);
+                margin-bottom: 1rem;
+            }
+            
+            .newsletter-form .footer-title {
+                text-align: center;
+                margin-bottom: 1rem;
+                color: #333;
+                font-size: 1.1rem;
+            }
+            
+            .newsletter-form .input-group {
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                margin-bottom: 1rem;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .newsletter-form #newsletterEmail {
+                border: none;
+                padding: 15px;
+                font-size: 1rem;
+                background: white;
+                border-radius: 0;
+                border-top-left-radius: 12px;
+                border-top-right-radius: 12px;
+                box-shadow: none;
+                width: 100%;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .newsletter-form #newsletterEmail:focus {
+                box-shadow: none;
+                border-color: #e9ecef;
+                outline: none;
+            }
+            
+            .newsletter-form #newsletterBtn {
+                border: none;
+                padding: 15px 20px;
+                background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                font-weight: 600;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                border-radius: 0;
+                border-bottom-left-radius: 12px;
+                border-bottom-right-radius: 12px;
+                color: white;
+                width: 100%;
+                box-shadow: none;
+            }
+            
+            .newsletter-form .newsletter-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            }
+            
+            .newsletter-form .newsletter-text {
+                text-align: center;
+                color: #666;
+                font-size: 0.8rem;
+                line-height: 1.4;
+            }
+            
+            /* Footer Contact Section Mobile */
+            .footer-contact {
+                border-radius: 15px;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .footer-contact .contact-item {
+                background: white;
+                padding: 12px 15px;
+                border-radius: 10px;
+                margin-bottom: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+            }
+            
+            .footer-contact .contact-item:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+            
+            .footer-contact .contact-item i {
+                font-size: 1.1rem;
+                color: #28a745;
+                margin-right: 12px;
+                width: 20px;
+                text-align: center;
+            }
+            
+            .footer-contact .contact-item span {
+                color: #333;
+                font-size: 0.9rem;
+            }
+            
+            /* Footer Apps Section Mobile */
+            .footer-apps {
+                text-align: center;
+                border-radius: 15px;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .footer-apps .footer-title {
+                color: #333;
+                margin-bottom: 1rem;
+                font-size: 1.1rem;
+            }
+            
+            .app-store-section {
+                border-radius: 12px;
+                padding: 1rem;
+            }
+            
+            .app-store-combined-img {
+                max-width: 80%;
+                border-radius: 8px;
+                margin-bottom: 0.5rem;
+            }
+            
+            /* Footer Links Mobile */
+            .footer-links {
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .footer-links li {
+                margin-bottom: 8px;
+            }
+            
+            .footer-links a {
+                color: #555;
+                text-decoration: none;
+                padding: 8px 12px;
+                border-radius: 8px;
+                display: block;
+                transition: all 0.3s ease;
+                font-size: 0.9rem;
+            }
+            
+            .footer-links a:hover {
+                background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%);
+                color: #28a745;
+                transform: translateX(5px);
+            }
+            
+            /* Social Icons Mobile */
+            .footer-social {
+                text-align: center;
+                background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%);
+                border-radius: 15px;
+                padding: 1.5rem;
+                border: 1px solid rgba(40, 167, 69, 0.2);
+                box-shadow: 0 4px 15px rgba(40, 167, 69, 0.1);
+                margin-bottom: 1rem;
+            }
+            
+            .social-icons {
+                display: flex;
+                justify-content: center;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            
+            .social-icon {
+                width: 45px;
+                height: 45px;
+                background: white;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                color: #666;
+                font-size: 1.2rem;
+            }
+            
+            .social-icon:hover {
+                transform: translateY(-3px) scale(1.05);
+                box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+                color: #28a745;
+            }
+            
+            /* Payment Icons Mobile */
+            .footer-payments {
+                border-radius: 15px;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+                text-align: center;
+            }
+            
+            .payment-icons {
+                background: white;
+                border-radius: 12px;
+                padding: 1rem;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            .payment-methods-img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 6px;
+            }
+            
+            /* Stats Section Mobile */
+            .stats-section {
+                margin-left: 1rem;
+                margin-right: 1rem;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            
+            .stats-section .stat-item {
+                text-align: center;
+            }
+            
+            .stats-section .stat-number {
+                text-align: center;
+            }
+            
+            .stats-section .stat-label {
+                text-align: center;
+            }
+            
+            /* Home Page Mobile Improvements */
+            /* Category Slider Mobile - Single row with horizontal scroll */
+            .category-slider-container {
+                padding: 0 1rem;
+                overflow: hidden;
+            }
+            
+            .category-slider {
+                display: flex !important;
+                overflow-x: auto !important;
+                scroll-behavior: smooth;
+                gap: 1rem;
+                padding-bottom: 10px;
+                scrollbar-width: none; /* Firefox */
+                -ms-overflow-style: none; /* IE and Edge */
+            }
+            
+            .category-slider::-webkit-scrollbar {
+                display: none; /* Chrome, Safari */
+            }
+            
+            .category-slide {
+                min-width: 90px !important;
+                flex-shrink: 0;
+                text-align: center;
+            }
+            
+            .category-circle {
+                width: 70px !important;
+                height: 70px !important;
+                margin: 0 auto 0.5rem;
+                border-radius: 50%;
+                overflow: hidden;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease;
+            }
+            
+            .category-slide:active .category-circle {
+                transform: scale(0.95);
+            }
+            
+            .category-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            
+            .category-name {
+                font-size: 0.8rem;
+                margin-bottom: 0.25rem;
+                font-weight: 600;
+                color: #333;
+            }
+            
+            .category-count {
+                font-size: 0.7rem;
+                margin-bottom: 0;
+                color: #666;
+            }
+            
+            /* Latest Activities Mobile - 2 columns */
+            .row.g-4 .col-lg-4.col-md-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+            
+            .activity-card {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .activity-image {
+                height: 150px;
+                overflow: hidden;
+            }
+            
+            .activity-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            
+            .activity-content {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            .activity-footer {
+                margin-top: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: center;
+            }
+            
+            .activity-location {
+                order: 1;
+                text-align: center;
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin: 0 auto;
+            }
+            
+            .activity-join-btn {
+                order: 2;
+                width: 100%;
+                text-align: center;
+            }
+            
+            .activity-title {
+                font-size: 0.9rem;
+                line-height: 1.3;
+            }
+            
+            .activity-description {
+                display: none;
+            }
+            
+            .activity-rating {
+                display: none;
+            }
+            
+            .activity-meta {
+                font-size: 0.75rem;
+            }
+            
+            .activity-join-btn {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
     </style>
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="mobile-sidebar-header">
+            <a href="{% url 'home' %}" class="mobile-logo">
+                <img src="{% static 'logo.png' %}" alt="Acteezer">
+            </a>
+            <button class="mobile-sidebar-close" id="closeSidebar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-sidebar-content">
+            {% if user.is_authenticated %}
+                <div class="mobile-user-profile">
+                    <div class="mobile-user-avatar">
+                        {% if user.profile_image %}
+                            <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name }}">
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="mobile-user-info">
+                        <h5>{{ user.get_full_name|default:user.phone }}</h5>
+                        <p>{{ user.email|default:"Hoş gəldiniz" }}</p>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <ul class="mobile-nav-links">
+                <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Ana səhifə</a></li>
+                <li><a href="{% url 'activities:activities_list' %}"><i class="fas fa-calendar-alt"></i> Aktivitələr</a></li>
+                <li><a href="{% url 'places:places_list' %}"><i class="fas fa-map-marker-alt"></i> Məkanlar</a></li>
+                <li><a href="{% url 'blog' %}"><i class="fas fa-blog"></i> Bloq</a></li>
+                <li><a href="{% url 'about' %}"><i class="fas fa-info-circle"></i> Haqqımızda</a></li>
+                <li><a href="{% url 'contact' %}"><i class="fas fa-phone"></i> Əlaqə</a></li>
+            </ul>
+            
+            {% if user.is_authenticated %}
+                <div class="mobile-action-buttons">
+                    <a href="{% url 'activities:create_activity' %}" class="mobile-create-btn">
+                        <i class="fas fa-plus"></i> Aktivitə Yarat
+                    </a>
+                </div>
+                
+                <ul class="mobile-user-links">
+                    <li><a href="{% url 'accounts:profile' %}"><i class="fas fa-user-circle"></i> Profil</a></li>
+                    <li><a href="{% url 'accounts:my_activities' %}"><i class="fas fa-list"></i> Aktivitələrim</a></li>
+                    <li><a href="{% url 'accounts:joined_activities' %}"><i class="fas fa-users"></i> Qoşulduğum Aktivitələr</a></li>
+                    <li><a href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt"></i> Çıxış</a></li>
+                </ul>
+            {% else %}
+                <div class="mobile-auth-buttons">
+                    <a href="{% url 'accounts:phone_registration' %}" class="mobile-join-btn">
+                        <i class="fas fa-user-plus"></i> Qoşulun
+                    </a>
+                    <a href="{% url 'accounts:login' %}" class="mobile-login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Daxil olun
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Mobile Sidebar Overlay -->
+    <div class="mobile-sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
@@ -152,7 +986,14 @@
                 <img src="{% static 'logo.png' %}" alt="Acteezer" class="navbar-logo me-2">
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn d-lg-none" id="openSidebar">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <button class="navbar-toggler d-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
@@ -320,6 +1161,7 @@
                         <li><a href="#">Qrup Yaratma</a></li>
                         <li><a href="#">Rezervasiya</a></li>
                         <li><a href="#">Mobil Tətbiq</a></li>
+                        
                     </ul>
                 </div>
 
@@ -329,6 +1171,9 @@
                             <li><a href="#">Bilet Rezervasyonu</a></li>
                             <li><a href="#">İcar Xidmətləri</a></li>
                             <li><a href="#">Səyahət Planı</a></li>
+                            <li><a href="#">Şərtlər</a></li>
+                        <li><a href="#">Məxfilik siyasəti</a></li>
+                        <li><a href="#">Hüquqi bildiriş</a></li>
                         </ul>
                     </div>
                 </div>
@@ -338,10 +1183,16 @@
                     <h6 class="footer-title">Xəbər Bülleteni üçün Abunə Olun</h6>
                     <div class="newsletter-form">
                         <div class="input-group">
-                            <input type="email" class="form-control newsletter-input" placeholder="Email adresinizi daxil edin">
-                            <button class="btn btn-primary newsletter-btn" type="button">Abunə ol</button>
+                            <input type="email" id="newsletterEmail" class="form-control newsletter-input" placeholder="Email adresinizi daxil edin" required>
+                            <button class="btn btn-primary newsletter-btn" type="button" id="newsletterBtn">
+                                <span class="btn-text">Abunə ol</span>
+                                <span class="btn-spinner d-none">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </span>
+                            </button>
                         </div>
                         <small class="newsletter-text">Heç bir reklam yoxdur. Heç bir izləmə yoxdur. Heç bir öhdəlik yoxdur.</small>
+                        <div id="newsletterMessage" class="mt-2" style="display: none;"></div>
                     </div>
                 </div>
             </div>
@@ -353,20 +1204,27 @@
                         <div class="footer-social">
                             <h6 class="footer-title mb-3">Bizi İzləyin</h6>
                             <div class="social-icons">
-                                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                                <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                                <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                                <a href="https://instagram.com/acteezer_app" target="_blank" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
+                                <a href="https://facebook.com/acteezer_app" target="_blank" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                                <a href="https://linkedin.com/company/acteezer_app" target="_blank" class="social-icon" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="https://youtube.com/@acteezer_app" target="_blank" class="social-icon" title="YouTube"><i class="fab fa-youtube"></i></a>
+                                <a href="https://tiktok.com/@acteezer_app" target="_blank" class="social-icon" title="TikTok"><i class="fab fa-tiktok"></i></a>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                        <div class="footer-help">
-                            <i class="fas fa-phone-alt me-2"></i>
-                            <div>
-                                <small class="help-text">Köməyə ehtiyacınız var? Bizə zəng edin</small>
-                                <div class="help-number">+994-50-123-4567</div>
+                        <div class="footer-help" style="display:block;">
+                            <small class="help-text mb-2 d-block">Köməyə ehtiyacınız var? Bizə zəng edin</small>
+                            <div class="contact-info">
+                                <div class="contact-row d-flex align-items-center mb-2">
+                                    <i class="fas fa-phone-alt contact-icon"></i>
+                                    <span class="help-number">+994-50-123-4567</span>
+                                </div>
+                                <div class="contact-row d-flex align-items-center">
+                                    <i class="fas fa-envelope contact-icon"></i>
+                                    <span class="help-email">info@acteezer.com</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -381,11 +1239,16 @@
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <div class="footer-links-bottom">
-                            <a href="#" class="footer-link-sm">Şərtlər</a>
-                            <a href="#" class="footer-link-sm">Məxfilik siyasəti</a>
-                            <a href="#" class="footer-link-sm">Hüquqi bildiriş</a>
+                        <div class="footer-apps mb-3">
+                            <div class="app-store-section">
+                                <img src="{% static 'app.png' %}" alt="Mobile Apps" class="app-store-combined-img mb-2">
+                                <div class="app-store-text">
+                                    <small>Tezliklə</small>
+                                    <span>Google Play & App Store</span>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -407,6 +1270,142 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% load static %}
     <script src="{% static 'js/main.js' %}"></script>
+    
+    <!-- Mobile Sidebar & Newsletter Subscription Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile Sidebar Functionality
+        const mobileSidebar = document.getElementById('mobileSidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const openSidebarBtn = document.getElementById('openSidebar');
+        const closeSidebarBtn = document.getElementById('closeSidebar');
+        
+        // Open sidebar
+        if (openSidebarBtn) {
+            openSidebarBtn.addEventListener('click', function() {
+                mobileSidebar.classList.add('active');
+                sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        }
+        
+        // Close sidebar
+        function closeSidebar() {
+            mobileSidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        if (closeSidebarBtn) {
+            closeSidebarBtn.addEventListener('click', closeSidebar);
+        }
+        
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', closeSidebar);
+        }
+        
+        // Close sidebar when clicking on a link (except dropdowns)
+        const sidebarLinks = document.querySelectorAll('.mobile-nav-links a, .mobile-user-links a, .mobile-create-btn, .mobile-join-btn, .mobile-login-btn');
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                setTimeout(closeSidebar, 100);
+            });
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 992) {
+                closeSidebar();
+            }
+        });
+        
+        // Newsletter Subscription
+        const newsletterBtn = document.getElementById('newsletterBtn');
+        const newsletterEmail = document.getElementById('newsletterEmail');
+        const newsletterMessage = document.getElementById('newsletterMessage');
+        const btnText = newsletterBtn.querySelector('.btn-text');
+        const btnSpinner = newsletterBtn.querySelector('.btn-spinner');
+        
+        function showMessage(message, isError = false) {
+            newsletterMessage.textContent = message;
+            newsletterMessage.className = isError ? 'mt-2 text-danger' : 'mt-2 text-success';
+            newsletterMessage.style.display = 'block';
+        }
+        
+        function hideMessage() {
+            newsletterMessage.style.display = 'none';
+        }
+        
+        function setLoading(loading) {
+            if (loading) {
+                btnText.classList.add('d-none');
+                btnSpinner.classList.remove('d-none');
+                newsletterBtn.disabled = true;
+            } else {
+                btnText.classList.remove('d-none');
+                btnSpinner.classList.add('d-none');
+                newsletterBtn.disabled = false;
+            }
+        }
+        
+        function subscribeNewsletter() {
+            const email = newsletterEmail.value.trim();
+            
+            if (!email) {
+                showMessage('Email ünvanı tələb olunur.', true);
+                return;
+            }
+            
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showMessage('Düzgün email ünvanı daxil edin.', true);
+                return;
+            }
+            
+            setLoading(true);
+            hideMessage();
+            
+            fetch('{% url "accounts:newsletter_subscribe" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                setLoading(false);
+                
+                if (data.success) {
+                    showMessage(data.message, false);
+                    newsletterEmail.value = '';
+                } else {
+                    showMessage(data.message, true);
+                }
+            })
+            .catch(error => {
+                setLoading(false);
+                showMessage('Bir xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.', true);
+                console.error('Error:', error);
+            });
+        }
+        
+        // Event listeners
+        newsletterBtn.addEventListener('click', subscribeNewsletter);
+        
+        newsletterEmail.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                subscribeNewsletter();
+            }
+        });
+        
+        // Hide message when user starts typing
+        newsletterEmail.addEventListener('input', hideMessage);
+    });
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>

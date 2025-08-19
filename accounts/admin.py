@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
-from .models import User, UserImage, Language, Interest, OTPVerification, BlogCategory, BlogPost, BlogTag, BlogPostTag
+from .models import User, UserImage, Language, Interest, OTPVerification, BlogCategory, BlogPost, BlogTag, BlogPostTag, Newsletter
 
 
 class UserImageInline(admin.TabularInline):
@@ -150,3 +150,24 @@ class BlogTagAdmin(admin.ModelAdmin):
     search_fields = ['name']
     prepopulated_fields = {'slug': ('name',)}
     ordering = ['name']
+
+
+@admin.register(Newsletter)
+class NewsletterAdmin(admin.ModelAdmin):
+    list_display = ['email', 'user', 'is_active', 'subscribed_at']
+    list_filter = ['is_active', 'subscribed_at']
+    search_fields = ['email', 'user__first_name', 'user__last_name', 'user__phone']
+    ordering = ['-subscribed_at']
+    readonly_fields = ['subscribed_at']
+    
+    actions = ['activate_subscriptions', 'deactivate_subscriptions']
+    
+    def activate_subscriptions(self, request, queryset):
+        queryset.update(is_active=True)
+        self.message_user(request, f"{queryset.count()} subscriptions activated.")
+    activate_subscriptions.short_description = "Activate selected subscriptions"
+    
+    def deactivate_subscriptions(self, request, queryset):
+        queryset.update(is_active=False)
+        self.message_user(request, f"{queryset.count()} subscriptions deactivated.")
+    deactivate_subscriptions.short_description = "Deactivate selected subscriptions"

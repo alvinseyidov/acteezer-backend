@@ -9,12 +9,28 @@ from datetime import timedelta
 import random
 import json
 
-from .models import User, Language, Interest, UserImage, OTPVerification
+from .models import User, Language, Interest, UserImage, OTPVerification, Newsletter
 
 
 def home(request):
     """Home page view"""
-    return render(request, 'core/home.html')
+    from activities.models import Activity, ActivityCategory
+    
+    # Get latest published activities (limit to 6 for home page)
+    latest_activities = Activity.objects.filter(
+        status='published',
+        start_date__gte=timezone.now().date()
+    ).select_related('category', 'organizer').order_by('start_date')[:6]
+    
+    # Get popular categories
+    popular_categories = ActivityCategory.objects.all()[:8]
+    
+    context = {
+        'latest_activities': latest_activities,
+        'popular_categories': popular_categories,
+    }
+    
+    return render(request, 'core/home.html', context)
 
 
 def activities(request):
@@ -488,6 +504,58 @@ def user_logout(request):
     messages.success(request, 'Logged out successfully!')
     return redirect('home')
 
+
+@csrf_exempt
+def newsletter_subscribe(request):
+    """Handle newsletter subscription"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            email = data.get('email', '').strip().lower()
+            
+            if not email:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Email ünvanı tələb olunur.'
+                })
+            
+            # Check if email is already subscribed
+            if Newsletter.objects.filter(email=email).exists():
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Bu email ünvanı artıq abunəlik siyahısındadır.'
+                })
+            
+            # Check if user is logged in and link the subscription
+            user = request.user if request.user.is_authenticated else None
+            
+            # Create newsletter subscription
+            newsletter = Newsletter.objects.create(
+                email=email,
+                user=user
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Təbriklər! Xəbər bülleteni üçün uğurla abunə oldunuz.'
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'success': False,
+                'message': 'Yanlış məlumat formatı.'
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': 'Bir xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.'
+            })
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'Yanlış sorğu metodu.'
+    })
+
 @login_required
 def joined_activities(request):
     """User's joined activities"""
@@ -551,3 +619,55 @@ def user_logout(request):
     logout(request)
     messages.success(request, 'Logged out successfully!')
     return redirect('home')
+
+
+@csrf_exempt
+def newsletter_subscribe(request):
+    """Handle newsletter subscription"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            email = data.get('email', '').strip().lower()
+            
+            if not email:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Email ünvanı tələb olunur.'
+                })
+            
+            # Check if email is already subscribed
+            if Newsletter.objects.filter(email=email).exists():
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Bu email ünvanı artıq abunəlik siyahısındadır.'
+                })
+            
+            # Check if user is logged in and link the subscription
+            user = request.user if request.user.is_authenticated else None
+            
+            # Create newsletter subscription
+            newsletter = Newsletter.objects.create(
+                email=email,
+                user=user
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Təbriklər! Xəbər bülleteni üçün uğurla abunə oldunuz.'
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'success': False,
+                'message': 'Yanlış məlumat formatı.'
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': 'Bir xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.'
+            })
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'Yanlış sorğu metodu.'
+    })

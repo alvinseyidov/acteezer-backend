@@ -24,4 +24,7 @@ urlpatterns = [
     path('register/interests/', views.interests_registration, name='interests_registration'),
     path('register/location/', views.location_registration, name='location_registration'),
     path('register/complete/', views.registration_complete, name='registration_complete'),
+    
+    # Newsletter
+    path('newsletter/subscribe/', views.newsletter_subscribe, name='newsletter_subscribe'),
 ]

@@ -254,3 +254,19 @@ class BlogPostTag(models.Model):
     
     class Meta:
         unique_together = ('post', 'tag')
+
+
+class Newsletter(models.Model):
+    """Model for newsletter subscriptions"""
+    email = models.EmailField(unique=True)
+    subscribed_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name='newsletter_subscriptions')
+    
+    class Meta:
+        ordering = ['-subscribed_at']
+        verbose_name = "Newsletter Subscription"
+        verbose_name_plural = "Newsletter Subscriptions"
+    
+    def __str__(self):
+        return f"{self.email} - {'Active' if self.is_active else 'Inactive'}"
