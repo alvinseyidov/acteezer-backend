@@ -22,7 +22,7 @@ from accounts.views import home, about, contact, blog, blog_detail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home/', home, name='home'),
+    path('', home, name='home'),
     path('activities/', include('activities.urls')),
     path('about/', about, name='about'),
     path('contact/', contact, name='contact'),
