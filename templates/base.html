@@ -36,12 +36,13 @@
         .create-activity-btn {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
             border: none !important;
-            border-radius: 20px !important;
-            padding: 0.5rem 1rem !important;
+            border-radius: 15px !important;
+            padding: 0.4rem 0.8rem !important;
             font-weight: 600 !important;
             text-decoration: none !important;
             transition: all 0.3s ease !important;
             box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
+            font-size: 0.85rem !important;
         }
         .create-activity-btn:hover {
             transform: translateY(-2px) !important;
@@ -52,17 +53,17 @@
         .user-dropdown-toggle {
             display: flex !important;
             align-items: center !important;
-            gap: 0.5rem !important;
-            padding: 0.5rem 1rem !important;
-            border-radius: 25px !important;
+            gap: 0 !important; /* Remove gap since we're hiding the name */
+            padding: 0.3rem !important;
+            border-radius: 50% !important;
             transition: all 0.3s ease !important;
         }
         .user-dropdown-toggle:hover {
             background: rgba(40, 167, 69, 0.1) !important;
         }
         .user-avatar {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             display: flex;
@@ -80,6 +81,12 @@
         .user-name {
             font-weight: 500;
             color: #333 !important;
+            display: none !important; /* Hide the user name text */
+        }
+        
+        /* Navigation font size adjustment */
+        .navbar-nav .nav-link {
+            font-size: 0.9rem !important;
         }
         .custom-dropdown {
             border: none !important;
@@ -944,6 +951,7 @@
             <ul class="mobile-nav-links">
                 <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Ana səhifə</a></li>
                 <li><a href="{% url 'activities:activities_list' %}"><i class="fas fa-calendar-alt"></i> Aktivitələr</a></li>
+                <li><a href="{% url 'accounts:people_list' %}"><i class="fas fa-users"></i> İnsanlar</a></li>
                 <li><a href="{% url 'places:places_list' %}"><i class="fas fa-map-marker-alt"></i> Məkanlar</a></li>
                 <li><a href="{% url 'blog' %}"><i class="fas fa-blog"></i> Bloq</a></li>
                 <li><a href="{% url 'about' %}"><i class="fas fa-info-circle"></i> Haqqımızda</a></li>
@@ -960,7 +968,9 @@
                 <ul class="mobile-user-links">
                     <li><a href="{% url 'accounts:profile' %}"><i class="fas fa-user-circle"></i> Profil</a></li>
                     <li><a href="{% url 'accounts:my_activities' %}"><i class="fas fa-list"></i> Aktivitələrim</a></li>
-                    <li><a href="{% url 'accounts:joined_activities' %}"><i class="fas fa-users"></i> Qoşulduğum Aktivitələr</a></li>
+                    <li><a href="{% url 'accounts:joined_activities' %}"><i class="fas fa-calendar-check"></i> Qoşulduğum Aktivitələr</a></li>
+                    <li><a href="{% url 'accounts:friends_list' %}"><i class="fas fa-user-friends"></i> Dostlarım</a></li>
+                    <li><a href="{% url 'accounts:friend_requests' %}"><i class="fas fa-user-plus"></i> Dostluq Sorğuları</a></li>
                     <li><a href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt"></i> Çıxış</a></li>
                 </ul>
             {% else %}
@@ -1009,6 +1019,9 @@
                         <a class="nav-link" href="{% url 'activities:activities_list' %}">Aktivitələr</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:people_list' %}">İnsanlar</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'places:places_list' %}">Məkanlar</a>
                     </li>
                     <li class="nav-item">
@@ -1024,7 +1037,7 @@
                         <li class="nav-item me-3">
                             <a href="{% url 'activities:create_activity' %}" class="btn btn-success btn-sm create-activity-btn">
                                 <i class="fas fa-plus me-1"></i>
-                                Aktivitə Yarat
+                                Aktivite Yarat
                             </a>
                         </li>
                         <li class="nav-item dropdown">
@@ -1058,6 +1071,8 @@
                                 <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-user me-2"></i>Profil</a></li>
                                 <li><a class="dropdown-item" href="{% url 'accounts:my_activities' %}"><i class="fas fa-calendar-plus me-2"></i>Təşkil Etdiyim Aktivitələr</a></li>
                                 <li><a class="dropdown-item" href="{% url 'accounts:joined_activities' %}"><i class="fas fa-calendar-check me-2"></i>Qoşulduğum Aktivitələr</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:friends_list' %}"><i class="fas fa-user-friends me-2"></i>Dostlarım</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:friend_requests' %}"><i class="fas fa-user-plus me-2"></i>Dostluq Sorğuları</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Tənzimləmələr</a></li>
                                 <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i>Kömək</a></li>

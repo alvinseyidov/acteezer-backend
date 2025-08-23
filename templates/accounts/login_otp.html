@@ -1,0 +1,387 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}OTP Doğrulama - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.auth-card {
+    max-width: 650px;
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 0 1rem;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.auth-header::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 4px;
+    background: white;
+    border-radius: 2px;
+}
+
+.auth-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    backdrop-filter: blur(10px);
+}
+
+.auth-body {
+    padding: 2.5rem 2rem;
+}
+
+.otp-input-container {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 2rem 0;
+}
+
+.otp-input {
+    width: 50px;
+    height: 60px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.otp-input:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.otp-input.filled {
+    background: rgba(40, 167, 69, 0.1);
+    border-color: #28a745;
+}
+
+.phone-display {
+    background: rgba(40, 167, 69, 0.1);
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.phone-number {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #28a745;
+    margin-bottom: 0.5rem;
+}
+
+.auth-btn {
+    height: 60px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+}
+
+.auth-btn:active {
+    transform: translateY(0);
+}
+
+.auth-btn:disabled {
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
+}
+
+.auth-link {
+    color: #28a745;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.auth-link:hover {
+    color: #20c997;
+}
+
+.resend-section {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.timer {
+    font-weight: 600;
+    color: #28a745;
+}
+
+@media (max-width: 576px) {
+    .auth-container {
+        padding: 1rem 0;
+    }
+    
+    .auth-card {
+        margin: 0 0.5rem;
+    }
+    
+    .auth-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .otp-input {
+        width: 45px;
+        height: 55px;
+        font-size: 1.3rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-shield-alt fa-2x"></i>
+            </div>
+            <h2 class="mb-2">OTP Doğrulama</h2>
+            <p class="mb-0 opacity-90">Telefon nömrənizə göndərilən kodu daxil edin</p>
+        </div>
+        
+        <div class="auth-body">
+            <div class="phone-display">
+                <div class="phone-number">{{ phone }}</div>
+                <small class="text-muted">Bu nömrəyə OTP kodu göndərildi</small>
+            </div>
+            
+            <form method="post" id="otp-form">
+                {% csrf_token %}
+
+                
+                <div class="otp-input-container">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off">
+                </div>
+                
+                <input type="hidden" name="otp" id="otp-value">
+                
+                <button type="submit" class="btn auth-btn w-100 text-white">
+                    <i class="fas fa-sign-in-alt me-2"></i>
+                    Daxil ol
+                </button>
+            </form>
+            
+            <div class="resend-section">
+                <p class="text-muted mb-2">Kod almadınız?</p>
+                <button id="resend-btn" class="btn btn-link auth-link p-0" disabled>
+                    Yenidən göndər (<span class="timer" id="timer">60</span>s)
+                </button>
+            </div>
+            
+            <div class="text-center mt-3">
+                <a href="{% url 'accounts:login' %}" class="auth-link">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Geri
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const otpInputs = document.querySelectorAll('.otp-input');
+    const otpValue = document.getElementById('otp-value');
+    const form = document.getElementById('otp-form');
+    const resendBtn = document.getElementById('resend-btn');
+    const timerSpan = document.getElementById('timer');
+    
+    let timer = 60;
+    
+    // Focus first input
+    otpInputs[0].focus();
+    
+    // Handle OTP input
+    otpInputs.forEach((input, index) => {
+        input.addEventListener('input', function(e) {
+            const value = e.target.value;
+            
+            // Only allow numbers
+            if (!/^\d$/.test(value)) {
+                e.target.value = '';
+                return;
+            }
+            
+            // Update visual state
+            e.target.classList.add('filled');
+            
+            // Move to next input
+            if (value && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+            
+            // Check if all inputs are filled
+            updateOTPValue();
+        });
+        
+        input.addEventListener('keydown', function(e) {
+            // Handle backspace
+            if (e.key === 'Backspace') {
+                if (!e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                    otpInputs[index - 1].value = '';
+                    otpInputs[index - 1].classList.remove('filled');
+                } else {
+                    e.target.value = '';
+                    e.target.classList.remove('filled');
+                }
+                updateOTPValue();
+            }
+        });
+        
+        input.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedData = e.clipboardData.getData('text').replace(/\D/g, '');
+            
+            if (pastedData.length === 6) {
+                pastedData.split('').forEach((digit, i) => {
+                    if (i < otpInputs.length) {
+                        otpInputs[i].value = digit;
+                        otpInputs[i].classList.add('filled');
+                    }
+                });
+                updateOTPValue();
+            }
+        });
+    });
+    
+    function updateOTPValue() {
+        const otp = Array.from(otpInputs).map(input => input.value).join('');
+        otpValue.value = otp;
+        
+        // Auto submit when all 6 digits are entered
+        if (otp.length === 6) {
+            // Trigger the submit event instead of calling submit() directly
+            setTimeout(() => {
+                console.log('Auto-triggering submit event with OTP:', otp);
+                const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                form.dispatchEvent(submitEvent);
+            }, 500);
+        }
+    }
+    
+    // Countdown timer
+    const countdown = setInterval(() => {
+        timer--;
+        timerSpan.textContent = timer;
+        
+        if (timer <= 0) {
+            clearInterval(countdown);
+            resendBtn.disabled = false;
+            resendBtn.innerHTML = 'Yenidən göndər';
+        }
+    }, 1000);
+    
+    // Resend OTP
+    resendBtn.addEventListener('click', function() {
+        if (!this.disabled) {
+            // In a real app, send AJAX request to resend OTP
+            alert('Yeni OTP kodu göndərildi!');
+            
+            // Reset timer
+            timer = 60;
+            this.disabled = true;
+            this.innerHTML = 'Yenidən göndər (<span class="timer" id="timer">60</span>s)';
+            
+            // Restart countdown
+            const newCountdown = setInterval(() => {
+                timer--;
+                document.getElementById('timer').textContent = timer;
+                
+                if (timer <= 0) {
+                    clearInterval(newCountdown);
+                    resendBtn.disabled = false;
+                    resendBtn.innerHTML = 'Yenidən göndər';
+                }
+            }, 1000);
+        }
+    });
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        const otp = otpValue.value;
+        
+        console.log('Form submission triggered. OTP value:', otp);
+        console.log('Form data:', new FormData(form));
+        
+        if (otp.length !== 6) {
+            e.preventDefault();
+            alert('Zəhmət olmasa 6 rəqəmli OTP kodunu daxil edin.');
+            return;
+        }
+        
+        // Ensure OTP value is set before submission
+        otpValue.value = otp;
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Doğrulanır...';
+        
+        console.log('Form being submitted with OTP:', otpValue.value);
+        
+        // Re-enable button after 10 seconds if form hasn't redirected
+        setTimeout(() => {
+            if (submitBtn.disabled) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Daxil ol';
+            }
+        }, 10000);
+    });
+});
+</script>
+{% endblock %}

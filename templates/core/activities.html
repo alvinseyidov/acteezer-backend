@@ -33,23 +33,83 @@
                     
                     <!-- Filter Buttons -->
                     <div class="filter-buttons">
-                        <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fas fa-map-marker-alt me-2"></i>Rayon
-                        </button>
-                        <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fas fa-clock me-2"></i>Vaxt
-                        </button>
-                        <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fas fa-users me-2"></i>İştirakçı Sayı
-                        </button>
-                        <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fas fa-star me-2"></i>Reytinq
-                        </button>
+                        <!-- District Filter -->
+                        <div class="dropdown">
+                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown" id="districtFilter">
+                                <i class="fas fa-map-marker-alt me-2"></i>Rayon
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" data-district="">Bütün Rayonlar</a></li>
+                                <li><a class="dropdown-item" href="#" data-district="nizami">Nizami</a></li>
+                                <li><a class="dropdown-item" href="#" data-district="sabail">Sabail</a></li>
+                                <li><a class="dropdown-item" href="#" data-district="yasamal">Yasamal</a></li>
+                                <li><a class="dropdown-item" href="#" data-district="binagadi">Binəqədi</a></li>
+                                <li><a class="dropdown-item" href="#" data-district="khazar">Xəzər</a></li>
+                                <li><a class="dropdown-item" href="#" data-district="sabunchu">Sabunçu</a></li>
+                                <li><a class="dropdown-item" href="#" data-district="surakhani">Suraxanı</a></li>
+                                <li><a class="dropdown-item" href="#" data-district="khatai">Xətai</a></li>
+                                <li><a class="dropdown-item" href="#" data-district="narimanov">Nərimanov</a></li>
+                                <li><a class="dropdown-item" href="#" data-district="nasimi">Nəsimi</a></li>
+                                <li><a class="dropdown-item" href="#" data-district="pirallahi">Pirallahı</a></li>
+                                <li><a class="dropdown-item" href="#" data-district="other">Digər</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Time Filter -->
+                        <div class="dropdown">
+                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown" id="timeFilter">
+                                <i class="fas fa-clock me-2"></i>Vaxt
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" data-date="">Bütün Vaxtlar</a></li>
+                                <li><a class="dropdown-item" href="#" data-date="today">Bu gün</a></li>
+                                <li><a class="dropdown-item" href="#" data-date="tomorrow">Sabah</a></li>
+                                <li><a class="dropdown-item" href="#" data-date="week">Bu həftə</a></li>
+                                <li><a class="dropdown-item" href="#" data-date="upcoming">Gələcək</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Participants Filter -->
+                        <div class="dropdown">
+                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown" id="participantsFilter">
+                                <i class="fas fa-users me-2"></i>İştirakçı Sayı
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" data-participants="">Bütün Ölçülər</a></li>
+                                <li><a class="dropdown-item" href="#" data-participants="small">Kiçik (2-10)</a></li>
+                                <li><a class="dropdown-item" href="#" data-participants="medium">Orta (11-25)</a></li>
+                                <li><a class="dropdown-item" href="#" data-participants="large">Böyük (26-50)</a></li>
+                                <li><a class="dropdown-item" href="#" data-participants="xlarge">Çox Böyük (50+)</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Price Filter -->
+                        <div class="dropdown">
+                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown" id="priceFilter">
+                                <i class="fas fa-star me-2"></i>Qiymət
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" data-price="">Bütün Qiymətlər</a></li>
+                                <li><a class="dropdown-item" href="#" data-price="free">Pulsuz</a></li>
+                                <li><a class="dropdown-item" href="#" data-price="paid">Ödənişli</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Sort Section -->
                         <div class="sort-section">
                             <span class="sort-text">Tarixə görə sırala</span>
-                            <button class="sort-btn">
-                                <i class="fas fa-calendar-alt"></i>
-                            </button>
+                            <div class="dropdown">
+                                <button class="sort-btn dropdown-toggle" data-bs-toggle="dropdown" id="sortFilter">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" data-sort="featured">Tövsiyə edilən</a></li>
+                                    <li><a class="dropdown-item" href="#" data-sort="date">Tarixə görə</a></li>
+                                    <li><a class="dropdown-item" href="#" data-sort="newest">Ən yeni</a></li>
+                                    <li><a class="dropdown-item" href="#" data-sort="price_low">Ucuzdan bahaya</a></li>
+                                    <li><a class="dropdown-item" href="#" data-sort="price_high">Bahadan ucuza</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -683,4 +743,255 @@
     padding: 0.4rem 0.6rem;
 }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('.search-input');
+    
+    if (searchInput) {
+        // Handle Enter key press
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        // Handle search icon click if needed
+        const searchIcon = document.querySelector('.search-icon');
+        if (searchIcon) {
+            searchIcon.addEventListener('click', performSearch);
+            searchIcon.style.cursor = 'pointer';
+        }
+        
+        // Populate search input if there's a search parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchParam = urlParams.get('search');
+        if (searchParam) {
+            searchInput.value = searchParam;
+        }
+    }
+    
+    function performSearch() {
+        const searchTerm = searchInput.value.trim();
+        const currentUrl = new URL(window.location);
+        
+        if (searchTerm) {
+            currentUrl.searchParams.set('search', searchTerm);
+        } else {
+            currentUrl.searchParams.delete('search');
+        }
+        
+        // Navigate to the search results
+        window.location.href = currentUrl.toString();
+    }
+    
+    // Handle category tabs
+    const searchTabs = document.querySelectorAll('.search-tab');
+    searchTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active class from all tabs
+            searchTabs.forEach(t => t.classList.remove('active'));
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            const currentUrl = new URL(window.location);
+            const categoryText = this.textContent.trim();
+            
+            // Map category names to category types
+            const categoryMap = {
+                'Bütün Aktivitələr': '',
+                'İdman': 'sports',
+                'Mədəniyyət': 'culture',
+                'Təbiət': 'nature',
+                'Sənət': 'art',
+                'Yemək': 'food'
+            };
+            
+            const categoryType = categoryMap[categoryText];
+            if (categoryType) {
+                currentUrl.searchParams.set('category', categoryType);
+            } else {
+                currentUrl.searchParams.delete('category');
+            }
+            
+            // Navigate to filtered results
+            window.location.href = currentUrl.toString();
+        });
+    });
+    
+    // Set active tab based on URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryParam = urlParams.get('category');
+    if (categoryParam) {
+        const categoryMap = {
+            'sports': 'İdman',
+            'culture': 'Mədəniyyət',
+            'nature': 'Təbiət',
+            'art': 'Sənət',
+            'food': 'Yemək'
+        };
+        
+        const categoryName = categoryMap[categoryParam];
+        if (categoryName) {
+            searchTabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.trim() === categoryName) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+    }
+    
+    // Handle filter dropdowns
+    function applyFilter(filterType, filterValue) {
+        const currentUrl = new URL(window.location);
+        
+        if (filterValue) {
+            currentUrl.searchParams.set(filterType, filterValue);
+        } else {
+            currentUrl.searchParams.delete(filterType);
+        }
+        
+        // Navigate to filtered results
+        window.location.href = currentUrl.toString();
+    }
+    
+    // District filter
+    const districtItems = document.querySelectorAll('[data-district]');
+    districtItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const district = this.getAttribute('data-district');
+            applyFilter('district', district);
+        });
+    });
+    
+    // Time/Date filter
+    const dateItems = document.querySelectorAll('[data-date]');
+    dateItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const date = this.getAttribute('data-date');
+            applyFilter('date', date);
+        });
+    });
+    
+    // Participants filter
+    const participantItems = document.querySelectorAll('[data-participants]');
+    participantItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const participants = this.getAttribute('data-participants');
+            applyFilter('participants', participants);
+        });
+    });
+    
+    // Price filter
+    const priceItems = document.querySelectorAll('[data-price]');
+    priceItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const price = this.getAttribute('data-price');
+            applyFilter('price', price);
+        });
+    });
+    
+    // Sort filter
+    const sortItems = document.querySelectorAll('[data-sort]');
+    sortItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sort = this.getAttribute('data-sort');
+            applyFilter('sort', sort);
+        });
+    });
+    
+    // Update filter button text based on current URL parameters
+    function updateFilterButtonText() {
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Update district filter button
+        const districtParam = urlParams.get('district');
+        const districtButton = document.getElementById('districtFilter');
+        if (districtParam) {
+            const districtNames = {
+                'nizami': 'Nizami',
+                'sabail': 'Sabail',
+                'yasamal': 'Yasamal',
+                'binagadi': 'Binəqədi',
+                'khazar': 'Xəzər',
+                'sabunchu': 'Sabunçu',
+                'surakhani': 'Suraxanı',
+                'khatai': 'Xətai',
+                'narimanov': 'Nərimanov',
+                'nasimi': 'Nəsimi',
+                'pirallahi': 'Pirallahı',
+                'other': 'Digər'
+            };
+            const districtName = districtNames[districtParam] || districtParam;
+            districtButton.innerHTML = `<i class="fas fa-map-marker-alt me-2"></i>${districtName}`;
+        }
+        
+        // Update time filter button
+        const dateParam = urlParams.get('date');
+        const timeButton = document.getElementById('timeFilter');
+        if (dateParam) {
+            const dateNames = {
+                'today': 'Bu gün',
+                'tomorrow': 'Sabah',
+                'week': 'Bu həftə',
+                'upcoming': 'Gələcək'
+            };
+            const dateName = dateNames[dateParam] || dateParam;
+            timeButton.innerHTML = `<i class="fas fa-clock me-2"></i>${dateName}`;
+        }
+        
+        // Update participants filter button
+        const participantsParam = urlParams.get('participants');
+        const participantsButton = document.getElementById('participantsFilter');
+        if (participantsParam) {
+            const participantNames = {
+                'small': 'Kiçik (2-10)',
+                'medium': 'Orta (11-25)',
+                'large': 'Böyük (26-50)',
+                'xlarge': 'Çox Böyük (50+)'
+            };
+            const participantName = participantNames[participantsParam] || participantsParam;
+            participantsButton.innerHTML = `<i class="fas fa-users me-2"></i>${participantName}`;
+        }
+        
+        // Update price filter button
+        const priceParam = urlParams.get('price');
+        const priceButton = document.getElementById('priceFilter');
+        if (priceParam) {
+            const priceNames = {
+                'free': 'Pulsuz',
+                'paid': 'Ödənişli'
+            };
+            const priceName = priceNames[priceParam] || priceParam;
+            priceButton.innerHTML = `<i class="fas fa-star me-2"></i>${priceName}`;
+        }
+        
+        // Update sort button (keeping the text but could show selected sort)
+        const sortParam = urlParams.get('sort');
+        if (sortParam && sortParam !== 'featured') {
+            const sortButton = document.querySelector('.sort-section .sort-text');
+            const sortNames = {
+                'date': 'Tarixə görə',
+                'newest': 'Ən yeni',
+                'price_low': 'Ucuzdan bahaya',
+                'price_high': 'Bahadan ucuza',
+                'featured': 'Tövsiyə edilən'
+            };
+            const sortName = sortNames[sortParam] || 'Tarixə görə sırala';
+            sortButton.textContent = sortName;
+        }
+    }
+    
+    // Initialize filter button text on page load
+    updateFilterButtonText();
+});
+</script>
 {% endblock %}

@@ -451,6 +451,8 @@ let selectedLatitude = null;
 let selectedLongitude = null;
 
 function selectQuickLocation(cityName, lat, lng) {
+    console.log('🗺️ selectQuickLocation called:', {cityName, lat, lng});
+    
     // Clear previous selections
     document.querySelectorAll('.quick-location').forEach(loc => {
         loc.classList.remove('selected');
@@ -467,6 +469,12 @@ function selectQuickLocation(cityName, lat, lng) {
     selectedLatitude = lat;
     selectedLongitude = lng;
     
+    console.log('📍 Form fields updated:', {
+        city: document.getElementById('city').value,
+        latitude: document.getElementById('latitude').value,
+        longitude: document.getElementById('longitude').value
+    });
+    
     // Show selected location
     const selectedDiv = document.getElementById('location-selected');
     const selectedText = document.getElementById('selected-location');
@@ -475,6 +483,7 @@ function selectQuickLocation(cityName, lat, lng) {
     
     // Enable submit button
     document.getElementById('submit-btn').disabled = false;
+    console.log('✅ Submit button enabled');
     
     // Update map placeholder
     const mapContainer = document.getElementById('map-container');
@@ -493,28 +502,37 @@ function validateForm() {
     const lng = document.getElementById('longitude').value;
     const submitBtn = document.getElementById('submit-btn');
     
+    console.log('🔍 validateForm called:', {city, lat, lng});
+    
     if (city && lat && lng) {
         submitBtn.disabled = false;
+        console.log('✅ Form validation passed - button enabled');
     } else {
         submitBtn.disabled = true;
+        console.log('❌ Form validation failed - button disabled');
     }
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Page loaded - initializing location registration');
+    
     const cityInput = document.getElementById('city');
     
     // Validate form when city input changes
     cityInput.addEventListener('input', function() {
         const city = this.value.trim();
+        console.log('⌨️ City input changed:', city);
         
         if (city && !selectedLatitude) {
             // If user types a city manually, we need coordinates
             // For simplicity, we'll use Baku coordinates as default
+            console.log('🏙️ Setting default Baku coordinates for manual city input');
             document.getElementById('latitude').value = 40.4093;
             document.getElementById('longitude').value = 49.8671;
             validateForm();
         } else if (!city) {
+            console.log('🧹 Clearing coordinates and location selection');
             document.getElementById('latitude').value = '';
             document.getElementById('longitude').value = '';
             document.getElementById('location-selected').style.display = 'none';
@@ -524,29 +542,125 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Form submission
     document.getElementById('location-form').addEventListener('submit', function(e) {
+        console.log('📋 Form submission started');
+        
+        const form = this;
+        console.log('📋 Form element:', form);
+        console.log('📋 Form action:', form.action || 'No action specified (current URL)');
+        console.log('📋 Form method:', form.method);
+        
         const city = document.getElementById('city').value.trim();
         const lat = document.getElementById('latitude').value;
         const lng = document.getElementById('longitude').value;
+        const address = document.getElementById('address').value.trim();
+        
+        console.log('📊 Form data:', {city, lat, lng, address});
         
         if (!city || !lat || !lng) {
+            console.log('❌ Form validation failed on submit');
             e.preventDefault();
             alert('Zəhmət olmasa şəhər seçin və ya məkan koordinatlarını təyin edin.');
             return;
         }
         
+        console.log('✅ Form validation passed - submitting');
+        
         const submitBtn = e.target.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
+        console.log('🔄 Changing button to loading state');
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Qeydiyyat tamamlanır...';
         submitBtn.disabled = true;
         
-        // Recovery mechanism - restore button after 10 seconds if still disabled
+        // Check if CSRF token exists
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+        console.log('🔐 CSRF token present:', !!csrfToken);
+        if (csrfToken) {
+            console.log('🔐 CSRF token value:', csrfToken.value.substring(0, 10) + '...');
+        }
+        
+        // Add a beforeunload listener to detect if the form is actually submitting
+        const beforeUnloadHandler = function(event) {
+            console.log('🔄 Page unloading - form submission in progress');
+        };
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+        
+        // Alternative: Use fetch to submit the form with better error handling
+        console.log('🔄 Preventing default form submission to use fetch instead');
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        console.log('📦 FormData created');
+        
+        // Log all form data
+        for (let [key, value] of formData.entries()) {
+            console.log(`📊 FormData[${key}]:`, value);
+        }
+        
+        console.log('🌐 Starting fetch request to:', form.action || window.location.href);
+        
+        fetch(form.action || window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => {
+            console.log('📡 Fetch response received:', response.status, response.statusText);
+            console.log('📡 Response headers:', [...response.headers.entries()]);
+            
+            if (response.redirected) {
+                console.log('🔄 Response was redirected to:', response.url);
+                window.location.href = response.url;
+                return;
+            }
+            
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+        })
+        .then(html => {
+            if (html) {
+                console.log('📄 Response HTML received, length:', html.length);
+                // If we get HTML back instead of a redirect, there might be form errors
+                if (html.includes('location_registration')) {
+                    console.log('⚠️ Received location form again - likely validation errors');
+                    document.body.innerHTML = html;
+                    // Re-initialize the form
+                    location.reload();
+                } else {
+                    console.log('✅ Unexpected HTML response - reloading page');
+                    location.reload();
+                }
+            }
+        })
+        .catch(error => {
+            console.error('❌ Fetch error:', error);
+            alert('Xəta baş verdi: ' + error.message);
+            
+            // Restore button
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        })
+        .finally(() => {
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+            console.log('🏁 Fetch request completed');
+        });
+        
+        console.log('⏰ Setting 30-second recovery timeout for fetch');
+        // Recovery mechanism - restore button after 30 seconds if still disabled
         setTimeout(() => {
             if (submitBtn.disabled) {
+                console.log('⚠️ Fetch submission took too long - restoring button');
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             }
-        }, 10000);
+        }, 30000);
     });
+    
+    console.log('✅ All event listeners registered');
 });
 </script>
 {% endblock %}

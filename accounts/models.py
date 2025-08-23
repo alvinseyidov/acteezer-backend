@@ -173,8 +173,15 @@ class UserImage(models.Model):
 
 class OTPVerification(models.Model):
     """Model to track OTP verification attempts"""
+    PURPOSE_CHOICES = [
+        ('registration', 'Registration'),
+        ('login', 'Login'),
+        ('password_reset', 'Password Reset'),
+    ]
+    
     phone = models.CharField(max_length=17)
     otp_code = models.CharField(max_length=6)
+    purpose = models.CharField(max_length=15, choices=PURPOSE_CHOICES, default='registration')
     created_at = models.DateTimeField(auto_now_add=True)
     is_verified = models.BooleanField(default=False)
     attempts = models.IntegerField(default=0)
@@ -254,6 +261,72 @@ class BlogPostTag(models.Model):
     
     class Meta:
         unique_together = ('post', 'tag')
+
+
+class Friendship(models.Model):
+    """Model for friendship relationships between users"""
+    FRIENDSHIP_STATUS_CHOICES = [
+        ('pending', 'Gözləyir'),
+        ('accepted', 'Qəbul edildi'),
+        ('rejected', 'Rədd edildi'),
+        ('blocked', 'Bloklandı'),
+    ]
+    
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_friend_requests')
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_friend_requests')
+    status = models.CharField(max_length=10, choices=FRIENDSHIP_STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ('from_user', 'to_user')
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.from_user.get_full_name()} → {self.to_user.get_full_name()} ({self.get_status_display()})"
+    
+    @classmethod
+    def are_friends(cls, user1, user2):
+        """Check if two users are friends"""
+        return cls.objects.filter(
+            models.Q(from_user=user1, to_user=user2, status='accepted') |
+            models.Q(from_user=user2, to_user=user1, status='accepted')
+        ).exists()
+    
+    @classmethod
+    def get_friendship_status(cls, user1, user2):
+        """Get friendship status between two users"""
+        friendship = cls.objects.filter(
+            models.Q(from_user=user1, to_user=user2) |
+            models.Q(from_user=user2, to_user=user1)
+        ).first()
+        
+        if not friendship:
+            return None
+        
+        # Return status and who initiated
+        return {
+            'status': friendship.status,
+            'initiated_by': friendship.from_user,
+            'friendship': friendship
+        }
+    
+    @classmethod
+    def get_friends(cls, user):
+        """Get all friends of a user"""
+        friend_ids = cls.objects.filter(
+            models.Q(from_user=user, status='accepted') |
+            models.Q(to_user=user, status='accepted')
+        ).values_list('from_user_id', 'to_user_id')
+        
+        all_friend_ids = set()
+        for from_id, to_id in friend_ids:
+            if from_id == user.id:
+                all_friend_ids.add(to_id)
+            else:
+                all_friend_ids.add(from_id)
+        
+        return User.objects.filter(id__in=all_friend_ids)
 
 
 class Newsletter(models.Model):

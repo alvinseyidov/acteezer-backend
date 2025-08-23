@@ -1,0 +1,416 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dostluq Sorğuları - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.requests-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.requests-header {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.section-header {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.request-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.request-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.request-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.request-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.request-info {
+    flex: 1;
+}
+
+.request-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+}
+
+.request-details {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.request-time {
+    color: #999;
+    font-size: 0.8rem;
+}
+
+.request-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.request-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.accept-btn {
+    background: #28a745;
+    color: white;
+}
+
+.accept-btn:hover {
+    background: #218838;
+    transform: translateY(-1px);
+}
+
+.reject-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.reject-btn:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+.pending-btn {
+    background: #ffc107;
+    color: #000;
+    cursor: not-allowed;
+}
+
+.view-profile-btn {
+    background: #17a2b8;
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.view-profile-btn:hover {
+    background: #138496;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    color: #e9ecef;
+    margin-bottom: 1rem;
+}
+
+.empty-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.empty-message {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .request-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .request-actions {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .request-btn,
+    .view-profile-btn {
+        flex: 1;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="requests-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="requests-header">
+            <h2 class="mb-3">
+                <i class="fas fa-user-plus text-primary me-2"></i>
+                Dostluq Sorğuları
+            </h2>
+            <p class="text-muted mb-0">
+                Gələn və göndərilən dostluq sorğularınızı idarə edin
+            </p>
+        </div>
+        
+        <!-- Received Requests -->
+        <div class="section-header">
+            <h4 class="mb-0">
+                <i class="fas fa-inbox text-success me-2"></i>
+                Gələn Sorğular
+                {% if received_requests %}
+                    <span class="badge bg-success ms-2">{{ received_requests|length }}</span>
+                {% endif %}
+            </h4>
+        </div>
+        
+        {% if received_requests %}
+            <div class="requests-section">
+                {% for request in received_requests %}
+                    <div class="request-card">
+                        <div class="request-content">
+                            <div class="request-avatar">
+                                {% if request.from_user.images.first %}
+                                    <img src="{{ request.from_user.images.first.image.url }}" alt="{{ request.from_user.get_full_name }}" class="request-avatar">
+                                {% else %}
+                                    <i class="fas fa-user fa-lg" style="color: #6c757d;"></i>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="request-info">
+                                <h5 class="request-name">{{ request.from_user.get_full_name }}</h5>
+                                <p class="request-details">
+                                    {% if request.from_user.city %}
+                                        <i class="fas fa-map-marker-alt me-1"></i>{{ request.from_user.city }}
+                                    {% endif %}
+                                    {% if request.from_user.age %}
+                                        <span class="ms-2">{{ request.from_user.age }} yaş</span>
+                                    {% endif %}
+                                </p>
+                                <p class="request-time">{{ request.created_at|timesince }} əvvəl</p>
+                            </div>
+                            
+                            <div class="request-actions">
+                                <button class="request-btn accept-btn" onclick="respondFriendRequest({{ request.id }}, 'accept', this)">
+                                    <i class="fas fa-check me-1"></i>
+                                    Qəbul et
+                                </button>
+                                <button class="request-btn reject-btn" onclick="respondFriendRequest({{ request.id }}, 'reject', this)">
+                                    <i class="fas fa-times me-1"></i>
+                                    Rədd et
+                                </button>
+                                <a href="#" class="view-profile-btn">
+                                    <i class="fas fa-eye me-1"></i>
+                                    Profil
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h4 class="empty-title">Gələn sorğu yoxdur</h4>
+                <p class="empty-message">Hal-hazırda sizə heç kim dostluq sorğusu göndərməyib</p>
+            </div>
+        {% endif %}
+        
+        <!-- Sent Requests -->
+        <div class="section-header mt-4">
+            <h4 class="mb-0">
+                <i class="fas fa-paper-plane text-warning me-2"></i>
+                Göndərilən Sorğular
+                {% if sent_requests %}
+                    <span class="badge bg-warning ms-2">{{ sent_requests|length }}</span>
+                {% endif %}
+            </h4>
+        </div>
+        
+        {% if sent_requests %}
+            <div class="requests-section">
+                {% for request in sent_requests %}
+                    <div class="request-card">
+                        <div class="request-content">
+                            <div class="request-avatar">
+                                {% if request.to_user.images.first %}
+                                    <img src="{{ request.to_user.images.first.image.url }}" alt="{{ request.to_user.get_full_name }}" class="request-avatar">
+                                {% else %}
+                                    <i class="fas fa-user fa-lg" style="color: #6c757d;"></i>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="request-info">
+                                <h5 class="request-name">{{ request.to_user.get_full_name }}</h5>
+                                <p class="request-details">
+                                    {% if request.to_user.city %}
+                                        <i class="fas fa-map-marker-alt me-1"></i>{{ request.to_user.city }}
+                                    {% endif %}
+                                    {% if request.to_user.age %}
+                                        <span class="ms-2">{{ request.to_user.age }} yaş</span>
+                                    {% endif %}
+                                </p>
+                                <p class="request-time">{{ request.created_at|timesince }} əvvəl göndərildi</p>
+                            </div>
+                            
+                            <div class="request-actions">
+                                <button class="request-btn pending-btn" disabled>
+                                    <i class="fas fa-clock me-1"></i>
+                                    Gözləyir
+                                </button>
+                                <a href="#" class="view-profile-btn">
+                                    <i class="fas fa-eye me-1"></i>
+                                    Profil
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <h4 class="empty-title">Göndərilən sorğu yoxdur</h4>
+                <p class="empty-message">Hələ heç kimə dostluq sorğusu göndərməmisiniz</p>
+                <a href="{% url 'accounts:people_list' %}" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>
+                    İnsanları Kəşf Et
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function respondFriendRequest(friendshipId, action, button) {
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Emal edilir...';
+    button.disabled = true;
+    
+    try {
+        const response = await fetch('{% url "accounts:respond_friend_request" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                friendship_id: friendshipId,
+                action: action
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Remove the request card with animation
+            const card = button.closest('.request-card');
+            card.style.transition = 'all 0.3s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(-100px)';
+            
+            setTimeout(() => {
+                card.remove();
+                
+                // Check if there are any remaining cards
+                const remainingCards = document.querySelectorAll('.request-card');
+                if (remainingCards.length === 0) {
+                    location.reload(); // Reload to show empty state
+                }
+            }, 300);
+            
+            showMessage(data.message, 'success');
+        } else {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            showMessage(data.message, 'error');
+        }
+    } catch (error) {
+        button.innerHTML = originalText;
+        button.disabled = false;
+        showMessage('Bir xəta baş verdi. Yenidən cəhd edin.', 'error');
+    }
+}
+
+function showMessage(message, type) {
+    // Create message element
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+    messageDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    messageDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (messageDiv.parentNode) {
+            messageDiv.remove();
+        }
+    }, 5000);
+}
+</script>
+
+<!-- Add CSRF token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}
+
+

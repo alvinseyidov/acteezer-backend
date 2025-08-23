@@ -9,7 +9,7 @@ from datetime import timedelta
 import random
 import json
 
-from .models import User, Language, Interest, UserImage, OTPVerification, Newsletter
+from .models import User, Language, Interest, UserImage, OTPVerification, Newsletter, Friendship
 
 
 def home(request):
@@ -136,7 +136,8 @@ def phone_registration(request):
         # Create OTP verification record
         OTPVerification.objects.create(
             phone=phone,
-            otp_code=otp
+            otp_code=otp,
+            purpose='registration'
         )
         
         # In a real app, send SMS here
@@ -174,7 +175,7 @@ def otp_verification(request):
                 
                 # Update OTP verification record
                 otp_verification = OTPVerification.objects.filter(
-                    phone=phone, otp_code=otp
+                    phone=phone, otp_code=otp, purpose='registration'
                 ).first()
                 if otp_verification:
                     otp_verification.is_verified = True
@@ -357,28 +358,52 @@ def interests_registration(request):
 @login_required
 def location_registration(request):
     """Step 9: Location and map pin"""
+    print(f"🔍 location_registration called for user: {request.user.id} ({request.user.phone})")
+    print(f"📊 User registration step: {request.user.registration_step}")
+    
     if request.user.registration_step < 7:
+        print(f"❌ User registration step {request.user.registration_step} < 7, redirecting to interests")
         return redirect('accounts:interests_registration')
     
     if request.method == 'POST':
+        print("📋 POST request received")
         city = request.POST.get('city')
         address = request.POST.get('address')
         latitude = request.POST.get('latitude')
         longitude = request.POST.get('longitude')
         
+        print(f"📊 POST data received: city='{city}', address='{address}', latitude='{latitude}', longitude='{longitude}'")
+        
         if city and latitude and longitude:
-            request.user.city = city
-            request.user.address = address
-            request.user.latitude = latitude
-            request.user.longitude = longitude
-            request.user.registration_step = 8
-            request.user.is_registration_complete = True
-            request.user.save()
-            
-            messages.success(request, 'Registration completed successfully!')
-            return redirect('accounts:registration_complete')
+            print("✅ All required fields present, updating user")
+            try:
+                request.user.city = city
+                request.user.address = address
+                request.user.latitude = latitude
+                request.user.longitude = longitude
+                request.user.registration_step = 8
+                request.user.is_registration_complete = True
+                request.user.save()
+                
+                print(f"✅ User updated successfully: {request.user.city}, {request.user.latitude}, {request.user.longitude}")
+                print(f"🎉 Registration complete: {request.user.is_registration_complete}")
+                
+                messages.success(request, 'Registration completed successfully!')
+                print("🔄 Redirecting to registration_complete")
+                return redirect('accounts:registration_complete')
+            except Exception as e:
+                print(f"❌ Error saving user: {e}")
+                messages.error(request, f'Error saving registration: {e}')
         else:
+            print("❌ Missing required fields")
+            missing_fields = []
+            if not city: missing_fields.append('city')
+            if not latitude: missing_fields.append('latitude')
+            if not longitude: missing_fields.append('longitude')
+            print(f"Missing fields: {missing_fields}")
             messages.error(request, 'Please select your city and pin location on the map.')
+    else:
+        print("📄 GET request - rendering form")
     
     return render(request, 'accounts/location_registration.html')
 
@@ -457,10 +482,10 @@ def joined_activities(request):
     return render(request, 'accounts/joined_activities.html', context)
 
 def user_login(request):
-    """Login page"""
+    """Login page - Step 1: Phone number entry"""
     if request.user.is_authenticated:
         if request.user.is_registration_complete:
-            return redirect('accounts:registration_complete')
+            return redirect('home')
         else:
             # Redirect to appropriate registration step
             step_urls = [
@@ -473,29 +498,110 @@ def user_login(request):
     
     if request.method == 'POST':
         phone = request.POST.get('phone')
-        password = request.POST.get('password')
         
-        if phone and password:
-            user = authenticate(request, username=phone, password=password)
-            if user:
-                login(request, user)
-                if user.is_registration_complete:
-                    return redirect('accounts:registration_complete')
-                else:
-                    # Redirect to appropriate registration step
-                    step_urls = [
-                        'phone_registration', 'otp_verification', 'full_name_registration',
-                        'languages_registration', 'birthday_registration', 'images_registration',
-                        'bio_registration', 'interests_registration', 'location_registration'
-                    ]
-                    if user.registration_step < len(step_urls):
-                        return redirect(step_urls[user.registration_step])
-            else:
-                messages.error(request, 'Invalid phone number or password.')
+        if phone:
+            try:
+                # Check if user exists with this phone number
+                user = User.objects.get(phone=phone)
+                
+                # Generate OTP for login
+                otp = str(random.randint(100000, 999999))
+                
+                # Save OTP
+                user.otp_code = otp
+                user.otp_created_at = timezone.now()
+                user.save()
+                
+                # Create OTP verification record for login
+                OTPVerification.objects.create(
+                    phone=phone,
+                    otp_code=otp,
+                    purpose='login'
+                )
+                
+                # In a real app, send SMS here
+                # For development, we'll just show the OTP
+                messages.info(request, f'OTP sent to your phone! For testing: {otp}')
+                
+                # Store phone in session for OTP verification
+                request.session['login_phone'] = phone
+                return redirect('accounts:login_otp_verification')
+                
+            except User.DoesNotExist:
+                messages.error(request, 'Bu telefon nömrəsi ilə qeydiyyat tapılmadı. Zəhmət olmasa qeydiyyatdan keçin.')
         else:
-            messages.error(request, 'Please enter both phone and password.')
+            messages.error(request, 'Zəhmət olmasa telefon nömrənizi daxil edin.')
     
     return render(request, 'accounts/login.html')
+
+
+def login_otp_verification(request):
+    """Login OTP verification - Step 2: OTP verification"""
+    phone = request.session.get('login_phone')
+    if not phone:
+        messages.error(request, 'OTP sorğusu vaxtı keçib. Yenidən cəhd edin.')
+        return redirect('accounts:login')
+    
+    if request.method == 'POST':
+        print(f"[DEBUG] POST request received. POST data: {request.POST}")
+        print(f"[DEBUG] CSRF token: {request.POST.get('csrfmiddlewaretoken', 'NOT FOUND')}")
+        otp = request.POST.get('otp')
+        print(f"[DEBUG] OTP received: {otp}")
+        
+        if otp:
+            try:
+                user = User.objects.get(phone=phone)
+                
+                # Check if OTP is valid and not expired (5 minutes)
+                if (user.otp_code == otp and 
+                    user.otp_created_at and 
+                    timezone.now() - user.otp_created_at < timedelta(minutes=5)):
+                    
+                    # Clear OTP
+                    user.otp_code = None
+                    user.otp_created_at = None
+                    user.save()
+                    
+                    # Update OTP verification record
+                    otp_verification = OTPVerification.objects.filter(
+                        phone=phone, otp_code=otp, purpose='login'
+                    ).first()
+                    if otp_verification:
+                        otp_verification.is_verified = True
+                        otp_verification.save()
+                    
+                    # Login user
+                    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                    
+                    # Clear session data
+                    if 'login_phone' in request.session:
+                        del request.session['login_phone']
+                    
+                    messages.success(request, 'Uğurla daxil oldunuz!')
+                    
+                    # Redirect based on registration status
+                    if user.is_registration_complete:
+                        return redirect('home')
+                    else:
+                        # Redirect to appropriate registration step
+                        step_urls = [
+                            'accounts:phone_registration', 'accounts:otp_verification', 'accounts:full_name_registration',
+                            'accounts:languages_registration', 'accounts:birthday_registration', 'accounts:images_registration',
+                            'accounts:bio_registration', 'accounts:interests_registration', 'accounts:location_registration'
+                        ]
+                        if user.registration_step < len(step_urls):
+                            return redirect(step_urls[user.registration_step])
+                        return redirect('accounts:registration_complete')
+                else:
+                    messages.error(request, 'Yanlış və ya vaxtı keçmiş OTP kodu.')
+            
+            except User.DoesNotExist:
+                messages.error(request, 'İstifadəçi tapılmadı.')
+                return redirect('accounts:login')
+        else:
+            messages.error(request, 'Zəhmət olmasa OTP kodunu daxil edin.')
+    
+    return render(request, 'accounts/login_otp.html', {'phone': phone})
 
 
 def user_logout(request):
@@ -556,104 +662,134 @@ def newsletter_subscribe(request):
         'message': 'Yanlış sorğu metodu.'
     })
 
-@login_required
-def joined_activities(request):
-    """User's joined activities"""
-    from activities.models import ActivityParticipant
+
+def people_list(request):
+    """People listing page with search functionality"""
+    query = request.GET.get('q', '').strip()
+    city_filter = request.GET.get('city', '')
+    interest_filter = request.GET.get('interest', '')
+    age_min = request.GET.get('age_min', '')
+    age_max = request.GET.get('age_max', '')
     
-    participations = ActivityParticipant.objects.filter(
-        user=request.user, 
-        status='approved'
-    ).select_related('activity').order_by('-join_requested_at')
+    # Base queryset - exclude current user and get completed registrations only
+    users = User.objects.filter(
+        is_registration_complete=True,
+        is_active=True
+    ).exclude(id=request.user.id if request.user.is_authenticated else None).select_related().prefetch_related('languages', 'interests', 'images')
+    
+    # Search by name or bio
+    if query:
+        from django.db.models import Q
+        users = users.filter(
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(bio__icontains=query)
+        )
+    
+    # Filter by city
+    if city_filter:
+        users = users.filter(city__icontains=city_filter)
+    
+    # Filter by interest
+    if interest_filter:
+        users = users.filter(interests__id=interest_filter)
+    
+    # Filter by age range
+    if age_min or age_max:
+        from datetime import date
+        today = date.today()
+        
+        if age_min:
+            try:
+                min_birth_year = today.year - int(age_min)
+                users = users.filter(birthday__year__lte=min_birth_year)
+            except ValueError:
+                pass
+        
+        if age_max:
+            try:
+                max_birth_year = today.year - int(age_max)
+                users = users.filter(birthday__year__gte=max_birth_year)
+            except ValueError:
+                pass
+    
+    # Get friendship statuses for current user
+    if request.user.is_authenticated:
+        # Add friendship status to each user object
+        for user_obj in users:
+            user_obj.friendship_status = Friendship.get_friendship_status(request.user, user_obj)
+    
+    # Order by latest joined
+    users = users.order_by('-created_at')
+    
+    # Pagination
+    from django.core.paginator import Paginator
+    paginator = Paginator(users, 12)  # 12 users per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Get all cities and interests for filters
+    cities = User.objects.filter(
+        is_registration_complete=True,
+        city__isnull=False
+    ).exclude(city='').values_list('city', flat=True).distinct().order_by('city')
+    
+    interests = Interest.objects.all().order_by('name')
     
     context = {
-        'participations': participations,
-        'page_title': 'Qoşulduğum Aktivitələr'
+        'page_obj': page_obj,
+        'cities': cities,
+        'interests': interests,
+        'query': query,
+        'city_filter': city_filter,
+        'interest_filter': interest_filter,
+        'age_min': age_min,
+        'age_max': age_max,
     }
-    return render(request, 'accounts/joined_activities.html', context)
-
-def user_login(request):
-    """Login page"""
-    if request.user.is_authenticated:
-        if request.user.is_registration_complete:
-            return redirect('accounts:registration_complete')
-        else:
-            # Redirect to appropriate registration step
-            step_urls = [
-                'accounts:phone_registration', 'accounts:otp_verification', 'accounts:full_name_registration',
-                'accounts:languages_registration', 'accounts:birthday_registration', 'accounts:images_registration',
-                'accounts:bio_registration', 'accounts:interests_registration', 'accounts:location_registration'
-            ]
-            if request.user.registration_step < len(step_urls):
-                return redirect(step_urls[request.user.registration_step])
     
-    if request.method == 'POST':
-        phone = request.POST.get('phone')
-        password = request.POST.get('password')
-        
-        if phone and password:
-            user = authenticate(request, username=phone, password=password)
-            if user:
-                login(request, user)
-                if user.is_registration_complete:
-                    return redirect('accounts:registration_complete')
-                else:
-                    # Redirect to appropriate registration step
-                    step_urls = [
-                        'phone_registration', 'otp_verification', 'full_name_registration',
-                        'languages_registration', 'birthday_registration', 'images_registration',
-                        'bio_registration', 'interests_registration', 'location_registration'
-                    ]
-                    if user.registration_step < len(step_urls):
-                        return redirect(step_urls[user.registration_step])
-            else:
-                messages.error(request, 'Invalid phone number or password.')
-        else:
-            messages.error(request, 'Please enter both phone and password.')
-    
-    return render(request, 'accounts/login.html')
+    return render(request, 'accounts/people_list.html', context)
 
 
-def user_logout(request):
-    """Logout user"""
-    logout(request)
-    messages.success(request, 'Logged out successfully!')
-    return redirect('home')
-
-
-@csrf_exempt
-def newsletter_subscribe(request):
-    """Handle newsletter subscription"""
+@login_required
+def send_friend_request(request):
+    """Send a friend request via AJAX"""
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            email = data.get('email', '').strip().lower()
+            user_id = data.get('user_id')
             
-            if not email:
+            if not user_id:
                 return JsonResponse({
                     'success': False,
-                    'message': 'Email ünvanı tələb olunur.'
+                    'message': 'İstifadəçi ID-si tələb olunur.'
                 })
             
-            # Check if email is already subscribed
-            if Newsletter.objects.filter(email=email).exists():
+            try:
+                to_user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
                 return JsonResponse({
                     'success': False,
-                    'message': 'Bu email ünvanı artıq abunəlik siyahısındadır.'
+                    'message': 'İstifadəçi tapılmadı.'
                 })
             
-            # Check if user is logged in and link the subscription
-            user = request.user if request.user.is_authenticated else None
+            # Check if users are already friends or have pending request
+            existing_status = Friendship.get_friendship_status(request.user, to_user)
+            if existing_status:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Artıq dostluq sorğusu mövcuddur.'
+                })
             
-            # Create newsletter subscription
-            newsletter = Newsletter.objects.create(
-                email=email,
-                user=user
+            # Create friend request
+            friendship = Friendship.objects.create(
+                from_user=request.user,
+                to_user=to_user,
+                status='pending'
             )
             
             return JsonResponse({
                 'success': True,
-                'message': 'Təbriklər! Xəbər bülleteni üçün uğurla abunə oldunuz.'
+                'message': 'Dostluq sorğusu göndərildi!'
             })
             
         except json.JSONDecodeError:
@@ -664,10 +800,103 @@ def newsletter_subscribe(request):
         except Exception as e:
             return JsonResponse({
                 'success': False,
-                'message': 'Bir xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.'
+                'message': 'Bir xəta baş verdi.'
             })
     
     return JsonResponse({
         'success': False,
         'message': 'Yanlış sorğu metodu.'
     })
+
+
+@login_required
+def respond_friend_request(request):
+    """Accept or reject a friend request via AJAX"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            friendship_id = data.get('friendship_id')
+            action = data.get('action')  # 'accept' or 'reject'
+            
+            if not friendship_id or action not in ['accept', 'reject']:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Yanlış parametrlər.'
+                })
+            
+            try:
+                friendship = Friendship.objects.get(
+                    id=friendship_id,
+                    to_user=request.user,
+                    status='pending'
+                )
+            except Friendship.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Dostluq sorğusu tapılmadı.'
+                })
+            
+            if action == 'accept':
+                friendship.status = 'accepted'
+                message = 'Dostluq sorğusu qəbul edildi!'
+            else:
+                friendship.status = 'rejected'
+                message = 'Dostluq sorğusu rədd edildi.'
+            
+            friendship.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': message
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'success': False,
+                'message': 'Yanlış məlumat formatı.'
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': 'Bir xəta baş verdi.'
+            })
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'Yanlış sorğu metodu.'
+    })
+
+
+@login_required
+def friend_requests(request):
+    """View pending friend requests"""
+    # Received friend requests
+    received_requests = Friendship.objects.filter(
+        to_user=request.user,
+        status='pending'
+    ).select_related('from_user').prefetch_related('from_user__images', 'from_user__interests')
+    
+    # Sent friend requests
+    sent_requests = Friendship.objects.filter(
+        from_user=request.user,
+        status='pending'
+    ).select_related('to_user').prefetch_related('to_user__images', 'to_user__interests')
+    
+    context = {
+        'received_requests': received_requests,
+        'sent_requests': sent_requests,
+    }
+    
+    return render(request, 'accounts/friend_requests.html', context)
+
+
+@login_required
+def friends_list(request):
+    """View user's friends list"""
+    friends = Friendship.get_friends(request.user).prefetch_related('images', 'interests')
+    
+    context = {
+        'friends': friends,
+    }
+    
+    return render(request, 'accounts/friends_list.html', context)

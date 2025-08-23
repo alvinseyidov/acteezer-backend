@@ -270,6 +270,44 @@ select[multiple] option:active {
     background: rgba(40, 167, 69, 0.2);
 }
 
+/* Hide the annoying validation messages */
+.invalid-feedback,
+input:invalid + .invalid-feedback,
+input:invalid ~ .invalid-feedback,
+.was-validated input:invalid ~ .invalid-feedback,
+.was-validated .form-control:invalid ~ .invalid-feedback {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+/* Hide browser validation tooltips */
+input:invalid,
+input[type="number"]:invalid,
+input[type="date"]:invalid,
+input[type="time"]:invalid {
+    box-shadow: none !important;
+}
+
+/* Prevent browser validation styles */
+input:invalid {
+    border-color: #e9ecef !important;
+}
+
+/* Hide any element containing the specific validation message */
+*[class*="invalid"]:contains("You must be between"),
+*[class*="feedback"]:contains("You must be between"),
+*[class*="error"]:contains("You must be between"),
+div:contains("You must be between 16 and 100 years old"),
+span:contains("You must be between 16 and 100 years old"),
+small:contains("You must be between 16 and 100 years old") {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
 .form-check-inline {
     margin-right: 1.5rem;
     margin-bottom: 0.5rem;
@@ -346,7 +384,7 @@ select[multiple] option:active {
                 <p class="mb-0 opacity-90">İnsanları bir araya gətirən aktivitə yaradın</p>
             </div>
 
-            <form method="post" enctype="multipart/form-data" id="create-activity-form">
+            <form method="post" enctype="multipart/form-data" id="create-activity-form" novalidate>
                 {% csrf_token %}
                 
                 <div class="form-body">
@@ -395,23 +433,23 @@ select[multiple] option:active {
                         <div class="datetime-row">
                             <div>
                                 <label for="start_date" class="form-label">Başlama Tarixi <span class="required">*</span></label>
-                                <input type="date" class="form-control form-control-lg" id="start_date" name="start_date" required>
+                                <input type="date" class="form-control form-control-lg" id="start_date" name="start_date" required autocomplete="off">
                             </div>
                             <div>
                                 <label for="start_time" class="form-label">Başlama Vaxtı <span class="required">*</span></label>
-                                <input type="time" class="form-control form-control-lg" id="start_time" name="start_time" required>
+                                <input type="time" class="form-control form-control-lg" id="start_time" name="start_time" required autocomplete="off">
                             </div>
                         </div>
                         
                         <div class="datetime-row">
                             <div>
                                 <label for="end_date" class="form-label">Bitmə Tarixi</label>
-                                <input type="date" class="form-control form-control-lg" id="end_date" name="end_date">
+                                <input type="date" class="form-control form-control-lg" id="end_date" name="end_date" autocomplete="off">
                                 <div class="form-help">Boş buraxırsanız, başlama tarixindən 3 saat sonra avtomatik təyin ediləcək</div>
                             </div>
                             <div>
                                 <label for="end_time" class="form-label">Bitmə Vaxtı</label>
-                                <input type="time" class="form-control form-control-lg" id="end_time" name="end_time">
+                                <input type="time" class="form-control form-control-lg" id="end_time" name="end_time" autocomplete="off">
                             </div>
                         </div>
                     </div>
@@ -456,12 +494,12 @@ select[multiple] option:active {
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="min_age" class="form-label">Minimum Yaş</label>
-                                <input type="number" class="form-control form-control-lg" id="min_age" name="min_age" min="10" max="100" placeholder="Məs: 18">
+                                <input type="number" class="form-control form-control-lg" id="min_age" name="min_age" placeholder="Məs: 18">
                                 <div class="form-help">İsteğe bağlı - boş qoyub bütün yaşlara açığ ola bilər</div>
                             </div>
                             <div class="col-md-6">
                                 <label for="max_age" class="form-label">Maksimum Yaş</label>
-                                <input type="number" class="form-control form-control-lg" id="max_age" name="max_age" min="10" max="100" placeholder="Məs: 65">
+                                <input type="number" class="form-control form-control-lg" id="max_age" name="max_age" placeholder="Məs: 65">
                                 <div class="form-help">İsteğe bağlı - boş qoyub yaş məhdudiyyəti olmaya bilər</div>
                             </div>
                         </div>
@@ -574,20 +612,100 @@ select[multiple] option:active {
 
 {% block extra_js %}
 <script>
+console.log('Create activity script loaded');
+
+// Immediately disable all HTML5 validation on form load
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('create-activity-form');
+    if (form) {
+        console.log('Setting form novalidate on DOMContentLoaded');
+        form.setAttribute('novalidate', 'true');
+        
+        // Clear validation on all form elements
+        const formElements = form.querySelectorAll('input, select, textarea');
+        formElements.forEach(element => {
+            element.addEventListener('invalid', function(e) {
+                console.log('Preventing invalid event on:', element.name || element.id);
+                e.preventDefault();
+                element.setCustomValidity('');
+            });
+        });
+    }
+    
+    // Aggressively remove validation messages
+    function removeValidationMessages() {
+        // Find and hide any validation messages
+        const validationElements = document.querySelectorAll(
+            '.invalid-feedback, .error-message, .form-error, [class*="invalid"], [class*="error"]'
+        );
+        validationElements.forEach(el => {
+            if (el.textContent.includes('You must be between') || 
+                el.textContent.includes('16 and 100 years old')) {
+                el.style.display = 'none';
+                el.style.visibility = 'hidden';
+                el.style.opacity = '0';
+                el.style.height = '0';
+                el.remove();
+                console.log('Removed validation message:', el.textContent);
+            }
+        });
+        
+        // Also check for any text nodes containing the message
+        const walker = document.createTreeWalker(
+            document.body,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false
+        );
+        
+        const textNodes = [];
+        let node;
+        while (node = walker.nextNode()) {
+            if (node.textContent.includes('You must be between 16 and 100 years old')) {
+                textNodes.push(node);
+            }
+        }
+        
+        textNodes.forEach(textNode => {
+            console.log('Removing text node with validation message');
+            textNode.textContent = '';
+            if (textNode.parentElement) {
+                textNode.parentElement.style.display = 'none';
+            }
+        });
+    }
+    
+    // Run immediately and periodically
+    removeValidationMessages();
+    setInterval(removeValidationMessages, 500);
+    
+    // Also run on any DOM changes
+    const observer = new MutationObserver(removeValidationMessages);
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class']
+    });
+});
+
 // Image upload handling
 document.getElementById('main_image').addEventListener('change', function(e) {
+    console.log('Image file selected:', e.target.files[0]);
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
             document.getElementById('image-preview').src = e.target.result;
             document.getElementById('preview-container').style.display = 'block';
+            console.log('Image preview set');
         };
         reader.readAsDataURL(file);
     }
 });
 
 function removeImage() {
+    console.log('Removing image');
     document.getElementById('main_image').value = '';
     document.getElementById('preview-container').style.display = 'none';
 }
@@ -611,6 +729,7 @@ uploadArea.addEventListener('drop', function(e) {
     
     const files = e.dataTransfer.files;
     if (files.length > 0) {
+        console.log('Files dropped:', files);
         document.getElementById('main_image').files = files;
         document.getElementById('main_image').dispatchEvent(new Event('change'));
     }
@@ -620,19 +739,43 @@ uploadArea.addEventListener('drop', function(e) {
 document.getElementById('start_date').addEventListener('change', function() {
     const startDate = this.value;
     const endDateField = document.getElementById('end_date');
+    console.log('Start date changed:', startDate);
     if (startDate && !endDateField.value) {
         endDateField.value = startDate;
+        console.log('End date auto-filled:', startDate);
     }
 });
 
 // Set minimum date to today
 const today = new Date().toISOString().split('T')[0];
+console.log('Setting minimum date to:', today);
 document.getElementById('start_date').min = today;
 document.getElementById('end_date').min = today;
+
+// Clear any unwanted validation messages on all form fields
+document.getElementById('start_date').addEventListener('input', function() {
+    this.setCustomValidity('');
+});
+document.getElementById('end_date').addEventListener('input', function() {
+    this.setCustomValidity('');
+});
+document.getElementById('start_time').addEventListener('input', function() {
+    this.setCustomValidity('');
+});
+document.getElementById('end_time').addEventListener('input', function() {
+    this.setCustomValidity('');
+});
+document.getElementById('min_age').addEventListener('input', function() {
+    this.setCustomValidity('');
+});
+document.getElementById('max_age').addEventListener('input', function() {
+    this.setCustomValidity('');
+});
 
 // Enhanced multiple select for languages
 const languageSelect = document.getElementById('required_languages');
 if (languageSelect) {
+    console.log('Language select found');
     // Add helper text on focus
     languageSelect.addEventListener('focus', function() {
         const helpText = this.parentNode.querySelector('.form-help');
@@ -658,6 +801,7 @@ if (languageSelect) {
     languageSelect.addEventListener('change', function() {
         const selectedCount = this.selectedOptions.length;
         const helpText = this.parentNode.querySelector('.form-help');
+        console.log('Language selection changed, count:', selectedCount);
         if (selectedCount > 0) {
             helpText.innerHTML = `${selectedCount} dil seçildi. İştirakçıların bilməli olduğu dillər`;
             helpText.style.color = '#28a745';
@@ -670,56 +814,201 @@ if (languageSelect) {
     });
 }
 
-// Form validation
+// Form validation and submission
 document.getElementById('create-activity-form').addEventListener('submit', function(e) {
+    console.log('Form submission started');
+    console.log('Form action:', this.action);
+    console.log('Form method:', this.method);
+    console.log('Form enctype:', this.enctype);
+    
+    // Prevent double submission
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn.disabled) {
+        console.log('Form already submitting, preventing double submission');
+        e.preventDefault();
+        return;
+    }
+    
+    // Log all form data for debugging
+    const formData = new FormData(this);
+    console.log('Form data:');
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+    
     const startDate = document.getElementById('start_date').value;
     const startTime = document.getElementById('start_time').value;
     const endDate = document.getElementById('end_date').value;
     const endTime = document.getElementById('end_time').value;
     
+    console.log('Date/time values:', { startDate, startTime, endDate, endTime });
+    
+    // Basic required field validation
+    console.log('Starting basic field validation...');
+    const requiredFields = ['title', 'category', 'short_description', 'description', 'start_date', 'start_time', 'address', 'max_participants'];
+    let missingFields = [];
+    
+    for (const fieldName of requiredFields) {
+        const field = document.getElementById(fieldName) || document.querySelector(`[name="${fieldName}"]`);
+        if (!field || !field.value.trim()) {
+            missingFields.push(fieldName);
+        }
+    }
+    
+    if (missingFields.length > 0) {
+        e.preventDefault();
+        console.log('Form prevented: Missing required fields:', missingFields);
+        alert('Zəhmət olmasa bütün məcburi sahələri doldurun: ' + missingFields.join(', '));
+        return;
+    }
+    console.log('Basic field validation passed');
+    
+    console.log('Starting date validation...');
     if (startDate && startTime) {
+        console.log('Date and time provided, creating start datetime...');
         const startDateTime = new Date(startDate + 'T' + startTime);
         const now = new Date();
+        console.log('Start datetime:', startDateTime, 'Now:', now);
         
+        console.log('Checking if start date is in the past...');
         if (startDateTime <= now) {
             e.preventDefault();
+            console.log('Form prevented: Start date is in the past');
             alert('Aktivitə tarixi indiki vaxtdan sonra olmalıdır.');
             return;
         }
+        console.log('Start date validation passed');
         
+        console.log('Checking end date...');
         if (endDate && endTime) {
+            console.log('End date and time provided, creating end datetime...');
             const endDateTime = new Date(endDate + 'T' + endTime);
+            console.log('End datetime:', endDateTime);
+            console.log('Checking if end date is after start date...');
             if (endDateTime <= startDateTime) {
                 e.preventDefault();
+                console.log('Form prevented: End date is before start date');
                 alert('Bitmə tarixi başlama tarixindən sonra olmalıdır.');
                 return;
             }
+            console.log('End date validation passed');
+        } else {
+            console.log('No end date provided, skipping end date validation');
         }
+    } else {
+        console.log('No start date/time provided, skipping date validation');
     }
+    console.log('Date validation completed successfully');
     
     // Validate age range
+    console.log('Starting age validation...');
     const minAge = document.getElementById('min_age').value;
     const maxAge = document.getElementById('max_age').value;
+    console.log('Age values:', { minAge, maxAge });
     
+    console.log('Checking age range validity...');
     if (minAge && maxAge && parseInt(minAge) >= parseInt(maxAge)) {
         e.preventDefault();
+        console.log('Form prevented: Invalid age range');
         alert('Maksimum yaş minimum yaşdan böyük olmalıdır.');
         return;
     }
+    console.log('Age validation passed');
     
     // Validate gender selection
+    console.log('Starting gender validation...');
     const genderCheckboxes = document.querySelectorAll('input[name="allowed_genders"]:checked');
+    console.log('Selected genders:', genderCheckboxes.length);
+    console.log('Checking if at least one gender is selected...');
     if (genderCheckboxes.length === 0) {
         e.preventDefault();
+        console.log('Form prevented: No gender selected');
         alert('Ən az bir cinsiyyət seçməlisiniz.');
         return;
     }
+    console.log('Gender validation passed');
+    
+    console.log('All validations passed, submitting form...');
     
     // Show loading state
     const submitBtn = e.target.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yaradılır...';
+    
+    console.log('Submit button disabled and loading state set');
+    console.log('Form actually submitting to server...');
+    
+    // Let the form submit naturally
+    console.log('Allowing natural form submission...');
+    
+    // Add timeout to re-enable button if submission takes too long
+    const timeoutId = setTimeout(() => {
+        console.log('Form submission timeout - re-enabling button');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Aktivitə Yarat';
+        alert('Form submission took too long. Please try again.');
+    }, 60000); // 60 second timeout
+    
+    // Store timeout ID to clear it if submission succeeds
+    window.formTimeoutId = timeoutId;
 });
+
+// Track page unload to see if form submission causes navigation
+window.addEventListener('beforeunload', function(e) {
+    console.log('Page is about to unload - form submission likely succeeded');
+});
+
+// Track page visibility change
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        console.log('Page became hidden');
+    } else {
+        console.log('Page became visible');
+    }
+});
+
+// Add form error handling
+window.addEventListener('load', function() {
+    console.log('Window loaded, checking for Django messages or errors');
+    
+    // Check if there are any error messages in Django's message framework
+    const djangoMessages = document.querySelectorAll('.alert, .messages li, .errorlist');
+    if (djangoMessages.length > 0) {
+        console.log('Django messages found:', djangoMessages);
+        djangoMessages.forEach((msg, index) => {
+            console.log(`Message ${index}:`, msg.textContent);
+        });
+    }
+    
+    // Reset submit button if there were errors
+    const submitBtn = document.querySelector('#create-activity-form button[type="submit"]');
+    if (submitBtn && submitBtn.disabled) {
+        console.log('Re-enabling submit button due to page reload');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Aktivitə Yarat';
+    }
+    
+    // Clear any existing timeout
+    if (window.formTimeoutId) {
+        clearTimeout(window.formTimeoutId);
+        console.log('Cleared existing form timeout on page load');
+    }
+});
+
+// Log browser console errors
+window.addEventListener('error', function(e) {
+    console.error('JavaScript error occurred:', e.error);
+});
+
+// Log network requests
+const originalFetch = window.fetch;
+window.fetch = function(...args) {
+    console.log('Fetch request:', args);
+    return originalFetch.apply(this, args).then(response => {
+        console.log('Fetch response:', response);
+        return response;
+    });
+};
 </script>
 {% endblock %}
 

@@ -195,7 +195,7 @@
                 <i class="fas fa-sign-in-alt fa-2x"></i>
             </div>
             <h2 class="mb-2">Xoş Gəlmisiniz!</h2>
-            <p class="mb-0 opacity-90">Hesabınıza daxil olun</p>
+            <p class="mb-0 opacity-90">Telefon nömrənizi daxil edin</p>
                 </div>
                 
         <div class="auth-body">
@@ -218,42 +218,16 @@
                     </label>
                         </div>
                         
-                <div class="form-floating password-field-wrapper">
-                                <input 
-                                    type="password" 
-                        class="form-control" 
-                                    id="password" 
-                                    name="password" 
-                        placeholder="Şifrə"
-                                    required
-                                >
-                    <label for="password">
-                        <i class="fas fa-lock me-2"></i>
-                        Şifrə
-                    </label>
-                                <button 
-                        class="password-toggle-btn" 
-                                    type="button" 
-                                    onclick="togglePassword()"
-                                    id="password-toggle"
-                                >
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                        </div>
-                        
-                <div class="auth-options">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                                <label class="form-check-label" for="remember">
-                            Məni xatırla
-                                </label>
-                            </div>
-                    <a href="#" class="auth-link">Şifrəni unutdunuz?</a>
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Telefon nömrənizə OTP kodu göndəriləcək
+                            </small>
                         </div>
                         
                 <button type="submit" class="btn auth-btn w-100 text-white">
-                                <i class="fas fa-sign-in-alt me-2"></i>
-                    Daxil ol
+                                <i class="fas fa-paper-plane me-2"></i>
+                    OTP Göndər
                             </button>
                 
                 <div class="auth-divider">
@@ -276,32 +250,48 @@
 
 {% block extra_js %}
 <script>
-// Toggle password visibility
-function togglePassword() {
-    const passwordInput = document.getElementById('password');
-    const toggleBtn = document.getElementById('password-toggle');
-    const icon = toggleBtn.querySelector('i');
-    
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        icon.className = 'fas fa-eye-slash';
-    } else {
-        passwordInput.type = 'password';
-        icon.className = 'fas fa-eye';
-    }
-}
-
-// Form submission
+// Form submission with loading state
 document.getElementById('login-form').addEventListener('submit', function(e) {
     const submitBtn = e.target.querySelector('button[type="submit"]');
-    const hideLoading = showLoading(submitBtn);
+    const phone = document.getElementById('phone').value.trim();
     
-    setTimeout(hideLoading, 2000);
+    if (!phone) {
+        e.preventDefault();
+        alert('Zəhmət olmasa telefon nömrənizi daxil edin.');
+        return;
+    }
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>OTP göndərilir...';
+    
+    // Re-enable button after 10 seconds if form hasn't redirected
+    setTimeout(() => {
+        if (submitBtn.disabled) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>OTP Göndər';
+        }
+    }, 10000);
 });
 
 // Auto-focus phone field
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('phone').focus();
 });
+
+// Phone number formatting
+function formatPhoneNumber(input) {
+    let value = input.value.replace(/\D/g, '');
+    
+    if (value.startsWith('994')) {
+        value = '+' + value;
+    } else if (value.startsWith('0')) {
+        value = '+994' + value.substring(1);
+    } else if (value && !value.startsWith('+')) {
+        value = '+994' + value;
+    }
+    
+    input.value = value;
+}
 </script>
 {% endblock %}

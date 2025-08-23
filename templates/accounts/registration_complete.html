@@ -1,164 +1,473 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Welcome to Acteezer!{% endblock %}
+{% block title %}Qeydiyyat Tamamlandı - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.success-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 25%, #17a2b8 50%, #007bff 75%, #6f42c1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.success-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="3" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="60" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="80" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="90" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+    animation: float 20s infinite linear;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-100px) rotate(360deg); }
+}
+
+.success-card {
+    max-width: 900px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+    margin: 0 1rem;
+    overflow: hidden;
+    animation: slideInUp 0.8s ease-out;
+}
+
+@keyframes slideInUp {
+    0% {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.success-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.success-header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 20px solid #20c997;
+}
+
+.trophy-animation {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(45deg, #ffc107, #ff8c00);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 15px 35px rgba(255, 193, 7, 0.4);
+    animation: trophy-bounce 2s ease-in-out infinite;
+}
+
+@keyframes trophy-bounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-10px) scale(1.05); }
+}
+
+.success-body {
+    padding: 3rem 2rem 2rem;
+}
+
+.profile-stats {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 2rem 0;
+    border: 2px solid rgba(40, 167, 69, 0.1);
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+}
+
+.progress-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: conic-gradient(#28a745 0deg 360deg, #e9ecef 360deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    position: relative;
+}
+
+.progress-ring::before {
+    content: '';
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.progress-text {
+    position: relative;
+    z-index: 1;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.action-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.action-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border-color: rgba(40, 167, 69, 0.3);
+}
+
+.action-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+    color: #28a745;
+    transition: all 0.3s ease;
+}
+
+.action-card:hover .action-icon {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    transform: scale(1.1);
+}
+
+.main-cta {
+    text-align: center;
+    margin: 3rem 0 2rem;
+}
+
+.cta-button {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    color: white;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 50px;
+    box-shadow: 0 15px 35px rgba(40, 167, 69, 0.4);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(40, 167, 69, 0.5);
+    color: white;
+}
+
+.tips-section {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 2rem 0;
+    border-left: 5px solid #ffc107;
+}
+
+.tip-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+}
+
+.tip-icon {
+    width: 40px;
+    height: 40px;
+    background: #28a745;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.stats-banner {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #20c997;
+}
+
+@media (max-width: 768px) {
+    .success-container {
+        padding: 1rem 0;
+    }
+    
+    .success-card {
+        margin: 0 0.5rem;
+    }
+    
+    .success-header {
+        padding: 2rem 1rem 1.5rem;
+    }
+    
+    .success-body {
+        padding: 2rem 1rem;
+    }
+    
+    .action-cards {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .trophy-animation {
+        width: 100px;
+        height: 100px;
+    }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="registration-container">
-    <div class="container">
-        <div class="registration-card">
-            <div class="card border-0 shadow-lg">
-                <div class="card-header bg-success text-white">
-                    <h3 class="mb-0 text-center">
-                        <i class="fas fa-check-circle me-2"></i>
-                        Registration Complete!
-                    </h3>
-                    <p class="mb-0 mt-2 text-center opacity-75">Welcome to the Acteezer community</p>
-                </div>
-                
-                <div class="card-body text-center">
-                    <!-- Success Animation -->
-                    <div class="success-animation mb-4">
-                        <i class="fas fa-trophy fa-5x text-warning mb-3" style="animation: bounce 2s infinite;"></i>
-                        <h2 class="fw-bold text-success">Congratulations, {{ user.get_full_name }}!</h2>
-                        <p class="lead text-muted">Your profile is now complete and ready to explore</p>
-                    </div>
-                    
-                    <!-- Profile Summary -->
-                    <div class="profile-summary bg-light rounded-3 p-4 mb-4">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <h6 class="text-muted mb-1">Profile Completeness</h6>
-                                <div class="progress mb-2">
-                                    <div class="progress-bar bg-success" style="width: 100%"></div>
-                                </div>
-                                <span class="badge bg-success">100% Complete</span>
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-header">
+            <div class="trophy-animation">
+                <i class="fas fa-trophy fa-3x" style="color: white;"></i>
+            </div>
+            <h1 class="mb-2">Təbriklər, {{ user.get_full_name }}!</h1>
+            <p class="mb-0 opacity-90 fs-5">Qeydiyyatınız uğurla tamamlandı</p>
+        </div>
+        
+        <div class="success-body">
+            <!-- Profile Summary -->
+            <div class="profile-stats">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="progress-ring">
+                                <div class="progress-text">100%</div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <h6 class="text-muted mb-1">Languages</h6>
-                                <div>
-                                    {% for language in user.languages.all %}
-                                        <span class="badge bg-primary me-1">{{ language.name }}</span>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <h6 class="text-muted mb-1">Location</h6>
-                                <p class="mb-0">
-                                    <i class="fas fa-map-marker-alt text-primary me-1"></i>
-                                    {{ user.city }}
-                                </p>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <h6 class="text-muted mb-1">Age</h6>
-                                <p class="mb-0">{{ user.age }} years old</p>
-                            </div>
+                            <h6 class="fw-bold text-success">Profil Tamamlığı</h6>
                         </div>
                     </div>
-                    
-                    <!-- Next Steps -->
-                    <div class="next-steps mb-4">
-                        <h5 class="fw-bold mb-3">What's Next?</h5>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <div class="card border-primary">
-                                    <div class="card-body text-center py-3">
-                                        <i class="fas fa-search fa-2x text-primary mb-2"></i>
-                                        <h6 class="mb-1">Discover Activities</h6>
-                                        <p class="small text-muted mb-2">Find exciting events near you</p>
-                                        <button class="btn btn-outline-primary btn-sm">Explore</button>
-                                    </div>
-                                </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-language"></i>
                             </div>
-                            <div class="col-md-4">
-                                <div class="card border-primary">
-                                    <div class="card-body text-center py-3">
-                                        <i class="fas fa-plus fa-2x text-primary mb-2"></i>
-                                        <h6 class="mb-1">Create Activity</h6>
-                                        <p class="small text-muted mb-2">Organize your own event</p>
-                                        <button class="btn btn-outline-primary btn-sm">Create</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card border-primary">
-                                    <div class="card-body text-center py-3">
-                                        <i class="fas fa-user-friends fa-2x text-primary mb-2"></i>
-                                        <h6 class="mb-1">Find People</h6>
-                                        <p class="small text-muted mb-2">Connect with adventurers</p>
-                                        <button class="btn btn-outline-primary btn-sm">Browse</button>
-                                    </div>
-                                </div>
-                            </div>
+                            <h6 class="fw-bold mb-1">Dillər</h6>
+                            {% for language in user.languages.all %}
+                                <span class="badge bg-primary me-1 mb-1">{{ language.name }}</span>
+                            {% empty %}
+                                <span class="text-muted">Dil seçilməyib</span>
+                            {% endfor %}
                         </div>
                     </div>
-                    
-                    <!-- Main CTA -->
-                    <div class="main-cta">
-                        <a href="#" class="btn btn-primary btn-lg px-5">
-                            <i class="fas fa-rocket me-2"></i>
-                            Start Exploring
-                        </a>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1">Məkan</h6>
+                            <p class="text-primary fw-semibold mb-0">{{ user.city }}</p>
+                        </div>
                     </div>
-                    
-                    <!-- Tips -->
-                    <div class="tips mt-4 pt-4 border-top">
-                        <h6 class="fw-bold mb-3">
-                            <i class="fas fa-lightbulb text-warning me-2"></i>
-                            Pro Tips for Getting Started
-                        </h6>
-                        <div class="row text-start">
-                            <div class="col-md-6">
-                                <ul class="list-unstyled">
-                                    <li class="mb-2">
-                                        <i class="fas fa-check text-success me-2"></i>
-                                        Complete your profile to get better matches
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="fas fa-check text-success me-2"></i>
-                                        Upload clear photos to build trust
-                                    </li>
-                                </ul>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-birthday-cake"></i>
                             </div>
-                            <div class="col-md-6">
-                                <ul class="list-unstyled">
-                                    <li class="mb-2">
-                                        <i class="fas fa-check text-success me-2"></i>
-                                        Be active and engage with the community
-                                    </li>
-                                    <li class="mb-2">
-                                        <i class="fas fa-check text-success me-2"></i>
-                                        Follow safety guidelines for meetings
-                                    </li>
-                                </ul>
-                            </div>
+                            <h6 class="fw-bold mb-1">Yaş</h6>
+                            <p class="text-primary fw-semibold mb-0">{{ user.age }} yaş</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Social Proof -->
-            <div class="social-proof mt-4">
+            <!-- Next Steps -->
+            <div class="text-center mb-4">
+                <h3 class="fw-bold mb-3">
+                    <i class="fas fa-rocket text-primary me-2"></i>
+                    Növbəti addımlar
+                </h3>
+                <p class="text-muted fs-5">Acteezer dünyasını kəşf etməyə başlayın</p>
+            </div>
+            
+            <div class="action-cards">
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Aktivitələri Kəşf Et</h5>
+                    <p class="text-muted mb-3">Yaxınlığınızda maraqlı tədbirlər tapın</p>
+                    <a href="{% url 'activities:activities_list' %}" class="btn btn-outline-success btn-sm px-4">
+                        Kəşf Et
+                    </a>
+                </div>
+                
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Aktivite Yarat</h5>
+                    <p class="text-muted mb-3">Öz tədbirinizi təşkil edin</p>
+                    <a href="{% url 'activities:create_activity' %}" class="btn btn-outline-success btn-sm px-4">
+                        Yarat
+                    </a>
+                </div>
+                
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">İnsanları Tap</h5>
+                    <p class="text-muted mb-3">Macəra dostları ilə tanış ol</p>
+                    <a href="{% url 'accounts:people_list' %}" class="btn btn-outline-success btn-sm px-4">
+                        Baxış
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Main CTA -->
+            <div class="main-cta">
+                <a href="{% url 'home' %}" class="cta-button">
+                    <i class="fas fa-home me-2"></i>
+                    Əsas Səhifəyə Get
+                </a>
+            </div>
+            
+            <!-- Tips -->
+            <div class="tips-section">
+                <h5 class="fw-bold mb-3 text-center">
+                    <i class="fas fa-lightbulb text-warning me-2"></i>
+                    Başlamaq üçün tövsiyələr
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="fas fa-user-edit"></i>
+                            </div>
+                            <span>Profilinizi daha ətraflı doldurun</span>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                            <span>Aydın şəkillər əlavə edin</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <span>İcma ilə aktiv əlaqə qurun</span>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <span>Təhlükəsizlik qaydalarına riayət edin</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Banner -->
+            <div class="stats-banner">
                 <div class="row text-center">
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <h3 class="text-primary fw-bold">10K+</h3>
-                            <p class="text-muted mb-0">Active Members</p>
-                        </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="stat-number">10K+</div>
+                        <p class="mb-0 opacity-75">Aktiv İstifadəçi</p>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="stat-number">500+</div>
+                        <p class="mb-0 opacity-75">Aylıq Aktivite</p>
                     </div>
                     <div class="col-md-4">
-                        <div class="stat-card">
-                            <h3 class="text-primary fw-bold">500+</h3>
-                            <p class="text-muted mb-0">Activities Monthly</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <h3 class="text-primary fw-bold">50+</h3>
-                            <p class="text-muted mb-0">Cities Worldwide</p>
-                        </div>
+                        <div class="stat-number">50+</div>
+                        <p class="mb-0 opacity-75">Şəhər Dünyada</p>
                     </div>
                 </div>
             </div>
@@ -167,65 +476,79 @@
 </div>
 {% endblock %}
 
-{% block extra_css %}
-<style>
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-10px);
-    }
-    60% {
-        transform: translateY(-5px);
-    }
-}
-
-.success-animation {
-    animation: fadeInUp 1s ease-out;
-}
-
-.profile-summary {
-    animation: fadeInUp 1s ease-out 0.3s both;
-}
-
-.next-steps {
-    animation: fadeInUp 1s ease-out 0.6s both;
-}
-
-.main-cta {
-    animation: fadeInUp 1s ease-out 0.9s both;
-}
-
-.stat-card {
-    padding: 1rem;
-    border-radius: 12px;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 1rem;
-}
-
-.card-primary {
-    border-color: var(--primary-color) !important;
-}
-</style>
-{% endblock %}
-
 {% block extra_js %}
 <script>
-// Confetti animation (simple version)
 document.addEventListener('DOMContentLoaded', function() {
-    // Add some celebration particles
+    // Celebration animation
+    console.log('🎉 Acteezer ailəsinə xoş gəlmisiniz! 🎉');
+    
+    // Add some visual celebration
     setTimeout(() => {
-        console.log('🎉 Welcome to Acteezer! 🎉');
-    }, 1000);
+        const trophy = document.querySelector('.trophy-animation');
+        if (trophy) {
+            trophy.style.animation = 'trophy-bounce 0.6s ease-in-out 3';
+        }
+    }, 500);
+    
+    // Track registration completion
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'registration_complete', {
+            'event_category': 'user',
+            'event_label': 'registration_flow',
+            'user_id': '{{ user.id }}'
+        });
+    }
+    
+    // Add sparkle effect
+    function createSparkle() {
+        const sparkle = document.createElement('div');
+        sparkle.style.cssText = `
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(45deg, #ffc107, #28a745);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            animation: sparkle 2s ease-out forwards;
+        `;
+        
+        sparkle.style.left = Math.random() * window.innerWidth + 'px';
+        sparkle.style.top = Math.random() * window.innerHeight + 'px';
+        
+        document.body.appendChild(sparkle);
+        
+        setTimeout(() => {
+            sparkle.remove();
+        }, 2000);
+    }
+    
+    // Create sparkles
+    for (let i = 0; i < 15; i++) {
+        setTimeout(createSparkle, i * 300);
+    }
 });
 
-// Track completion event
-gtag && gtag('event', 'registration_complete', {
-    'event_category': 'user',
-    'event_label': 'registration_flow'
-});
+// Add sparkle animation CSS
+const sparkleCSS = `
+@keyframes sparkle {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1) rotate(180deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0) rotate(360deg);
+        opacity: 0;
+    }
+}
+`;
+
+const style = document.createElement('style');
+style.textContent = sparkleCSS;
+document.head.appendChild(style);
 </script>
 {% endblock %}
-

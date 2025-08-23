@@ -1,0 +1,816 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}İnsanlar - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.people-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.search-header {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.search-form {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+    gap: 1rem;
+    align-items: end;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    height: 50px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.search-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    color: white;
+    height: 50px;
+    padding: 0 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+}
+
+.clear-btn {
+    background: #6c757d;
+    border: none;
+    color: white;
+    height: 50px;
+    padding: 0 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    margin-left: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.clear-btn:hover {
+    background: #5a6268;
+    color: white;
+    text-decoration: none;
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.results-count {
+    font-size: 1.1rem;
+    color: #495057;
+}
+
+.view-toggle {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.view-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #e9ecef;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-btn.active,
+.view-btn:hover {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.people-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.person-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.person-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.person-card-header {
+    position: relative;
+    height: 200px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    overflow: hidden;
+}
+
+.person-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid white;
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    object-fit: cover;
+    background: white;
+}
+
+.person-info {
+    padding: 3rem 1.5rem 1.5rem;
+    text-align: center;
+}
+
+.person-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.person-age {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.person-location {
+    color: #28a745;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+.person-bio {
+    color: #6c757d;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.person-interests {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.interest-tag {
+    background: #e9ecef;
+    color: #495057;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.person-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.friend-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.friend-btn.send-request {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.friend-btn.send-request:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+}
+
+.friend-btn.pending {
+    background: #ffc107;
+    color: #000;
+    cursor: not-allowed;
+}
+
+.friend-btn.friends {
+    background: #28a745;
+    color: white;
+    cursor: default;
+}
+
+.friend-btn.rejected {
+    background: #dc3545;
+    color: white;
+    cursor: not-allowed;
+}
+
+.view-profile-btn {
+    background: #17a2b8;
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.view-profile-btn:hover {
+    background: #138496;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+.pagination {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.page-link {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    background: white;
+    color: #495057;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.page-link:hover,
+.page-link.active {
+    border-color: #28a745;
+    background: #28a745;
+    color: white;
+    text-decoration: none;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: #e9ecef;
+    margin-bottom: 1rem;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 1rem;
+}
+
+.empty-message {
+    color: #6c757d;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.status-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-online {
+    background: #28a745;
+    color: white;
+}
+
+.status-away {
+    background: #ffc107;
+    color: #000;
+}
+
+@media (max-width: 768px) {
+    .search-form {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .results-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .people-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .person-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 576px) {
+    .people-container {
+        padding: 1rem 0;
+    }
+    
+    .search-header {
+        padding: 1.5rem;
+        margin: 0 1rem 1rem;
+    }
+    
+    .results-header {
+        margin: 0 1rem 1rem;
+        padding: 1rem;
+    }
+    
+    .people-grid {
+        margin: 0 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="people-container">
+    <div class="container-fluid">
+        <!-- Search Header -->
+        <div class="search-header">
+            <h2 class="mb-3">
+                <i class="fas fa-users text-primary me-2"></i>
+                İnsanları Kəşf Et
+            </h2>
+            
+            <form method="get" class="search-form">
+                <div class="form-group">
+                    <label class="form-label">Ad və ya Bio</label>
+                    <input type="text" name="q" class="form-control" placeholder="Ad, soyad və ya bio axtarın..." value="{{ query }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Şəhər</label>
+                    <select name="city" class="form-control">
+                        <option value="">Bütün şəhərlər</option>
+                        {% for city in cities %}
+                            <option value="{{ city }}" {% if city == city_filter %}selected{% endif %}>{{ city }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Maraqlar</label>
+                    <select name="interest" class="form-control">
+                        <option value="">Bütün maraqlar</option>
+                        {% for interest in interests %}
+                            <option value="{{ interest.id }}" {% if interest.id|stringformat:"s" == interest_filter %}selected{% endif %}>{{ interest.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Min yaş</label>
+                    <input type="number" name="age_min" class="form-control" placeholder="18" min="18" max="100" value="{{ age_min }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Max yaş</label>
+                    <input type="number" name="age_max" class="form-control" placeholder="65" min="18" max="100" value="{{ age_max }}">
+                </div>
+                
+                <div class="form-group" style="display: flex; gap: 0.5rem;">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search me-2"></i>
+                        Axtar
+                    </button>
+                    <a href="{% url 'accounts:people_list' %}" class="clear-btn">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Results Header -->
+        <div class="results-header">
+            <div class="results-count">
+                <strong>{{ page_obj.paginator.count }}</strong> nəfər tapıldı
+                {% if query or city_filter or interest_filter or age_min or age_max %}
+                    (filtrlənmiş nəticələr)
+                {% endif %}
+            </div>
+            
+            <div class="view-toggle">
+                <div class="view-btn active" data-view="grid">
+                    <i class="fas fa-th"></i>
+                </div>
+                <div class="view-btn" data-view="list">
+                    <i class="fas fa-list"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- People Grid -->
+        {% if page_obj.object_list %}
+            <div class="people-grid" id="people-container">
+                {% for person in page_obj.object_list %}
+                    <div class="person-card">
+                        <div class="person-card-header">
+                            {% if person.images.first %}
+                                <img src="{{ person.images.first.image.url }}" alt="{{ person.get_full_name }}" class="person-avatar">
+                            {% else %}
+                                <div class="person-avatar" style="background: #e9ecef; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-user fa-2x" style="color: #6c757d;"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="status-badge status-online">Aktiv</div>
+                        </div>
+                        
+                        <div class="person-info">
+                            <h5 class="person-name">{{ person.get_full_name }}</h5>
+                            {% if person.age %}
+                                <p class="person-age">{{ person.age }} yaş</p>
+                            {% endif %}
+                            
+                            {% if person.city %}
+                                <p class="person-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ person.city }}
+                                </p>
+                            {% endif %}
+                            
+                            {% if person.bio %}
+                                <p class="person-bio">{{ person.bio }}</p>
+                            {% endif %}
+                            
+                            {% if person.interests.all %}
+                                <div class="person-interests">
+                                    {% for interest in person.interests.all|slice:":3" %}
+                                        <span class="interest-tag">{{ interest.name }}</span>
+                                    {% endfor %}
+                                    {% if person.interests.count > 3 %}
+                                        <span class="interest-tag">+{{ person.interests.count|add:"-3" }}</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="person-actions">
+                                {% if user.is_authenticated %}
+                                    {% if not person.friendship_status %}
+                                        <button class="friend-btn send-request" onclick="sendFriendRequest({{ person.id }}, this)">
+                                            <i class="fas fa-user-plus me-1"></i>
+                                            Dostluq sorğusu
+                                        </button>
+                                    {% elif person.friendship_status.status == 'pending' %}
+                                        {% if person.friendship_status.initiated_by.id == user.id %}
+                                            <button class="friend-btn pending" disabled>
+                                                <i class="fas fa-clock me-1"></i>
+                                                Gözləyir
+                                            </button>
+                                        {% else %}
+                                            <button class="friend-btn send-request" onclick="respondFriendRequest({{ person.friendship_status.friendship.id }}, 'accept', this)">
+                                                <i class="fas fa-check me-1"></i>
+                                                Qəbul et
+                                            </button>
+                                        {% endif %}
+                                    {% elif person.friendship_status.status == 'accepted' %}
+                                        <button class="friend-btn friends" disabled>
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            Dostdur
+                                        </button>
+                                    {% elif person.friendship_status.status == 'rejected' %}
+                                        <button class="friend-btn rejected" disabled>
+                                            <i class="fas fa-times me-1"></i>
+                                            Rədd edildi
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+                                
+                                <a href="#" class="view-profile-btn">
+                                    <i class="fas fa-eye me-1"></i>
+                                    Profil
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <div class="pagination-container">
+                    <div class="pagination">
+                        {% if page_obj.has_previous %}
+                            <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-link">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <span class="page-link active">{{ num }}</span>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ num }}" class="page-link">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-link">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="empty-title">Heç kim tapılmadı</h3>
+                <p class="empty-message">
+                    {% if query or city_filter or interest_filter or age_min or age_max %}
+                        Axtarış kriteriyalarınızı dəyişdirərək yenidən cəhd edin.
+                    {% else %}
+                        Hazırda heç bir istifadəçi mövcud deyil.
+                    {% endif %}
+                </p>
+                <a href="{% url 'accounts:people_list' %}" class="search-btn">
+                    <i class="fas fa-refresh me-2"></i>
+                    Yenidən Axtar
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Friend request functionality
+async function sendFriendRequest(userId, button) {
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Göndərilir...';
+    button.disabled = true;
+    
+    try {
+        const response = await fetch('{% url "accounts:send_friend_request" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                user_id: userId
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            button.innerHTML = '<i class="fas fa-clock me-1"></i>Gözləyir';
+            button.className = 'friend-btn pending';
+            button.disabled = true;
+            
+            // Show success message
+            showMessage(data.message, 'success');
+        } else {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            showMessage(data.message, 'error');
+        }
+    } catch (error) {
+        button.innerHTML = originalText;
+        button.disabled = false;
+        showMessage('Bir xəta baş verdi. Yenidən cəhd edin.', 'error');
+    }
+}
+
+async function respondFriendRequest(friendshipId, action, button) {
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Emal edilir...';
+    button.disabled = true;
+    
+    try {
+        const response = await fetch('{% url "accounts:respond_friend_request" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                friendship_id: friendshipId,
+                action: action
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            if (action === 'accept') {
+                button.innerHTML = '<i class="fas fa-check-circle me-1"></i>Dostdur';
+                button.className = 'friend-btn friends';
+            } else {
+                button.innerHTML = '<i class="fas fa-times me-1"></i>Rədd edildi';
+                button.className = 'friend-btn rejected';
+            }
+            button.disabled = true;
+            
+            showMessage(data.message, 'success');
+        } else {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            showMessage(data.message, 'error');
+        }
+    } catch (error) {
+        button.innerHTML = originalText;
+        button.disabled = false;
+        showMessage('Bir xəta baş verdi. Yenidən cəhd edin.', 'error');
+    }
+}
+
+function showMessage(message, type) {
+    // Create message element
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+    messageDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    messageDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (messageDiv.parentNode) {
+            messageDiv.remove();
+        }
+    }, 5000);
+}
+
+// View toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const viewBtns = document.querySelectorAll('.view-btn');
+    const peopleContainer = document.getElementById('people-container');
+    
+    viewBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            viewBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const view = this.dataset.view;
+            if (view === 'list') {
+                peopleContainer.style.display = 'flex';
+                peopleContainer.style.flexDirection = 'column';
+                peopleContainer.style.gap = '1rem';
+                
+                // Modify cards for list view
+                const cards = peopleContainer.querySelectorAll('.person-card');
+                cards.forEach(card => {
+                    card.style.display = 'flex';
+                    card.style.flexDirection = 'row';
+                    card.style.alignItems = 'center';
+                    card.style.padding = '1rem';
+                    
+                    const header = card.querySelector('.person-card-header');
+                    header.style.height = '80px';
+                    header.style.width = '80px';
+                    header.style.flexShrink = '0';
+                    header.style.borderRadius = '50%';
+                    
+                    const avatar = card.querySelector('.person-avatar');
+                    avatar.style.position = 'static';
+                    avatar.style.transform = 'none';
+                    avatar.style.width = '60px';
+                    avatar.style.height = '60px';
+                    avatar.style.margin = '10px';
+                    
+                    const info = card.querySelector('.person-info');
+                    info.style.textAlign = 'left';
+                    info.style.padding = '0 1rem';
+                    info.style.flex = '1';
+                });
+            } else {
+                // Reset to grid view
+                peopleContainer.style.display = 'grid';
+                peopleContainer.style.flexDirection = '';
+                
+                const cards = peopleContainer.querySelectorAll('.person-card');
+                cards.forEach(card => {
+                    card.style.display = 'block';
+                    card.style.flexDirection = '';
+                    card.style.alignItems = '';
+                    card.style.padding = '';
+                    
+                    const header = card.querySelector('.person-card-header');
+                    header.style.height = '200px';
+                    header.style.width = '';
+                    header.style.flexShrink = '';
+                    header.style.borderRadius = '';
+                    
+                    const avatar = card.querySelector('.person-avatar');
+                    avatar.style.position = 'absolute';
+                    avatar.style.transform = 'translateX(-50%)';
+                    avatar.style.width = '100px';
+                    avatar.style.height = '100px';
+                    avatar.style.margin = '';
+                    
+                    const info = card.querySelector('.person-info');
+                    info.style.textAlign = 'center';
+                    info.style.padding = '3rem 1.5rem 1.5rem';
+                    info.style.flex = '';
+                });
+            }
+        });
+    });
+});
+</script>
+
+<!-- Add CSRF token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}

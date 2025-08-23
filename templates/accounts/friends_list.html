@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dostlarım - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.friends-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.friends-header {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.friends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.friend-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.friend-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.friend-card-header {
+    position: relative;
+    height: 150px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    overflow: hidden;
+}
+
+.friend-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 4px solid white;
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    object-fit: cover;
+    background: white;
+}
+
+.friend-info {
+    padding: 2.5rem 1.5rem 1.5rem;
+    text-align: center;
+}
+
+.friend-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.friend-location {
+    color: #28a745;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+.friend-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.friend-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    text-decoration: none;
+    text-align: center;
+}
+
+.view-profile-btn {
+    background: #17a2b8;
+    color: white;
+}
+
+.view-profile-btn:hover {
+    background: #138496;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.message-btn {
+    background: #28a745;
+    color: white;
+}
+
+.message-btn:hover {
+    background: #218838;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: #e9ecef;
+    margin-bottom: 1rem;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 1rem;
+}
+
+.empty-message {
+    color: #6c757d;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="friends-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="friends-header">
+            <h2 class="mb-3">
+                <i class="fas fa-user-friends text-primary me-2"></i>
+                Dostlarım
+            </h2>
+            <p class="text-muted mb-0">
+                {% if friends %}
+                    {{ friends|length }} dostunuz var
+                {% else %}
+                    Hələ dostunuz yoxdur
+                {% endif %}
+            </p>
+        </div>
+        
+        <!-- Friends Grid -->
+        {% if friends %}
+            <div class="friends-grid">
+                {% for friend in friends %}
+                    <div class="friend-card">
+                        <div class="friend-card-header">
+                            {% if friend.images.first %}
+                                <img src="{{ friend.images.first.image.url }}" alt="{{ friend.get_full_name }}" class="friend-avatar">
+                            {% else %}
+                                <div class="friend-avatar" style="background: #e9ecef; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-user fa-lg" style="color: #6c757d;"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="friend-info">
+                            <h5 class="friend-name">{{ friend.get_full_name }}</h5>
+                            
+                            {% if friend.city %}
+                                <p class="friend-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ friend.city }}
+                                </p>
+                            {% endif %}
+                            
+                            <div class="friend-actions">
+                                <a href="#" class="friend-btn view-profile-btn">
+                                    <i class="fas fa-eye me-1"></i>
+                                    Profil
+                                </a>
+                                <a href="#" class="friend-btn message-btn">
+                                    <i class="fas fa-comment me-1"></i>
+                                    Mesaj
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                <h3 class="empty-title">Hələ dostunuz yoxdur</h3>
+                <p class="empty-message">
+                    Yeni insanlar tapın və dostluq sorğuları göndərin
+                </p>
+                <a href="{% url 'accounts:people_list' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-search me-2"></i>
+                    İnsanları Kəşf Et
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+

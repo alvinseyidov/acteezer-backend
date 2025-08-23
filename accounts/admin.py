@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
-from .models import User, UserImage, Language, Interest, OTPVerification, BlogCategory, BlogPost, BlogTag, BlogPostTag, Newsletter
+from .models import User, UserImage, Language, Interest, OTPVerification, BlogCategory, BlogPost, BlogTag, BlogPostTag, Newsletter, Friendship
 
 
 class UserImageInline(admin.TabularInline):
@@ -171,3 +171,38 @@ class NewsletterAdmin(admin.ModelAdmin):
         queryset.update(is_active=False)
         self.message_user(request, f"{queryset.count()} subscriptions deactivated.")
     deactivate_subscriptions.short_description = "Deactivate selected subscriptions"
+
+
+@admin.register(Friendship)
+class FriendshipAdmin(admin.ModelAdmin):
+    list_display = ['from_user', 'to_user', 'status', 'created_at', 'updated_at']
+    list_filter = ['status', 'created_at', 'updated_at']
+    search_fields = ['from_user__first_name', 'from_user__last_name', 'from_user__phone', 
+                     'to_user__first_name', 'to_user__last_name', 'to_user__phone']
+    ordering = ['-created_at']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    fieldsets = (
+        ('Friendship Details', {
+            'fields': ('from_user', 'to_user', 'status')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ['collapse']
+        }),
+    )
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('from_user', 'to_user')
+    
+    actions = ['accept_friendships', 'reject_friendships']
+    
+    def accept_friendships(self, request, queryset):
+        updated = queryset.filter(status='pending').update(status='accepted')
+        self.message_user(request, f"{updated} friendship requests accepted.")
+    accept_friendships.short_description = "Accept selected pending friendship requests"
+    
+    def reject_friendships(self, request, queryset):
+        updated = queryset.filter(status='pending').update(status='rejected')
+        self.message_user(request, f"{updated} friendship requests rejected.")
+    reject_friendships.short_description = "Reject selected pending friendship requests"

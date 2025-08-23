@@ -6,12 +6,20 @@ app_name = 'accounts'
 urlpatterns = [
     # Authentication
     path('login/', views.user_login, name='login'),
+    path('login/otp/', views.login_otp_verification, name='login_otp_verification'),
     path('logout/', views.user_logout, name='logout'),
     
     # Profile
     path('profile/', views.profile, name='profile'),
     path('my-activities/', views.my_activities, name='my_activities'),
     path('joined-activities/', views.joined_activities, name='joined_activities'),
+    
+    # People & Friends
+    path('people/', views.people_list, name='people_list'),
+    path('friends/', views.friends_list, name='friends_list'),
+    path('friend-requests/', views.friend_requests, name='friend_requests'),
+    path('send-friend-request/', views.send_friend_request, name='send_friend_request'),
+    path('respond-friend-request/', views.respond_friend_request, name='respond_friend_request'),
     
     # Registration steps
     path('register/', views.phone_registration, name='phone_registration'),

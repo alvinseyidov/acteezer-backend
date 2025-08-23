@@ -221,8 +221,8 @@ function validateField(input) {
         }
     }
     
-    // Date validation (age check)
-    if (input.type === 'date' && value) {
+    // Date validation (age check - only for birthday fields)
+    if (input.type === 'date' && value && (input.name === 'birthday' || input.id === 'birthday')) {
         const birthDate = new Date(value);
         const today = new Date();
         const age = today.getFullYear() - birthDate.getFullYear();
