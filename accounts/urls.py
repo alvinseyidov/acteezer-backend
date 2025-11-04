@@ -10,6 +10,8 @@ urlpatterns = [
     
     # Profile
     path('profile/', views.profile, name='profile'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('settings/', views.settings, name='settings'),
     path('user/<int:user_id>/', views.user_detail, name='user_detail'),
     path('my-activities/', views.my_activities, name='my_activities'),
     path('joined-activities/', views.joined_activities, name='joined_activities'),

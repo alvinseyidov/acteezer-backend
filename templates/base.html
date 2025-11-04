@@ -779,6 +779,166 @@
             }
         }
 
+        /* Mobile Bottom Navigation Bar */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e0f2ef;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+            display: none;
+            padding: 0.5rem 0;
+            padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+        }
+
+        @media (max-width: 991.98px) {
+            .mobile-bottom-nav {
+                display: flex;
+            }
+
+            /* Add padding to body to prevent content from being hidden behind bottom nav */
+            body {
+                padding-bottom: 80px;
+            }
+        }
+
+        .mobile-bottom-nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 0.5rem;
+            position: relative;
+        }
+
+        .mobile-bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 0.5rem;
+            text-decoration: none;
+            color: #64748b;
+            transition: all 0.3s ease;
+            position: relative;
+            min-width: 0;
+        }
+
+        .mobile-bottom-nav-item.active {
+            color: #5DD3BE;
+        }
+
+        .mobile-bottom-nav-item i {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-bottom-nav-item span {
+            font-size: 0.7rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .mobile-bottom-nav-item:hover {
+            color: #5DD3BE;
+            text-decoration: none;
+        }
+
+        .mobile-bottom-nav-item.active i {
+            transform: scale(1.1);
+        }
+
+        /* Prominent Create Activity Button in Middle */
+        .mobile-bottom-nav-create {
+            position: relative;
+            margin: 0 0.5rem;
+            z-index: 10;
+        }
+
+        .mobile-bottom-nav-create-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+            border: 4px solid white;
+            box-shadow: 0 4px 20px rgba(93, 211, 190, 0.4), 0 8px 30px rgba(93, 211, 190, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(-8px);
+            position: relative;
+        }
+
+        .mobile-bottom-nav-create-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .mobile-bottom-nav-create-btn:hover {
+            transform: translateY(-12px) scale(1.05);
+            box-shadow: 0 6px 30px rgba(93, 211, 190, 0.5), 0 12px 40px rgba(93, 211, 190, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .mobile-bottom-nav-create-btn:hover::before {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
+        .mobile-bottom-nav-create-btn:active {
+            transform: translateY(-6px) scale(0.95);
+        }
+
+        .mobile-bottom-nav-create-btn i {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Hide create button on small screens if needed */
+        @media (max-width: 360px) {
+            .mobile-bottom-nav-item span {
+                font-size: 0.65rem;
+            }
+            
+            .mobile-bottom-nav-create-btn {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .mobile-bottom-nav-create-btn i {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Adjust scroll-to-top button on mobile to avoid bottom nav */
+        @media (max-width: 991.98px) {
+            .scroll-to-top {
+                bottom: 100px !important;
+                right: 20px !important;
+            }
+        }
+
         /* Mobile Footer Improvements */
         @media (max-width: 768px) {
             /* Footer Help Section Mobile */
@@ -1266,6 +1426,7 @@
                     <li><a href="{% url 'accounts:friends_list' %}"><i class="fas fa-user-friends"></i> Dostlarım</a></li>
                     <li><a href="{% url 'accounts:friend_requests' %}"><i class="fas fa-user-plus"></i> Dostluq Sorğuları</a></li>
                     <li><a href="{% url 'places:liked_places' %}"><i class="fas fa-heart"></i> Bəyəndiyim Məkanlar</a></li>
+                    <li><a href="{% url 'accounts:settings' %}"><i class="fas fa-cog"></i> Tənzimləmələr</a></li>
                     <li><a href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt"></i> Çıxış</a></li>
                 </ul>
             {% else %}
@@ -1370,7 +1531,7 @@
                                 <li><a class="dropdown-item" href="{% url 'accounts:friend_requests' %}"><i class="fas fa-user-plus"></i>Dostluq Sorğuları</a></li>
                                 <li><a class="dropdown-item" href="{% url 'places:liked_places' %}"><i class="fas fa-heart"></i>Bəyəndiyim Məkanlar</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i>Tənzimləmələr</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:settings' %}"><i class="fas fa-cog"></i>Tənzimləmələr</a></li>
                                 <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle"></i>Kömək</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt"></i>Çıxış</a></li>
@@ -1573,6 +1734,60 @@
             </div>
         </div>
     </footer>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    {% if user.is_authenticated %}
+    <nav class="mobile-bottom-nav">
+        <div class="mobile-bottom-nav-container">
+            <a href="{% url 'home' %}" class="mobile-bottom-nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                <i class="fas fa-home"></i>
+                <span>Ana səhifə</span>
+            </a>
+            <a href="{% url 'activities:activities_list' %}" class="mobile-bottom-nav-item {% if 'activities' in request.resolver_match.namespace and request.resolver_match.url_name == 'activities_list' %}active{% endif %}">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Aktivitələr</span>
+            </a>
+            <div class="mobile-bottom-nav-create">
+                <a href="{% url 'activities:create_activity' %}" class="mobile-bottom-nav-create-btn" title="Aktivitə Yarat">
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+            <a href="{% url 'accounts:people_list' %}" class="mobile-bottom-nav-item {% if request.resolver_match.url_name == 'people_list' %}active{% endif %}">
+                <i class="fas fa-users"></i>
+                <span>İnsanlar</span>
+            </a>
+            <a href="{% url 'accounts:profile' %}" class="mobile-bottom-nav-item {% if 'profile' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-user"></i>
+                <span>Profil</span>
+            </a>
+        </div>
+    </nav>
+    {% else %}
+    <nav class="mobile-bottom-nav">
+        <div class="mobile-bottom-nav-container">
+            <a href="{% url 'home' %}" class="mobile-bottom-nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                <i class="fas fa-home"></i>
+                <span>Ana səhifə</span>
+            </a>
+            <a href="{% url 'activities:activities_list' %}" class="mobile-bottom-nav-item {% if 'activities' in request.resolver_match.namespace and request.resolver_match.url_name == 'activities_list' %}active{% endif %}">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Aktivitələr</span>
+            </a>
+            <a href="{% url 'places:places_list' %}" class="mobile-bottom-nav-item {% if 'places' in request.resolver_match.namespace and request.resolver_match.url_name == 'places_list' %}active{% endif %}">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Məkanlar</span>
+            </a>
+            <a href="{% url 'accounts:people_list' %}" class="mobile-bottom-nav-item {% if request.resolver_match.url_name == 'people_list' %}active{% endif %}">
+                <i class="fas fa-users"></i>
+                <span>İnsanlar</span>
+            </a>
+            <a href="{% url 'accounts:login' %}" class="mobile-bottom-nav-item {% if request.resolver_match.url_name == 'login' %}active{% endif %}">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Daxil ol</span>
+            </a>
+        </div>
+    </nav>
+    {% endif %}
 
     <!-- Scroll to Top Button -->
     <button class="scroll-to-top" id="scrollToTop" title="Yuxarı qayıt">

@@ -1,0 +1,525 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profil Redaktəsi - {{ user.get_full_name|default:user.phone }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.edit-profile-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.edit-profile-header {
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px 15px 0 0;
+    margin-bottom: 0;
+}
+
+.edit-profile-section {
+    background: white;
+    border-radius: 0 0 15px 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #5DD3BE;
+    box-shadow: 0 0 0 0.2rem rgba(93, 211, 190, 0.25);
+}
+
+.checkbox-group,
+.radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.checkbox-item,
+.radio-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.checkbox-item:hover,
+.radio-item:hover {
+    background: #e9ecef;
+    border-color: #5DD3BE;
+}
+
+.checkbox-item input[type="checkbox"],
+.radio-item input[type="radio"] {
+    margin-right: 0.5rem;
+}
+
+.image-upload-section {
+    margin-top: 1rem;
+}
+
+.current-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.image-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.image-item.primary {
+    border-color: #5DD3BE;
+}
+
+.image-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-item:hover .image-overlay {
+    opacity: 1;
+}
+
+.image-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: #5DD3BE;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.btn-sm-icon {
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-danger-sm {
+    background: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-danger-sm:hover {
+    background: #c82333;
+    color: white;
+}
+
+.btn-primary-sm {
+    background: #5DD3BE;
+    color: white;
+    border: none;
+}
+
+.btn-primary-sm:hover {
+    background: #4BC5AA;
+    color: white;
+}
+
+.btn-primary-sm:disabled {
+    background: #6c757d;
+    opacity: 0.6;
+}
+
+.save-btn {
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(93, 211, 190, 0.4);
+    color: white;
+}
+
+.cancel-btn {
+    background: #6c757d;
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+    background: #5a6268;
+    color: white;
+}
+
+.image-upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.image-upload-area:hover {
+    border-color: #5DD3BE;
+    background: #f0f8f4;
+}
+
+.image-upload-area.dragover {
+    border-color: #5DD3BE;
+    background: #e8f5e9;
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-profile-container">
+    <div class="edit-profile-header">
+        <h1 class="mb-0">
+            <i class="fas fa-user-edit me-2"></i>
+            Profil Redaktəsi
+        </h1>
+        <p class="mb-0 mt-2 opacity-90">Şəxsi məlumatlarınızı yeniləyin</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="edit-profile-section">
+        {% csrf_token %}
+        
+        <!-- Basic Information -->
+        <div class="section-title">
+            <i class="fas fa-user"></i>
+            Əsas Məlumatlar
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" for="first_name">Ad</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" 
+                           value="{{ user.first_name }}" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" for="last_name">Soyad</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" 
+                           value="{{ user.last_name }}" required>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" 
+                   value="{{ user.email|default:'' }}">
+            <small class="form-text">Email ünvanı seçimlidir</small>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="bio">Bio</label>
+            <textarea class="form-control" id="bio" name="bio" rows="4" 
+                      maxlength="500" placeholder="Özünüz haqqında qısa məlumat yazın...">{{ user.bio|default:'' }}</textarea>
+            <small class="form-text">Maksimum 500 simvol</small>
+        </div>
+        
+        <!-- Personal Details -->
+        <div class="section-title">
+            <i class="fas fa-info-circle"></i>
+            Şəxsi Məlumatlar
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" for="birthday">Doğum Tarixi</label>
+                    <input type="date" class="form-control" id="birthday" name="birthday" 
+                           value="{{ user.birthday|date:'Y-m-d'|default:'' }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" for="gender">Cinsiyyət</label>
+                    <select class="form-select" id="gender" name="gender">
+                        <option value="">Seçin</option>
+                        <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Kişi</option>
+                        <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Qadın</option>
+                        <option value="other" {% if user.gender == 'other' %}selected{% endif %}>Digər</option>
+                        <option value="prefer_not_to_say" {% if user.gender == 'prefer_not_to_say' %}selected{% endif %}>Deməyi üstün tutmuram</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Location -->
+        <div class="section-title">
+            <i class="fas fa-map-marker-alt"></i>
+            Yerləşmə
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" for="city">Şəhər</label>
+                    <input type="text" class="form-control" id="city" name="city" 
+                           value="{{ user.city|default:'' }}" placeholder="Məsələn: Bakı">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" for="address">Ünvan</label>
+                    <input type="text" class="form-control" id="address" name="address" 
+                           value="{{ user.address|default:'' }}" placeholder="Ünvan">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Languages -->
+        <div class="section-title">
+            <i class="fas fa-language"></i>
+            Dillər
+        </div>
+        
+        <div class="form-group">
+            <div class="checkbox-group">
+                {% for language in languages %}
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="languages" value="{{ language.id }}" 
+                               {% if language in user.languages.all %}checked{% endif %}>
+                        {{ language.name }}
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Interests -->
+        <div class="section-title">
+            <i class="fas fa-heart"></i>
+            Maraqlar
+        </div>
+        
+        <div class="form-group">
+            <div class="checkbox-group">
+                {% for interest in interests %}
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="interests" value="{{ interest.id }}" 
+                               {% if interest in user.interests.all %}checked{% endif %}>
+                        {% if interest.icon %}
+                            <i class="{{ interest.icon }} me-1"></i>
+                        {% endif %}
+                        {{ interest.name }}
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Profile Images -->
+        <div class="section-title">
+            <i class="fas fa-images"></i>
+            Profil Şəkilləri
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Cari Şəkillər</label>
+            {% if user_images %}
+                <div class="current-images">
+                    {% for img in user_images %}
+                        <div class="image-item {% if img.is_primary %}primary{% endif %}">
+                            <img src="{{ img.image.url }}" alt="Profil şəkli">
+                            {% if img.is_primary %}
+                                <span class="image-badge">Əsas</span>
+                            {% endif %}
+                            <div class="image-overlay">
+                                {% if not img.is_primary %}
+                                <button type="button" class="btn btn-sm-icon btn-primary-sm" title="Əsas şəkil et"
+                                        onclick="setPrimaryImage({{ img.id }})">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                {% endif %}
+                                <button type="button" class="btn btn-sm-icon btn-danger-sm" title="Sil"
+                                        onclick="deleteImage({{ img.id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">Hələ şəkil yüklənməyib</p>
+            {% endif %}
+        </div>
+        
+        <div class="form-group image-upload-section">
+            <label class="form-label" for="new_images">Yeni Şəkillər Əlavə Et</label>
+            <div class="image-upload-area">
+                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
+                <p class="mb-2">Şəkilləri buraya sürükləyin və ya klikləyin</p>
+                <input type="file" class="form-control" id="new_images" name="new_images" 
+                       multiple accept="image/*">
+                <small class="form-text d-block mt-2">Bir neçə şəkil seçə bilərsiniz</small>
+            </div>
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-4 border-top">
+            <a href="{% url 'accounts:profile' %}" class="btn cancel-btn">
+                <i class="fas fa-times me-2"></i>
+                Ləğv Et
+            </a>
+            <button type="submit" class="btn save-btn">
+                <i class="fas fa-save me-2"></i>
+                Yadda Saxla
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+// Drag and drop functionality
+const uploadArea = document.querySelector('.image-upload-area');
+const fileInput = document.getElementById('new_images');
+
+uploadArea.addEventListener('click', () => fileInput.click());
+
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    fileInput.files = files;
+});
+
+// Image management functions
+function setPrimaryImage(imageId) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{% url "accounts:edit_profile" %}';
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfToken;
+    form.appendChild(csrfInput);
+    
+    const imageInput = document.createElement('input');
+    imageInput.type = 'hidden';
+    imageInput.name = 'primary_image_id';
+    imageInput.value = imageId;
+    form.appendChild(imageInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function deleteImage(imageId) {
+    if (confirm('Bu şəkli silmək istədiyinizə əminsiniz?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{% url "accounts:edit_profile" %}';
+        
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+        
+        const deleteInput = document.createElement('input');
+        deleteInput.type = 'hidden';
+        deleteInput.name = 'delete_images';
+        deleteInput.value = imageId;
+        form.appendChild(deleteInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}
+

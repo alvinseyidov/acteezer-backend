@@ -6,7 +6,7 @@
 {% block extra_css %}
 <style>
 .profile-header {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
     color: white;
     padding: 3rem 0;
     margin-bottom: 2rem;
@@ -49,7 +49,7 @@
 .stat-number {
     font-size: 2rem;
     font-weight: 700;
-    color: #28a745;
+    color: #5DD3BE;
     margin-bottom: 0.5rem;
 }
 
@@ -127,7 +127,7 @@
 .profile-info-icon {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -153,7 +153,7 @@
 }
 
 .edit-profile-btn {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
     border: none;
     border-radius: 25px;
     padding: 0.75rem 1.5rem;
@@ -164,7 +164,7 @@
 
 .edit-profile-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+    box-shadow: 0 8px 25px rgba(93, 211, 190, 0.4);
     color: white;
 }
 
@@ -188,8 +188,8 @@
         <div class="row align-items-center">
             <div class="col-md-8">
                 <div class="d-flex align-items-center">
-                    {% if user.profile_image %}
-                        <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name }}" class="profile-avatar">
+                    {% if primary_image %}
+                        <img src="{{ primary_image.image.url }}" alt="{{ user.get_full_name }}" class="profile-avatar">
                     {% else %}
                         <div class="profile-default-avatar">
                             <i class="fas fa-user"></i>
@@ -202,13 +202,13 @@
                             {{ user.phone }}
                         </p>
                         {% if user.bio %}
-                            <p class="mb-0 opacity-80">{{ user.bio }}</p>
+                            <p class="mb-0 opacity-80">{{ user.bio|truncatewords:20 }}</p>
                         {% endif %}
                     </div>
                 </div>
             </div>
             <div class="col-md-4 text-md-end">
-                <a href="#" class="btn edit-profile-btn">
+                <a href="{% url 'accounts:edit_profile' %}" class="btn edit-profile-btn">
                     <i class="fas fa-edit me-2"></i>
                     Profili Redaktə Et
                 </a>
@@ -258,41 +258,74 @@
                 </h3>
                 
                 {% if recent_activities %}
-                    {% for activity_participation in recent_activities %}
-                        <div class="activity-history-item">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="mb-1">
-                                    <a href="{{ activity_participation.activity.get_absolute_url }}" class="text-decoration-none">
-                                        {{ activity_participation.activity.title }}
-                                    </a>
-                                </h5>
-                                <span class="activity-status {% if activity_participation.activity.organizer == user %}status-organized{% elif activity_participation.activity.is_past %}status-completed{% else %}status-joined{% endif %}">
-                                    {% if activity_participation.activity.organizer == user %}
-                                        Təşkilatçı
-                                    {% elif activity_participation.activity.is_past %}
-                                        Tamamlandı
-                                    {% else %}
-                                        Qoşuldu
-                                    {% endif %}
-                                </span>
-                            </div>
-                            <p class="text-muted mb-2">{{ activity_participation.activity.short_description }}</p>
-                            <div class="d-flex justify-content-between text-muted small">
-                                <span>
-                                    <i class="fas fa-calendar me-1"></i>
-                                    {{ activity_participation.activity.start_date|date:"d M Y, H:i" }}
-                                </span>
-                                <span>
-                                    <i class="fas fa-map-marker-alt me-1"></i>
-                                    {{ activity_participation.activity.address }}
-                                </span>
-                            </div>
-                        </div>
+                    {% for item in recent_activities %}
+                        {% if item.activity %}
+                            {% with activity=item.activity %}
+                                <div class="activity-history-item">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="mb-1">
+                                            <a href="{{ activity.get_absolute_url }}" class="text-decoration-none">
+                                                {{ activity.title }}
+                                            </a>
+                                        </h5>
+                                        <span class="activity-status {% if activity.organizer == user %}status-organized{% elif activity.is_past %}status-completed{% else %}status-joined{% endif %}">
+                                            {% if activity.organizer == user %}
+                                                Təşkilatçı
+                                            {% elif activity.is_past %}
+                                                Tamamlandı
+                                            {% else %}
+                                                Qoşuldu
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <p class="text-muted mb-2">{{ activity.short_description }}</p>
+                                    <div class="d-flex justify-content-between text-muted small">
+                                        <span>
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ activity.start_date|date:"d M Y, H:i" }}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            {{ activity.address }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endwith %}
+                        {% else %}
+                            {% with activity=item %}
+                                <div class="activity-history-item">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="mb-1">
+                                            <a href="{{ activity.get_absolute_url }}" class="text-decoration-none">
+                                                {{ activity.title }}
+                                            </a>
+                                        </h5>
+                                        <span class="activity-status status-organized">
+                                            Təşkilatçı
+                                        </span>
+                                    </div>
+                                    <p class="text-muted mb-2">{{ activity.short_description }}</p>
+                                    <div class="d-flex justify-content-between text-muted small">
+                                        <span>
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ activity.start_date|date:"d M Y, H:i" }}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            {{ activity.address }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endwith %}
+                        {% endif %}
                     {% endfor %}
                     
                     <div class="text-center mt-3">
-                        <a href="#" class="btn btn-outline-primary">
-                            Bütün Aktivitələri Gör
+                        <a href="{% url 'accounts:my_activities' %}" class="btn btn-outline-primary me-2">
+                            Təşkil Etdiyim Aktivitələr
+                        </a>
+                        <a href="{% url 'accounts:joined_activities' %}" class="btn btn-outline-primary">
+                            Qoşulduğum Aktivitələr
                         </a>
                     </div>
                 {% else %}

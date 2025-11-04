@@ -477,6 +477,12 @@ def registration_complete(request):
 def profile(request):
     """User profile view"""
     from activities.models import ActivityParticipant, Activity
+    from .models import UserImage
+    
+    # Get primary image
+    primary_image = UserImage.objects.filter(user=request.user, is_primary=True).first()
+    if not primary_image:
+        primary_image = UserImage.objects.filter(user=request.user).first()
     
     # Get user's organized activities
     organized_activities = Activity.objects.filter(organizer=request.user).order_by('-created_at')
@@ -501,12 +507,123 @@ def profile(request):
     recent_activities = sorted(recent_activities, key=lambda x: x.join_requested_at if hasattr(x, 'join_requested_at') else x.created_at, reverse=True)[:10]
     
     context = {
+        'primary_image': primary_image,
         'organized_activities_count': organized_activities_count,
         'joined_activities_count': joined_activities_count,
         'completed_activities_count': completed_activities_count,
         'recent_activities': recent_activities,
     }
     return render(request, 'accounts/profile.html', context)
+
+@login_required
+def edit_profile(request):
+    """Edit user profile"""
+    from .models import Language, Interest, UserImage
+    from django.contrib import messages
+    
+    if request.method == 'POST':
+        user = request.user
+        
+        # Check if this is just an image operation (primary image change or deletion)
+        primary_image_id = request.POST.get('primary_image_id')
+        delete_image_ids = request.POST.getlist('delete_images')
+        new_images = request.FILES.getlist('new_images')
+        
+        is_image_only_operation = (primary_image_id or delete_image_ids) and not request.POST.get('first_name')
+        
+        # Handle primary image change
+        if primary_image_id:
+            try:
+                # Set new primary image
+                UserImage.objects.filter(user=user, id=primary_image_id).update(is_primary=True)
+                UserImage.objects.filter(user=user).exclude(id=primary_image_id).update(is_primary=False)
+                messages.success(request, 'Əsas şəkil dəyişdirildi!')
+            except Exception:
+                pass
+        
+        # Handle image deletion
+        if delete_image_ids:
+            images_to_delete = UserImage.objects.filter(user=user, id__in=delete_image_ids)
+            images_to_delete.delete()
+            # If we deleted the primary image, make the first remaining image primary
+            if UserImage.objects.filter(user=user, is_primary=True).count() == 0:
+                first_image = UserImage.objects.filter(user=user).first()
+                if first_image:
+                    first_image.is_primary = True
+                    first_image.save()
+            messages.success(request, 'Şəkil(lər) silindi!')
+        
+        # Handle image uploads
+        if new_images:
+            existing_count = user.images.count()
+            for i, image in enumerate(new_images):
+                UserImage.objects.create(
+                    user=user,
+                    image=image,
+                    order=existing_count + i + 1,
+                    is_primary=(existing_count == 0 and i == 0)  # Make first image primary if no images exist
+                )
+            # If this was the first image, make it primary
+            if existing_count == 0 and new_images:
+                first_img = UserImage.objects.filter(user=user).first()
+                if first_img:
+                    first_img.is_primary = True
+                    first_img.save()
+            messages.success(request, 'Şəkil(lər) yükləndi!')
+        
+        # If it's just an image operation, redirect immediately
+        if is_image_only_operation:
+            return redirect('accounts:edit_profile')
+        
+        # Update basic info
+        user.first_name = request.POST.get('first_name', '').strip()
+        user.last_name = request.POST.get('last_name', '').strip()
+        user.email = request.POST.get('email', '').strip()
+        user.bio = request.POST.get('bio', '').strip()
+        
+        # Update birthday
+        birthday_str = request.POST.get('birthday', '').strip()
+        if birthday_str:
+            try:
+                from datetime import datetime
+                user.birthday = datetime.strptime(birthday_str, '%Y-%m-%d').date()
+            except ValueError:
+                messages.error(request, 'Doğum tarixi düzgün formatda deyil.')
+        
+        # Update gender
+        gender = request.POST.get('gender', '').strip()
+        if gender:
+            user.gender = gender
+        else:
+            user.gender = None
+        
+        # Update location
+        user.city = request.POST.get('city', '').strip() or None
+        user.address = request.POST.get('address', '').strip() or None
+        
+        # Update languages
+        language_ids = request.POST.getlist('languages')
+        user.languages.set(Language.objects.filter(id__in=language_ids))
+        
+        # Update interests
+        interest_ids = request.POST.getlist('interests')
+        user.interests.set(Interest.objects.filter(id__in=interest_ids))
+        
+        user.save()
+        messages.success(request, 'Profil uğurla yeniləndi!')
+        return redirect('accounts:profile')
+    
+    # GET request - show edit form
+    languages = Language.objects.all().order_by('name')
+    interests = Interest.objects.all().order_by('name')
+    user_images = UserImage.objects.filter(user=request.user).order_by('order', 'uploaded_at')
+    
+    context = {
+        'languages': languages,
+        'interests': interests,
+        'user_images': user_images,
+    }
+    return render(request, 'accounts/edit_profile.html', context)
 
 @login_required
 def my_activities(request):
@@ -989,3 +1106,63 @@ def user_detail(request, user_id):
     }
     
     return render(request, 'accounts/user_detail.html', context)
+
+
+@login_required
+def settings(request):
+    """User settings page"""
+    from django.contrib.auth import update_session_auth_hash
+    
+    if request.method == 'POST':
+        user = request.user
+        action = request.POST.get('action')
+        
+        if action == 'change_password':
+            # Change password
+            old_password = request.POST.get('old_password', '').strip()
+            new_password = request.POST.get('new_password', '').strip()
+            confirm_password = request.POST.get('confirm_password', '').strip()
+            
+            if not old_password or not new_password or not confirm_password:
+                messages.error(request, 'Bütün sahələr doldurulmalıdır.')
+            elif new_password != confirm_password:
+                messages.error(request, 'Yeni şifrələr uyğun gəlmir.')
+            elif len(new_password) < 8:
+                messages.error(request, 'Şifrə ən azı 8 simvol olmalıdır.')
+            elif not user.check_password(old_password):
+                messages.error(request, 'Köhnə şifrə düzgün deyil.')
+            else:
+                user.set_password(new_password)
+                user.save()
+                update_session_auth_hash(request, user)  # Keep user logged in
+                messages.success(request, 'Şifrə uğurla dəyişdirildi!')
+                return redirect('accounts:settings')
+        
+        elif action == 'update_email':
+            # Update email
+            email = request.POST.get('email', '').strip()
+            if email:
+                user.email = email
+                user.save()
+                messages.success(request, 'Email uğurla yeniləndi!')
+            else:
+                messages.error(request, 'Email daxil edin.')
+            return redirect('accounts:settings')
+        
+        elif action == 'update_phone':
+            # Update phone (requires verification)
+            phone = request.POST.get('phone', '').strip()
+            if phone:
+                # Check if phone is already taken
+                if User.objects.filter(phone=phone).exclude(id=user.id).exists():
+                    messages.error(request, 'Bu telefon nömrəsi artıq istifadə olunur.')
+                else:
+                    user.phone = phone
+                    user.is_phone_verified = False  # Require re-verification
+                    user.save()
+                    messages.success(request, 'Telefon nömrəsi yeniləndi. Zəhmət olmasa yenidən təsdiqləyin.')
+            else:
+                messages.error(request, 'Telefon nömrəsi daxil edin.')
+            return redirect('accounts:settings')
+    
+    return render(request, 'accounts/settings.html')

@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tənzimləmələr - {{ user.get_full_name|default:user.phone }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.settings-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.settings-header {
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px 15px 0 0;
+    margin-bottom: 0;
+}
+
+.settings-section {
+    background: white;
+    border-radius: 0 0 15px 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #5DD3BE;
+    box-shadow: 0 0 0 0.2rem rgba(93, 211, 190, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(93, 211, 190, 0.4);
+    background: #4BC5AA;
+}
+
+.btn-outline-secondary {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border: 2px solid #5DD3BE;
+    color: #5DD3BE;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background: #5DD3BE;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(93, 211, 190, 0.3);
+}
+
+.settings-info-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.settings-info-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 1rem;
+    font-size: 0.9rem;
+}
+
+.settings-info-content {
+    flex: 1;
+}
+
+.settings-info-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.settings-info-value {
+    font-weight: 600;
+    color: #333;
+}
+
+.alert {
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.password-toggle {
+    position: relative;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.password-toggle-btn:hover {
+    color: #5DD3BE;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-header">
+        <h1 class="mb-0">
+            <i class="fas fa-cog me-2"></i>
+            Tənzimləmələr
+        </h1>
+        <p class="mb-0 mt-2 opacity-90">Hesabınızın parametrlərini idarə edin</p>
+    </div>
+
+    <!-- Account Information -->
+    <div class="settings-section">
+        <h3 class="section-title">
+            <i class="fas fa-user-circle"></i>
+            Hesab Məlumatları
+        </h3>
+        
+        <div class="settings-info-item">
+            <div class="settings-info-icon">
+                <i class="fas fa-phone"></i>
+            </div>
+            <div class="settings-info-content">
+                <div class="settings-info-label">Telefon Nömrəsi</div>
+                <div class="settings-info-value">{{ user.phone }}</div>
+            </div>
+            {% if user.is_phone_verified %}
+                <span class="badge" style="background: #5DD3BE; color: white;">Təsdiqlənib</span>
+            {% else %}
+                <span class="badge bg-warning">Təsdiqlənməyib</span>
+            {% endif %}
+        </div>
+
+        <div class="settings-info-item">
+            <div class="settings-info-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div class="settings-info-content">
+                <div class="settings-info-label">Email</div>
+                <div class="settings-info-value">{{ user.email|default:"Əlavə edilməyib" }}</div>
+            </div>
+        </div>
+
+        <div class="settings-info-item">
+            <div class="settings-info-icon">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div class="settings-info-content">
+                <div class="settings-info-label">Qoşulma Tarixi</div>
+                <div class="settings-info-value">{{ user.date_joined|date:"d M Y" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="settings-section">
+        <h3 class="section-title">
+            <i class="fas fa-lock"></i>
+            Şifrəni Dəyişdir
+        </h3>
+        
+        <form method="POST" action="{% url 'accounts:settings' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="change_password">
+            
+            <div class="form-group">
+                <label for="old_password" class="form-label">Köhnə Şifrə</label>
+                <div class="password-toggle">
+                    <input type="password" class="form-control" id="old_password" name="old_password" required>
+                    <button type="button" class="password-toggle-btn" onclick="togglePassword('old_password', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="new_password" class="form-label">Yeni Şifrə</label>
+                <div class="password-toggle">
+                    <input type="password" class="form-control" id="new_password" name="new_password" required minlength="8">
+                    <button type="button" class="password-toggle-btn" onclick="togglePassword('new_password', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <small class="form-text text-muted">Şifrə ən azı 8 simvol olmalıdır</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm_password" class="form-label">Yeni Şifrəni Təsdiqlə</label>
+                <div class="password-toggle">
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="8">
+                    <button type="button" class="password-toggle-btn" onclick="togglePassword('confirm_password', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>
+                Şifrəni Yenilə
+            </button>
+        </form>
+    </div>
+
+    <!-- Update Email -->
+    <div class="settings-section">
+        <h3 class="section-title">
+            <i class="fas fa-envelope"></i>
+            Email Yenilə
+        </h3>
+        
+        <form method="POST" action="{% url 'accounts:settings' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_email">
+            
+            <div class="form-group">
+                <label for="email" class="form-label">Email Ünvanı</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ user.email|default:'' }}" placeholder="email@example.com">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>
+                Email Yenilə
+            </button>
+        </form>
+    </div>
+
+    <!-- Update Phone -->
+    <div class="settings-section">
+        <h3 class="section-title">
+            <i class="fas fa-phone"></i>
+            Telefon Nömrəsini Yenilə
+        </h3>
+        
+        <form method="POST" action="{% url 'accounts:settings' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_phone">
+            
+            <div class="form-group">
+                <label for="phone" class="form-label">Telefon Nömrəsi</label>
+                <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone }}" placeholder="+994501234567" required>
+                <small class="form-text text-muted">Telefon nömrəsini dəyişdikdən sonra yenidən təsdiqləmə tələb olunacaq</small>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>
+                Telefon Nömrəsini Yenilə
+            </button>
+        </form>
+    </div>
+
+    <!-- Profile Links -->
+    <div class="settings-section">
+        <h3 class="section-title">
+            <i class="fas fa-link"></i>
+            Sürətli Keçidlər
+        </h3>
+        
+        <div class="d-grid gap-2">
+            <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-user me-2"></i>
+                Profilə Qayıt
+            </a>
+            <a href="{% url 'accounts:edit_profile' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-edit me-2"></i>
+                Profili Redaktə Et
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+    const icon = button.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+</script>
+{% endblock %}
+
