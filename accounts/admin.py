@@ -21,8 +21,8 @@ class UserAdmin(BaseUserAdmin):
     inlines = [UserImageInline]
     
     # List display
-    list_display = ['phone', 'first_name', 'last_name', 'city', 'is_registration_complete', 'registration_step', 'is_phone_verified', 'created_at']
-    list_filter = ['is_registration_complete', 'registration_step', 'is_phone_verified', 'is_staff', 'is_active', 'created_at']
+    list_display = ['phone', 'first_name', 'last_name', 'gender', 'city', 'is_registration_complete', 'registration_step', 'is_phone_verified', 'created_at']
+    list_filter = ['is_registration_complete', 'registration_step', 'is_phone_verified', 'is_staff', 'is_active', 'gender', 'created_at']
     search_fields = ['phone', 'first_name', 'last_name', 'email', 'city']
     ordering = ['-created_at']
     
@@ -32,7 +32,7 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('phone', 'password', 'is_phone_verified')
         }),
         ('Personal Info', {
-            'fields': ('first_name', 'last_name', 'email', 'birthday', 'bio')
+            'fields': ('first_name', 'last_name', 'email', 'gender', 'birthday', 'bio')
         }),
         ('Location', {
             'fields': ('city', 'address', 'latitude', 'longitude')
@@ -56,7 +56,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('phone', 'first_name', 'last_name', 'password1', 'password2'),
+            'fields': ('phone', 'first_name', 'last_name', 'gender', 'password1', 'password2'),
         }),
     )
     
