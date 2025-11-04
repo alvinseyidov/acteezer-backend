@@ -202,16 +202,18 @@ def full_name_registration(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
+        gender = request.POST.get('gender')
         
-        if first_name and last_name:
+        if first_name and last_name and gender:
             request.user.first_name = first_name
             request.user.last_name = last_name
+            request.user.gender = gender
             request.user.registration_step = 2
             request.user.save()
             
             return redirect('accounts:languages_registration')
         else:
-            messages.error(request, 'Please enter both first and last name.')
+            messages.error(request, 'Zəhmət olmasa bütün məlumatları doldurun.')
     
     return render(request, 'accounts/full_name_registration.html')
 
