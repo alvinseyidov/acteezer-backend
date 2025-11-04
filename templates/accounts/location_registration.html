@@ -1,182 +1,308 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Yerin Məlumatı - Acteezer{% endblock %}
+{% block title %}Yerinizi Seçin - Acteezer{% endblock %}
 
 {% block extra_css %}
 <style>
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #f0fdf9 0%, #f7fefb 100%);
+    min-height: 100vh;
+}
+
 .auth-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem 0;
+    padding: 2rem 1rem;
 }
 
 .auth-card {
     max-width: 800px;
     width: 100%;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 32px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     overflow: hidden;
-    margin: 0 1rem;
+    animation: slideUp 0.6s ease;
 }
 
-.auth-header {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    padding: 2rem 2rem 1.5rem;
-    text-align: center;
-    position: relative;
-}
-
-.auth-logo {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    backdrop-filter: blur(10px);
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .step-progress {
-    padding: 1.5rem 2rem;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
+    padding: 2rem 2rem 1.75rem;
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.05) 0%, rgba(75, 197, 170, 0.05) 100%);
 }
 
-.step-indicator {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+.progress-container {
     position: relative;
 }
 
-.step-indicator::before {
+.progress-track {
+    width: 100%;
+    height: 6px;
+    background: #e8f0f5;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #5DD3BE 0%, #4BC5AA 100%);
+    border-radius: 10px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    width: 100%;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4));
+    border-radius: 0 10px 10px 0;
+}
+
+.progress-indicator {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: white;
+    border: 3px solid #4BC5AA;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(75, 197, 170, 0.3);
+    z-index: 10;
+    transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.progress-indicator::before {
     content: '';
     position: absolute;
     top: 50%;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: #e9ecef;
-    z-index: 1;
-}
-
-.step {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    background: #e9ecef;
-    color: #6c757d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 0.9rem;
-    position: relative;
-    z-index: 2;
-    transition: all 0.3s ease;
-}
-
-.step.active {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    transform: scale(1.1);
-}
-
-.step.completed {
-    background: #28a745;
-    color: white;
-}
-
-.progress {
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
     height: 8px;
-    border-radius: 4px;
-    overflow: hidden;
-    background: #e9ecef;
-}
-
-.progress-bar {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    transition: width 0.6s ease;
-}
-
-.auth-body {
-    padding: 2.5rem 2rem;
-}
-
-.step-title {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.step-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: #4BC5AA;
     border-radius: 50%;
+}
+
+.progress-info {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    color: white;
-    margin: 0 auto 1rem;
-    font-size: 2rem;
+    margin-top: 1rem;
+    font-size: 0.8125rem;
 }
 
-.form-floating {
-    margin-bottom: 1.5rem;
+.progress-step {
+    color: #4BC5AA;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
-.form-floating > .form-control {
-    height: 60px;
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.form-floating > .form-control:focus {
-    border-color: #28a745;
-    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
-}
-
-.form-floating > label {
-    color: #6c757d;
+.progress-percentage {
+    color: #94a3b8;
     font-weight: 500;
 }
 
-.auth-btn {
-    height: 60px;
-    border-radius: 12px;
-    font-size: 1.1rem;
+.auth-header {
+    padding: 2.5rem 2.5rem 2rem;
+    text-align: center;
+}
+
+.auth-logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(93, 211, 190, 0.4);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.auth-logo i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.auth-header h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.auth-header p {
+    color: #718096;
+    font-size: 1rem;
+}
+
+.auth-body {
+    padding: 2rem 2.5rem 3rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     font-weight: 600;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    border: none;
+    font-size: 0.9375rem;
+    color: #1a202c;
+    margin-bottom: 0.75rem;
+}
+
+.form-label i {
+    color: #4BC5AA;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #1a202c;
+    background: white;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-control:focus {
+    border-color: #5DD3BE;
+    box-shadow: 0 0 0 3px rgba(93, 211, 190, 0.1);
+}
+
+.form-control::placeholder {
+    color: #94a3b8;
+}
+
+.quick-locations-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quick-locations-title i {
+    color: #4BC5AA;
+}
+
+.quick-locations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.quick-location {
+    border: 2px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.quick-location::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.05) 0%, rgba(75, 197, 170, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.quick-location:hover {
+    border-color: #5DD3BE;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(93, 211, 190, 0.2);
+}
+
+.quick-location:hover::before {
+    opacity: 1;
+}
+
+.quick-location.selected {
+    border-color: #4BC5AA;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(93, 211, 190, 0.25);
+}
+
+.quick-location.selected::before {
+    opacity: 0;
+}
+
+.quick-location-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.1) 0%, rgba(75, 197, 170, 0.1) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4BC5AA;
+    margin: 0 auto 0.75rem;
+    font-size: 1.25rem;
     transition: all 0.3s ease;
 }
 
-.auth-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+.quick-location.selected .quick-location-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
-.auth-btn:disabled {
-    opacity: 0.6;
-    transform: none;
-    box-shadow: none;
+.quick-location strong {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    display: block;
+    color: inherit;
 }
 
 .map-container {
     height: 300px;
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-    background: #f8f9fa;
+    border: 2px solid #e2e8f0;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.02) 0%, rgba(75, 197, 170, 0.02) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -187,111 +313,172 @@
 
 .map-placeholder {
     text-align: center;
-    color: #6c757d;
+    color: #64748b;
+    padding: 2rem;
 }
 
-.location-info {
-    background: #d4edda;
-    border-left: 4px solid #28a745;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #155724;
+.map-placeholder i {
+    font-size: 3rem;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+}
+
+.map-placeholder h5 {
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.map-placeholder p {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    margin: 0;
 }
 
 .location-selected {
-    background: #d1ecf1;
-    border-left: 4px solid #17a2b8;
-    padding: 1rem;
-    border-radius: 8px;
-    margin: 1rem 0;
-    font-size: 0.9rem;
-    color: #0c5460;
-    display: none;
-}
-
-.quick-locations {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.15) 0%, rgba(75, 197, 170, 0.15) 100%);
+    border: 2px solid #4BC5AA;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
     margin: 1.5rem 0;
+    font-size: 0.9375rem;
+    color: #155724;
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
 }
 
-.quick-location {
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-    padding: 1rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: white;
+.location-selected i {
+    color: #4BC5AA;
+    font-size: 1.125rem;
 }
 
-.quick-location:hover {
-    border-color: #28a745;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+.location-info {
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.1) 0%, rgba(75, 197, 170, 0.1) 100%);
+    border: 2px solid #4BC5AA;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    font-size: 0.875rem;
+    color: #155724;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
 }
 
-.quick-location.selected {
-    border-color: #28a745;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+.location-info i {
+    color: #4BC5AA;
+    font-size: 1rem;
+    margin-top: 0.125rem;
+}
+
+.auth-btn {
+    width: 100%;
+    height: 56px;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
     color: white;
-}
-
-.quick-location-icon {
-    width: 50px;
-    height: 50px;
-    background: #f8f9fa;
-    border-radius: 50%;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #28a745;
-    margin: 0 auto 0.5rem;
-    font-size: 1.2rem;
+    gap: 0.5rem;
+    box-shadow: 0 10px 25px rgba(93, 211, 190, 0.4);
+    position: relative;
+    overflow: hidden;
+    margin-top: 2rem;
+}
+
+.auth-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.auth-btn:hover::before {
+    left: 100%;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(93, 211, 190, 0.5);
+}
+
+.auth-btn:active {
+    transform: translateY(0);
+}
+
+.auth-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 5px 15px rgba(93, 211, 190, 0.2);
+    background: #94a3b8;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #718096;
+    text-decoration: none;
+    font-weight: 500;
+    margin-top: 1.5rem;
     transition: all 0.3s ease;
 }
 
-.quick-location.selected .quick-location-icon {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+.back-link:hover {
+    color: #4BC5AA;
+    transform: translateX(-2px);
 }
 
-@media (max-width: 768px) {
+.completion-message {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #4BC5AA;
+    font-weight: 500;
+    font-size: 0.9375rem;
+}
+
+.completion-message i {
+    margin-right: 0.5rem;
+}
+
+@media (max-width: 640px) {
+    .auth-card {
+        border-radius: 24px;
+        margin: 0 0.5rem;
+    }
+    
+    .auth-body {
+        padding: 1.5rem 1.5rem 2rem;
+    }
+    
     .quick-locations {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
+    }
+    
+    .quick-location {
+        padding: 1rem 0.75rem;
     }
     
     .map-container {
         height: 250px;
     }
-}
-
-@media (max-width: 576px) {
-    .auth-container {
-        padding: 1rem 0;
-    }
     
-    .auth-card {
-        margin: 0 0.5rem;
-    }
-    
-    .auth-body {
-        padding: 2rem 1.5rem;
-    }
-    
-    .step {
-        width: 30px;
-        height: 30px;
-        font-size: 0.8rem;
-    }
-    
-    .quick-locations {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
+    .step-progress {
+        padding: 1.5rem 1.5rem 1.25rem;
     }
 }
 </style>
@@ -300,82 +487,64 @@
 {% block content %}
 <div class="auth-container">
     <div class="auth-card">
-        <div class="auth-header">
-            <div class="auth-logo">
-                <i class="fas fa-map-marker-alt fa-2x"></i>
-            </div>
-            <h2 class="mb-2">Yerinizi Müəyyən Edin</h2>
-            <p class="mb-0 opacity-90">Son addım!</p>
-        </div>
-                
         <div class="step-progress">
-            <div class="step-indicator">
-                <div class="step completed">1</div>
-                <div class="step completed">2</div>
-                <div class="step completed">3</div>
-                <div class="step completed">4</div>
-                <div class="step completed">5</div>
-                <div class="step completed">6</div>
-                <div class="step completed">7</div>
-                <div class="step completed">8</div>
-                <div class="step active">9</div>
+            <div class="progress-container">
+                <div class="progress-track">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+                <div class="progress-indicator" style="left: 100%"></div>
             </div>
-                    
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-info">
+                <span class="progress-step">Addım 9 / 9</span>
+                <span class="progress-percentage">100%</span>
             </div>
         </div>
         
-        <div class="auth-body">
-            <div class="step-title">
-                <div class="step-icon">
-                    <i class="fas fa-map-marked-alt"></i>
-                </div>
-                <h4 class="fw-bold">Yerinizi Seçin</h4>
-                <p class="text-muted">Yaxınlıqdakı aktivitələri sizə göstərək</p>
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-map-marked-alt"></i>
             </div>
-                    
-            <form method="post" id="location-form">
+            <h2>Yerinizi Seçin</h2>
+            <p>Son addım - Yaxınlıqdakı aktivitələri sizə göstərək</p>
+        </div>
+        
+        <div class="auth-body">
+            <form method="post" id="location-form" action="{% url 'accounts:location_registration' %}">
                 {% csrf_token %}
                 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input 
-                                type="text" 
-                                class="form-control" 
-                                id="city" 
-                                name="city" 
-                                placeholder="Şəhər"
-                                required
-                            >
-                            <label for="city">
-                                <i class="fas fa-city me-2"></i>
-                                Şəhər
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input 
-                                type="text" 
-                                class="form-control" 
-                                id="address" 
-                                name="address" 
-                                placeholder="Ünvan (ixtiyari)"
-                            >
-                            <label for="address">
-                                <i class="fas fa-map me-2"></i>
-                                Ünvan (ixtiyari)
-                            </label>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label for="city" class="form-label">
+                        <i class="fas fa-city"></i>
+                        <span>Şəhər</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="city" 
+                        name="city" 
+                        placeholder="Şəhər adını daxil edin"
+                        required
+                    >
                 </div>
                 
-                <h6 class="fw-bold mb-3">
-                    <i class="fas fa-lightning-bolt me-2"></i>
-                    Tez seçim
-                </h6>
+                <div class="form-group">
+                    <label for="address" class="form-label">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Ünvan (ixtiyari)</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="address" 
+                        name="address" 
+                        placeholder="Ünvanı daxil edin"
+                    >
+                </div>
+                
+                <div class="quick-locations-title">
+                    <i class="fas fa-bolt"></i>
+                    <span>Tez Seçim</span>
+                </div>
                 
                 <div class="quick-locations">
                     <div class="quick-location" onclick="selectQuickLocation('Bakı', 40.4093, 49.8671)">
@@ -406,38 +575,40 @@
                 
                 <div class="map-container" id="map-container">
                     <div class="map-placeholder">
-                        <i class="fas fa-map fa-3x mb-3 text-muted"></i>
-                        <h5 class="text-muted">Xəritə yüklənir...</h5>
-                        <p class="text-muted mb-0">
-                            Yuxarıdakı tez seçim düymələrindən birini seçin<br>
-                            və ya məkan adı yazın
-                        </p>
+                        <i class="fas fa-map"></i>
+                        <h5>Xəritə</h5>
+                        <p>Yuxarıdakı tez seçim düymələrindən birini seçin<br>və ya məkan adı yazın</p>
                     </div>
                 </div>
                 
                 <div class="location-selected" id="location-selected">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <strong>Seçilmiş məkan:</strong> <span id="selected-location"></span>
+                    <i class="fas fa-check-circle"></i>
+                    <span><strong>Seçilmiş məkan:</strong> <span id="selected-location"></span></span>
                 </div>
                 
-                <input type="hidden" id="latitude" name="latitude">
-                <input type="hidden" id="longitude" name="longitude">
+                <input type="hidden" id="latitude" name="latitude" required>
+                <input type="hidden" id="longitude" name="longitude" required>
                 
                 <div class="location-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Bu məlumat yalnız sizə uyğun aktivitələri göstərmək üçün istifadə olunur və heç kimə göstərilməz.
+                    <i class="fas fa-info-circle"></i>
+                    <span>Bu məlumat yalnız sizə uyğun aktivitələri göstərmək üçün istifadə olunur və heç kimə göstərilməz.</span>
                 </div>
-                        
-                <button type="submit" class="btn auth-btn w-100 text-white mt-4" id="submit-btn" disabled>
-                    <i class="fas fa-check me-2"></i>
-                    Qeydiyyatı Tamamla
+                
+                <button type="submit" class="auth-btn" id="submit-btn" disabled>
+                    <i class="fas fa-check"></i>
+                    <span>Qeydiyyatı Tamamla</span>
                 </button>
-                        
-                <div class="text-center mt-3">
-                    <p class="text-muted mb-0">
-                        <i class="fas fa-heart me-1"></i>
-                        Təbriklər! Artıq Acteezer ailəsinə qoşuldunuz
-                    </p>
+                
+                <div class="completion-message">
+                    <i class="fas fa-heart"></i>
+                    <span>Təbriklər! Artıq Acteezer ailəsinə qoşuldunuz</span>
+                </div>
+                
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <a href="{% url 'accounts:interests_registration' %}" class="back-link">
+                        <i class="fas fa-arrow-left"></i>
+                        Geri
+                    </a>
                 </div>
             </form>
         </div>
@@ -451,8 +622,6 @@ let selectedLatitude = null;
 let selectedLongitude = null;
 
 function selectQuickLocation(cityName, lat, lng) {
-    console.log('🗺️ selectQuickLocation called:', {cityName, lat, lng});
-    
     // Clear previous selections
     document.querySelectorAll('.quick-location').forEach(loc => {
         loc.classList.remove('selected');
@@ -469,29 +638,26 @@ function selectQuickLocation(cityName, lat, lng) {
     selectedLatitude = lat;
     selectedLongitude = lng;
     
-    console.log('📍 Form fields updated:', {
-        city: document.getElementById('city').value,
-        latitude: document.getElementById('latitude').value,
-        longitude: document.getElementById('longitude').value
-    });
-    
     // Show selected location
     const selectedDiv = document.getElementById('location-selected');
     const selectedText = document.getElementById('selected-location');
     selectedText.textContent = `${cityName} (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
-    selectedDiv.style.display = 'block';
+    selectedDiv.style.display = 'flex';
     
-    // Enable submit button
-    document.getElementById('submit-btn').disabled = false;
-    console.log('✅ Submit button enabled');
+    // Enable submit button - ensure it's enabled
+    const btn = document.getElementById('submit-btn');
+    if (btn) {
+        btn.disabled = false;
+        btn.removeAttribute('disabled');
+    }
     
     // Update map placeholder
     const mapContainer = document.getElementById('map-container');
     mapContainer.innerHTML = `
-        <div class="text-center text-success">
-            <i class="fas fa-map-marked-alt fa-3x mb-3"></i>
-            <h5>Məkan seçildi: ${cityName}</h5>
-            <p class="mb-0">Koordinatlar: ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
+        <div class="map-placeholder" style="color: #4BC5AA;">
+            <i class="fas fa-map-marked-alt"></i>
+            <h5 style="color: #4BC5AA;">Məkan seçildi: ${cityName}</h5>
+            <p style="color: #64748b;">Koordinatlar: ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
         </div>
     `;
 }
@@ -502,37 +668,49 @@ function validateForm() {
     const lng = document.getElementById('longitude').value;
     const submitBtn = document.getElementById('submit-btn');
     
-    console.log('🔍 validateForm called:', {city, lat, lng});
-    
     if (city && lat && lng) {
         submitBtn.disabled = false;
-        console.log('✅ Form validation passed - button enabled');
+        submitBtn.removeAttribute('disabled');
     } else {
         submitBtn.disabled = true;
-        console.log('❌ Form validation failed - button disabled');
+        submitBtn.setAttribute('disabled', 'disabled');
     }
+}
+
+function validateAndSubmit() {
+    const city = document.getElementById('city').value.trim();
+    const lat = document.getElementById('latitude').value;
+    const lng = document.getElementById('longitude').value;
+    
+    if (!city || !lat || !lng) {
+        alert('Zəhmət olmasa şəhər seçin və ya məkan koordinatlarını təyin edin.');
+        return false;
+    }
+    
+    // Update button
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Yadda saxlanılır...</span>';
+    submitBtn.disabled = true;
+    
+    // Allow form to submit
+    return true;
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Page loaded - initializing location registration');
-    
     const cityInput = document.getElementById('city');
     
     // Validate form when city input changes
     cityInput.addEventListener('input', function() {
         const city = this.value.trim();
-        console.log('⌨️ City input changed:', city);
         
         if (city && !selectedLatitude) {
-            // If user types a city manually, we need coordinates
-            // For simplicity, we'll use Baku coordinates as default
-            console.log('🏙️ Setting default Baku coordinates for manual city input');
+            // If user types a city manually, use Baku coordinates as default
             document.getElementById('latitude').value = 40.4093;
             document.getElementById('longitude').value = 49.8671;
             validateForm();
         } else if (!city) {
-            console.log('🧹 Clearing coordinates and location selection');
+            // Clear coordinates and location selection
             document.getElementById('latitude').value = '';
             document.getElementById('longitude').value = '';
             document.getElementById('location-selected').style.display = 'none';
@@ -540,127 +718,133 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Form submission
-    document.getElementById('location-form').addEventListener('submit', function(e) {
-        console.log('📋 Form submission started');
-        
-        const form = this;
-        console.log('📋 Form element:', form);
-        console.log('📋 Form action:', form.action || 'No action specified (current URL)');
-        console.log('📋 Form method:', form.method);
+    // Form submission handler with debugging
+    const form = document.getElementById('location-form');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    console.log('🔍 Form element:', form);
+    console.log('🔍 Submit button:', submitBtn);
+    
+    // Add submit handler - use capture phase to run FIRST
+    form.addEventListener('submit', function(e) {
+        console.log('📋 Form submit event triggered');
+        console.log('📋 Event type:', e.type);
+        console.log('📋 Event target:', e.target);
+        console.log('📋 Event currentTarget:', e.currentTarget);
         
         const city = document.getElementById('city').value.trim();
         const lat = document.getElementById('latitude').value;
         const lng = document.getElementById('longitude').value;
-        const address = document.getElementById('address').value.trim();
         
-        console.log('📊 Form data:', {city, lat, lng, address});
+        console.log('📊 Form values:', { city, lat, lng });
         
+        // Validate
         if (!city || !lat || !lng) {
-            console.log('❌ Form validation failed on submit');
+            console.log('❌ Validation failed - preventing submission');
             e.preventDefault();
+            e.stopPropagation();
             alert('Zəhmət olmasa şəhər seçin və ya məkan koordinatlarını təyin edin.');
-            return;
+            return false;
         }
         
-        console.log('✅ Form validation passed - submitting');
+        console.log('✅ Validation passed - allowing form submission');
+        console.log('📋 Form action:', this.action);
+        console.log('📋 Form method:', this.method);
         
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        console.log('🔄 Changing button to loading state');
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Qeydiyyat tamamlanır...';
-        submitBtn.disabled = true;
-        
-        // Check if CSRF token exists
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
-        console.log('🔐 CSRF token present:', !!csrfToken);
-        if (csrfToken) {
-            console.log('🔐 CSRF token value:', csrfToken.value.substring(0, 10) + '...');
+        // Show loading state
+        if (submitBtn) {
+            console.log('🔄 Updating button to loading state');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Yadda saxlanılır...</span>';
+            // Don't disable - form needs to submit
         }
         
-        // Add a beforeunload listener to detect if the form is actually submitting
-        const beforeUnloadHandler = function(event) {
-            console.log('🔄 Page unloading - form submission in progress');
-        };
-        window.addEventListener('beforeunload', beforeUnloadHandler);
+        console.log('📤 Form submitting... (not preventing default)');
+        console.log('📤 Default prevented BEFORE our handler?', e.defaultPrevented);
         
-        // Alternative: Use fetch to submit the form with better error handling
-        console.log('🔄 Preventing default form submission to use fetch instead');
-        e.preventDefault();
+        // CRITICAL: Stop propagation to prevent global validation from running
+        e.stopImmediatePropagation();
+        console.log('🛑 Stopped immediate propagation to prevent global validation');
         
-        const formData = new FormData(form);
-        console.log('📦 FormData created');
-        
-        // Log all form data
-        for (let [key, value] of formData.entries()) {
-            console.log(`📊 FormData[${key}]:`, value);
+        // Show loading state
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Yadda saxlanılır...</span>';
         }
         
-        console.log('🌐 Starting fetch request to:', form.action || window.location.href);
-        
-        fetch(form.action || window.location.href, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-            }
-        })
-        .then(response => {
-            console.log('📡 Fetch response received:', response.status, response.statusText);
-            console.log('📡 Response headers:', [...response.headers.entries()]);
-            
-            if (response.redirected) {
-                console.log('🔄 Response was redirected to:', response.url);
-                window.location.href = response.url;
-                return;
-            }
-            
-            if (response.ok) {
-                return response.text();
-            } else {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-        })
-        .then(html => {
-            if (html) {
-                console.log('📄 Response HTML received, length:', html.length);
-                // If we get HTML back instead of a redirect, there might be form errors
-                if (html.includes('location_registration')) {
-                    console.log('⚠️ Received location form again - likely validation errors');
-                    document.body.innerHTML = html;
-                    // Re-initialize the form
-                    location.reload();
-                } else {
-                    console.log('✅ Unexpected HTML response - reloading page');
-                    location.reload();
-                }
-            }
-        })
-        .catch(error => {
-            console.error('❌ Fetch error:', error);
-            alert('Xəta baş verdi: ' + error.message);
-            
-            // Restore button
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        })
-        .finally(() => {
-            window.removeEventListener('beforeunload', beforeUnloadHandler);
-            console.log('🏁 Fetch request completed');
-        });
-        
-        console.log('⏰ Setting 30-second recovery timeout for fetch');
-        // Recovery mechanism - restore button after 30 seconds if still disabled
+        // Manually submit the form after a brief delay to ensure UI updates
         setTimeout(() => {
-            if (submitBtn.disabled) {
-                console.log('⚠️ Fetch submission took too long - restoring button');
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+            console.log('🚀 Manually submitting form...');
+            console.log('📋 Form action:', this.action);
+            console.log('📋 Form method:', this.method);
+            
+            // Create a temporary form to submit
+            const formData = new FormData(this);
+            console.log('📦 FormData created');
+            for (let [key, value] of formData.entries()) {
+                console.log(`   ${key}: ${value}`);
             }
-        }, 30000);
-    });
+            
+            // Submit form using fetch to have better control
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+            .then(response => {
+                console.log('📡 Response received:', response.status, response.statusText);
+                if (response.redirected) {
+                    console.log('🔄 Redirect detected, following:', response.url);
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    return response.text().then(html => {
+                        console.log('📄 HTML response received, checking for redirect...');
+                        // Check if response contains redirect
+                        if (html.includes('registration_complete') || html.includes('register/complete')) {
+                            console.log('✅ Redirecting to success page');
+                            window.location.href = '{% url "accounts:registration_complete" %}';
+                        } else {
+                            console.log('⚠️ No redirect found, reloading page');
+                            window.location.reload();
+                        }
+                    });
+                } else {
+                    console.error('❌ Response not OK:', response.status);
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            })
+            .catch(error => {
+                console.error('❌ Fetch error:', error);
+                // Fallback: try native form submission
+                console.log('🔄 Falling back to native form submission');
+                this.submit();
+            });
+        }, 100);
+        
+        // Prevent default to stop normal submission (we're handling it manually)
+        e.preventDefault();
+    }, true); // Use capture phase = true to run BEFORE global validation
     
-    console.log('✅ All event listeners registered');
+    // Button click handler - just for logging, don't interfere
+    if (submitBtn) {
+        submitBtn.addEventListener('click', function(e) {
+            console.log('🖱️ Submit button clicked');
+            console.log('🖱️ Button disabled?', this.disabled);
+            console.log('🖱️ Button type:', this.type);
+            
+            const city = document.getElementById('city').value.trim();
+            const lat = document.getElementById('latitude').value;
+            const lng = document.getElementById('longitude').value;
+            console.log('📊 Button click - values:', { city, lat, lng });
+            console.log('📊 Form valid?', form.checkValidity());
+            
+            // Don't prevent default - let form submit normally
+        }, false);
+    }
+    
+    // Debug: Check if form has any other event listeners
+    console.log('🔍 Form event listeners registered');
+    console.log('🔍 Attempting to manually check form submission...');
 });
 </script>
 {% endblock %}

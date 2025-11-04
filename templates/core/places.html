@@ -4,80 +4,57 @@
 {% block title %}Məkanlar - Acteezer{% endblock %}
 
 {% block content %}
-<!-- Places Search Hero Section -->
+<!-- Enhanced Hero Section -->
 <section class="places-hero-section">
-    <div class="container">
+    <div class="hero-overlay"></div>
+    <div class="container position-relative">
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div class="places-hero-content text-center">
-                    <h1 class="places-hero-title">Bakıda Məkanlar</h1>
-                    <p class="places-hero-subtitle">Şəhərin ən yaxşı restoran, pub, klub və aktivlik məkanlarını kəşf edin</p>
+                    <h1 class="places-hero-title">Bakıda Ən Yaxşı Məkanları Kəşf Edin</h1>
+                    <p class="places-hero-subtitle">{{ total_places }}+ məkan, {{ total_reviews }}+ rəy, orta reytinq {{ avg_rating }}/5.0</p>
                     
-                    <!-- Main Search Bar -->
-                    <form method="GET" class="main-search-container">
+                    <!-- Advanced Search Bar -->
+                    <form method="GET" class="main-search-container" id="places-search-form">
                         <div class="main-search-box">
                             <div class="search-input-wrapper">
                                 <i class="fas fa-search search-icon"></i>
                                 <input type="text" name="search" class="search-input" 
-                                       placeholder="Hansı məkan axtarırsınız?" value="{{ search_query }}">
+                                       placeholder="Restoran, pub, klub və ya məkan adı..." 
+                                       value="{{ search_query }}"
+                                       autocomplete="off">
+                                <button type="submit" class="search-submit-btn">
+                                    <i class="fas fa-search"></i> Axtar
+                                </button>
                             </div>
+                            
+                            <!-- Quick Category Tabs -->
                             <div class="search-tabs">
-                                <button type="submit" name="category" value="" 
-                                        class="search-tab {% if not category_filter %}active{% endif %}">Bütün Məkanlar</button>
-                                <button type="submit" name="category" value="restaurant" 
-                                        class="search-tab {% if category_filter == 'restaurant' %}active{% endif %}">Restoranlar</button>
-                                <button type="submit" name="category" value="pub" 
-                                        class="search-tab {% if category_filter == 'pub' %}active{% endif %}">Publar</button>
-                                <button type="submit" name="category" value="club" 
-                                        class="search-tab {% if category_filter == 'club' %}active{% endif %}">Klublar</button>
-                                <button type="submit" name="category" value="cafe" 
-                                        class="search-tab {% if category_filter == 'cafe' %}active{% endif %}">Kafelər</button>
-                                <button type="submit" name="category" value="activity" 
-                                        class="search-tab {% if category_filter == 'activity' %}active{% endif %}">Aktivlik</button>
+                                <button type="button" class="search-tab {% if not category_filter %}active{% endif %}" 
+                                        onclick="setCategory('')">Bütün</button>
+                                {% for category in categories|slice:":8" %}
+                                <button type="button" class="search-tab {% if category_filter == category.category_type %}active{% endif %}" 
+                                        onclick="setCategory('{{ category.category_type }}')">
+                                    <i class="{{ category.icon }} me-1"></i>{{ category.name }}
+                                </button>
+                                {% endfor %}
                             </div>
                         </div>
                     </form>
                     
-                    <!-- Filter Buttons -->
-                    <div class="filter-buttons">
-                        <div class="dropdown">
-                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="fas fa-map-marker-alt me-2"></i>Rayon
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="?district=">Bütün Rayonlar</a></li>
-                                {% for district_code, district_name in district_choices %}
-                                    <li><a class="dropdown-item" href="?district={{ district_code }}">{{ district_name }}</a></li>
-                                {% endfor %}
-                            </ul>
+                    <!-- Statistics Bar -->
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ total_places }}+ Məkan</span>
                         </div>
-                        
-                        <div class="dropdown">
-                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="fas fa-dollar-sign me-2"></i>Qiymət
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="?price=">Bütün Qiymətlər</a></li>
-                                {% for price_code, price_name in price_choices %}
-                                    <li><a class="dropdown-item" href="?price={{ price_code }}">{{ price_name }}</a></li>
-                                {% endfor %}
-                            </ul>
+                        <div class="stat-item">
+                            <i class="fas fa-star"></i>
+                            <span>{{ avg_rating }}/5 Orta Reytinq</span>
                         </div>
-                        
-                        <div class="dropdown">
-                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="fas fa-star me-2"></i>Reytinq
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="?sort=rating">Ən Yüksək Reytinq</a></li>
-                                <li><a class="dropdown-item" href="?sort=featured">Seçilmiş</a></li>
-                                <li><a class="dropdown-item" href="?sort=newest">Ən Yeni</a></li>
-                                <li><a class="dropdown-item" href="?sort=name">Ad (A-Z)</a></li>
-                            </ul>
-                        </div>
-                        
-                        <div class="sort-section">
-                            <span class="sort-text">{{ total_count }} məkan tapıldı</span>
+                        <div class="stat-item">
+                            <i class="fas fa-comments"></i>
+                            <span>{{ total_reviews }}+ Rəy</span>
                         </div>
                     </div>
                 </div>
@@ -86,74 +63,30 @@
     </div>
 </section>
 
-<!-- Featured Places Section -->
-{% if featured_places and not search_query %}
-<section class="py-5 bg-light">
+<!-- Popular Districts Section -->
+{% if popular_districts and not search_query %}
+<section class="popular-districts-section py-4 bg-white">
     <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="fw-bold mb-3">Seçilmiş Məkanlar</h2>
-                <p class="text-muted">Bakıda ən populyar və tövsiyə olunan məkanlar</p>
-            </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0 fw-bold">Populyar Rayonlar</h5>
+            <a href="#all-places" class="text-decoration-none text-primary">Hamısını gör <i class="fas fa-arrow-right ms-1"></i></a>
         </div>
-        
-        <div class="row g-3">
-            {% for place in featured_places %}
-            <div class="col-lg-3 col-md-6">
-                <div class="place-card featured">
-                    <div class="place-image">
-                        {% if place.main_image %}
-                            <img src="{{ place.main_image.url }}" alt="{{ place.image_alt|default:place.name }}" class="img-fluid">
-                        {% else %}
-                            <img src="{% static '1.png' %}" alt="{{ place.name }}" class="img-fluid">
-                        {% endif %}
-                        <div class="place-badge">
-                            <span class="badge bg-warning">
-                                <i class="{{ place.category.icon }} me-1"></i>{{ place.category.name }}
-                            </span>
-                        </div>
-                        {% if place.is_verified %}
-                        <div class="place-verified">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        {% endif %}
-                        <div class="place-heart">
-                            <i class="far fa-heart"></i>
-                        </div>
+        <div class="row g-2">
+            {% for district in popular_districts %}
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="?district={{ district.district }}" class="district-card">
+                    <div class="district-icon">
+                        <i class="fas fa-map-marker-alt"></i>
                     </div>
-                    <div class="place-content">
-                        <div class="place-meta">
-                            <span class="place-price">{{ place.get_price_display }}</span>
-                            <span class="place-district">{{ place.get_district_display }}</span>
+                    <div class="district-info">
+                        <div class="district-name">
+                            {% for code, name in district_choices %}
+                                {% if code == district.district %}{{ name }}{% endif %}
+                            {% endfor %}
                         </div>
-                        <h5 class="place-title">
-                            <a href="{{ place.get_absolute_url }}">{{ place.name }}</a>
-                        </h5>
-                        <div class="place-rating mb-2">
-                            <span class="star-rating">
-                                {% for i in place.get_rating_stars.full %}
-                                    <i class="fas fa-star"></i>
-                                {% endfor %}
-                                {% if place.get_rating_stars.half %}
-                                    <i class="fas fa-star-half-alt"></i>
-                                {% endif %}
-                                {% for i in place.get_rating_stars.empty %}
-                                    <i class="far fa-star"></i>
-                                {% endfor %}
-                                <span class="rating-score">{{ place.rating|floatformat:1 }}</span>
-                                <span class="rating-count">({{ place.review_count }} rəy)</span>
-                            </span>
-                        </div>
-                        <p class="place-description">{{ place.short_description|truncatechars:80 }}</p>
-                        <div class="place-footer">
-                            <span class="place-location">
-                                <i class="fas fa-map-marker-alt me-1"></i>
-                                {{ place.address|truncatechars:25 }}
-                            </span>
-                            <a href="{{ place.get_absolute_url }}" class="btn btn-primary btn-sm place-view-btn">Ətraflı</a>
-                        </div>
+                        <div class="district-count">{{ district.count }} məkan</div>
                     </div>
-                </div>
+                </a>
             </div>
             {% endfor %}
         </div>
@@ -161,190 +94,483 @@
 </section>
 {% endif %}
 
-<!-- All Places Section -->
-<section class="py-5 bg-white">
+<!-- Main Content Section -->
+<section class="places-main-section py-5" id="all-places">
     <div class="container">
-        <div class="row text-center mb-4">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="fw-bold mb-3">
-                    {% if search_query %}
-                        "{{ search_query }}" üçün axtarış nəticələri
-                    {% elif category_filter %}
-                        {{ category_filter|title }} Məkanları
-                    {% else %}
-                        Bütün Məkanlar
-                    {% endif %}
-                </h2>
-            </div>
-        </div>
-        
-        {% if places %}
-        <div class="row g-3">
-            {% for place in places %}
-            <div class="col-xl-20 col-lg-3 col-md-6 col-sm-6">
-                <div class="place-card">
-                    <div class="place-image">
-                        {% if place.main_image %}
-                            <img src="{{ place.main_image.url }}" alt="{{ place.image_alt|default:place.name }}" class="img-fluid">
-                        {% else %}
-                            <img src="{% static '1.png' %}" alt="{{ place.name }}" class="img-fluid">
-                        {% endif %}
-                        <div class="place-badge">
-                            <span class="badge" style="background-color: {{ place.category.color }};">
-                                <i class="{{ place.category.icon }} me-1"></i>{{ place.category.name }}
-                            </span>
-                        </div>
-                        {% if place.is_verified %}
-                        <div class="place-verified">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        {% endif %}
-                        <div class="place-heart">
-                            <i class="far fa-heart"></i>
-                        </div>
+        <div class="row">
+            <!-- Advanced Filters Sidebar -->
+            <aside class="col-lg-3 mb-4 mb-lg-0">
+                <div class="filters-sidebar">
+                    <div class="filters-header">
+                        <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filterlər</h5>
+                        <button class="btn btn-sm btn-link text-danger p-0 clear-filters-btn" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Təmizlə
+                        </button>
                     </div>
-                    <div class="place-content">
-                        <div class="place-meta">
-                            <span class="place-price">{{ place.get_price_display }}</span>
-                            <span class="place-district">{{ place.get_district_display }}</span>
-                        </div>
-                        <h5 class="place-title">
-                            <a href="{{ place.get_absolute_url }}">{{ place.name }}</a>
-                        </h5>
-                        <div class="place-rating mb-2">
-                            <span class="star-rating">
-                                {% for i in place.get_rating_stars.full %}
-                                    <i class="fas fa-star"></i>
+                    
+                    <form method="GET" id="filters-form">
+                        <input type="hidden" name="search" value="{{ search_query }}">
+                        
+                        <!-- Category Filter -->
+                        <div class="filter-group">
+                            <h6 class="filter-title"><i class="fas fa-list me-2"></i>Kateqoriya</h6>
+                            <div class="filter-options">
+                                {% for category in categories %}
+                                <label class="filter-checkbox">
+                                    <input type="radio" name="category" value="{{ category.category_type }}" 
+                                           {% if category_filter == category.category_type %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <span class="checkmark"></span>
+                                    <i class="{{ category.icon }} me-2"></i>
+                                    {{ category.name }}
+                                </label>
                                 {% endfor %}
-                                {% if place.get_rating_stars.half %}
-                                    <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- District Filter -->
+                        <div class="filter-group">
+                            <h6 class="filter-title"><i class="fas fa-map-marker-alt me-2"></i>Rayon</h6>
+                            <div class="filter-options">
+                                <label class="filter-checkbox">
+                                    <input type="radio" name="district" value="" 
+                                           {% if not district_filter %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <span class="checkmark"></span>
+                                    Bütün Rayonlar
+                                </label>
+                                {% for district_code, district_name in district_choices %}
+                                <label class="filter-checkbox">
+                                    <input type="radio" name="district" value="{{ district_code }}" 
+                                           {% if district_filter == district_code %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <span class="checkmark"></span>
+                                    {{ district_name }}
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Price Range Filter -->
+                        <div class="filter-group">
+                            <h6 class="filter-title"><i class="fas fa-dollar-sign me-2"></i>Qiymət</h6>
+                            <div class="filter-options">
+                                <label class="filter-checkbox">
+                                    <input type="radio" name="price" value="" 
+                                           {% if not price_filter %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <span class="checkmark"></span>
+                                    Bütün Qiymətlər
+                                </label>
+                                {% for price_code, price_name in price_choices %}
+                                <label class="filter-checkbox">
+                                    <input type="radio" name="price" value="{{ price_code }}" 
+                                           {% if price_filter == price_code %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <span class="checkmark"></span>
+                                    {{ price_name }}
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Rating Filter -->
+                        <div class="filter-group">
+                            <h6 class="filter-title"><i class="fas fa-star me-2"></i>Minimum Reytinq</h6>
+                            <div class="filter-options">
+                                <label class="filter-checkbox">
+                                    <input type="radio" name="min_rating" value="" 
+                                           {% if not min_rating %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <span class="checkmark"></span>
+                                    Hər hansı
+                                </label>
+                                <label class="filter-checkbox">
+                                    <input type="radio" name="min_rating" value="4.5" 
+                                           {% if min_rating == '4.5' %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <span class="checkmark"></span>
+                                    <i class="fas fa-star text-warning"></i> 4.5+ (Əla)
+                                </label>
+                                <label class="filter-checkbox">
+                                    <input type="radio" name="min_rating" value="4.0" 
+                                           {% if min_rating == '4.0' %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <span class="checkmark"></span>
+                                    <i class="fas fa-star text-warning"></i> 4.0+ (Çox yaxşı)
+                                </label>
+                                <label class="filter-checkbox">
+                                    <input type="radio" name="min_rating" value="3.5" 
+                                           {% if min_rating == '3.5' %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <span class="checkmark"></span>
+                                    <i class="fas fa-star text-warning"></i> 3.5+ (Yaxşı)
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Verified Filter -->
+                        <div class="filter-group">
+                            <h6 class="filter-title"><i class="fas fa-check-circle me-2"></i>Status</h6>
+                            <div class="filter-options">
+                                <label class="filter-checkbox">
+                                    <input type="checkbox" name="verified" value="true" 
+                                           {% if verified_only == 'true' %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <span class="checkmark"></span>
+                                    <i class="fas fa-check-circle text-success me-1"></i>
+                                    Yalnız təsdiqlənmiş
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </aside>
+            
+            <!-- Main Places Content -->
+            <div class="col-lg-9">
+                <!-- Results Header -->
+                <div class="results-header mb-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                        <div>
+                            <h2 class="results-title mb-1">
+                                {% if search_query %}
+                                    "{{ search_query }}" üçün nəticələr
+                                {% elif category_filter %}
+                                    {% for cat in categories %}
+                                        {% if cat.category_type == category_filter %}{{ cat.name }}{% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    Bütün Məkanlar
                                 {% endif %}
-                                {% for i in place.get_rating_stars.empty %}
-                                    <i class="far fa-star"></i>
-                                {% endfor %}
-                                <span class="rating-score">{{ place.rating|floatformat:1 }}</span>
-                                <span class="rating-count">({{ place.review_count }} rəy)</span>
-                            </span>
+                            </h2>
+                            <p class="results-count text-muted mb-0">
+                                <strong>{{ total_count }}</strong> məkan tapıldı
+                            </p>
                         </div>
-                        <p class="place-description">{{ place.short_description|truncatechars:70 }}</p>
-                        <div class="place-footer">
-                            <span class="place-location">
-                                <i class="fas fa-map-marker-alt me-1"></i>
-                                {{ place.address|truncatechars:20 }}
-                            </span>
-                            <a href="{{ place.get_absolute_url }}" class="btn btn-primary btn-sm place-view-btn">Ətraflı</a>
+                        
+                        <div class="d-flex gap-2 align-items-center">
+                            <!-- View Toggle -->
+                            <div class="view-toggle btn-group" role="group">
+                                <button type="button" class="btn btn-outline-secondary active" id="grid-view-btn" onclick="setView('grid')">
+                                    <i class="fas fa-th"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="list-view-btn" onclick="setView('list')">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Sort Dropdown -->
+                            <div class="dropdown">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-sort me-2"></i>
+                                    {% if sort_by == 'rating' %}Reytinqə görə
+                                    {% elif sort_by == 'name' %}Ada görə
+                                    {% elif sort_by == 'newest' %}Ən yeni
+                                    {% elif sort_by == 'reviews' %}Rəy sayına görə
+                                    {% elif sort_by == 'popular' %}Populyarlığa görə
+                                    {% else %}Seçilmiş
+                                    {% endif %}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if district_filter %}district={{ district_filter }}&{% endif %}{% if price_filter %}price={{ price_filter }}&{% endif %}sort=featured">Seçilmiş</a></li>
+                                    <li><a class="dropdown-item" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if district_filter %}district={{ district_filter }}&{% endif %}{% if price_filter %}price={{ price_filter }}&{% endif %}sort=rating">Reytinqə görə</a></li>
+                                    <li><a class="dropdown-item" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if district_filter %}district={{ district_filter }}&{% endif %}{% if price_filter %}price={{ price_filter }}&{% endif %}sort=reviews">Rəy sayına görə</a></li>
+                                    <li><a class="dropdown-item" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if district_filter %}district={{ district_filter }}&{% endif %}{% if price_filter %}price={{ price_filter }}&{% endif %}sort=popular">Populyarlığa görə</a></li>
+                                    <li><a class="dropdown-item" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if district_filter %}district={{ district_filter }}&{% endif %}{% if price_filter %}price={{ price_filter }}&{% endif %}sort=newest">Ən yeni</a></li>
+                                    <li><a class="dropdown-item" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if district_filter %}district={{ district_filter }}&{% endif %}{% if price_filter %}price={{ price_filter }}&{% endif %}sort=name">Ada görə (A-Z)</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            {% endfor %}
-        </div>
-        
-        <!-- Pagination -->
-        {% if page_obj.has_other_pages %}
-        <div class="row mt-5">
-            <div class="col-12">
-                <nav aria-label="Places pagination">
+                
+                <!-- Trending Places (if no search) -->
+                {% if trending_places and not search_query and not category_filter %}
+                <div class="trending-section mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0"><i class="fas fa-fire text-danger me-2"></i>Trend Məkanlar</h4>
+                        <span class="badge bg-danger">Populyar</span>
+                    </div>
+                    <div class="row g-3">
+                        {% for place in trending_places %}
+                        <div class="col-md-6">
+                            <div class="place-card-trending">
+                                <div class="place-image-trending">
+                                    {% if place.main_image %}
+                                        <img src="{{ place.main_image.url }}" alt="{{ place.name }}">
+                                    {% else %}
+                                        <img src="{% static '1.png' %}" alt="{{ place.name }}">
+                                    {% endif %}
+                                    <div class="trending-badge">
+                                        <i class="fas fa-fire"></i> Trend
+                                    </div>
+                                </div>
+                                <div class="place-content-trending">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="mb-0 place-name-trending">
+                                            <a href="{{ place.get_absolute_url }}">{{ place.name }}</a>
+                                        </h5>
+                                        <span class="badge" style="background-color: {{ place.category.color }};">
+                                            <i class="{{ place.category.icon }}"></i>
+                                        </span>
+                                    </div>
+                                    <div class="place-rating mb-2">
+                                        <span class="star-rating">
+                                            {% for i in place.get_rating_stars.full %}
+                                                <i class="fas fa-star"></i>
+                                            {% endfor %}
+                                            {% if place.get_rating_stars.half %}
+                                                <i class="fas fa-star-half-alt"></i>
+                                            {% endif %}
+                                            {% for i in place.get_rating_stars.empty %}
+                                                <i class="far fa-star"></i>
+                                            {% endfor %}
+                                            <span class="rating-score">{{ place.rating|floatformat:1 }}</span>
+                                            <span class="rating-count">({{ place.review_count }})</span>
+                                        </span>
+                                    </div>
+                                    <p class="place-description mb-2">{{ place.short_description|truncatechars:100 }}</p>
+                                    <div class="place-meta-trending">
+                                        <span><i class="fas fa-map-marker-alt"></i> {{ place.get_district_display }}</span>
+                                        <span><i class="fas fa-dollar-sign"></i> {{ place.get_price_display }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Places Grid/List -->
+                {% if places %}
+                <div id="places-container" class="places-container grid-view">
+                    <div class="row g-4" id="places-grid">
+                        {% for place in places %}
+                        <div class="col-lg-4 col-md-6 place-item">
+                            <div class="place-card-enhanced">
+                                <div class="place-image-enhanced">
+                                    {% if place.main_image %}
+                                        <img src="{{ place.main_image.url }}" alt="{{ place.image_alt|default:place.name }}" loading="lazy">
+                                    {% else %}
+                                        <img src="{% static '1.png' %}" alt="{{ place.name }}" loading="lazy">
+                                    {% endif %}
+                                    
+                                    <!-- Image Overlay -->
+                                    <div class="place-overlay">
+                                        <div class="place-actions">
+                                            <button class="action-btn {% if place.id in favorited_place_ids %}favorited{% endif %}" onclick="toggleFavorite({{ place.id }})" title="{% if place.id in favorited_place_ids %}Bəyənməklərdən çıxar{% else %}Bəyənməklərə əlavə et{% endif %}">
+                                                <i class="{% if place.id in favorited_place_ids %}fas{% else %}far{% endif %} fa-heart"></i>
+                                            </button>
+                                            <button class="action-btn" onclick="sharePlace({{ place.id }})" title="Paylaş">
+                                                <i class="fas fa-share-alt"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Photo Count -->
+                                        {% if place.images.exists %}
+                                        <div class="photo-count">
+                                            <i class="fas fa-camera"></i> {{ place.images.count }}+
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Badges -->
+                                    <div class="place-badges">
+                                        <span class="badge category-badge" style="background-color: {{ place.category.color }};">
+                                            <i class="{{ place.category.icon }}"></i> {{ place.category.name }}
+                                        </span>
+                                        {% if place.is_verified %}
+                                        <span class="badge verified-badge">
+                                            <i class="fas fa-check-circle"></i> Təsdiqlənmiş
+                                        </span>
+                                        {% endif %}
+                                        {% if place.is_featured %}
+                                        <span class="badge featured-badge">
+                                            <i class="fas fa-star"></i> Seçilmiş
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="place-content-enhanced">
+                                    <div class="place-header">
+                                        <h5 class="place-title-enhanced">
+                                            <a href="{{ place.get_absolute_url }}">{{ place.name }}</a>
+                                        </h5>
+                                        <div class="place-price-badge">{{ place.get_price_display }}</div>
+                                    </div>
+                                    
+                                    <div class="place-rating-enhanced">
+                                        <span class="star-rating">
+                                            {% for i in place.get_rating_stars.full %}
+                                                <i class="fas fa-star"></i>
+                                            {% endfor %}
+                                            {% if place.get_rating_stars.half %}
+                                                <i class="fas fa-star-half-alt"></i>
+                                            {% endif %}
+                                            {% for i in place.get_rating_stars.empty %}
+                                                <i class="far fa-star"></i>
+                                            {% endfor %}
+                                        </span>
+                                        <span class="rating-value">{{ place.rating|floatformat:1 }}</span>
+                                        <span class="rating-count">({{ place.review_count }} rəy)</span>
+                                    </div>
+                                    
+                                    <p class="place-description-enhanced">{{ place.short_description|truncatechars:120 }}</p>
+                                    
+                                    <div class="place-features">
+                                        <span class="feature-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            {{ place.get_district_display }}
+                                        </span>
+                                        {% if place.phone %}
+                                        <span class="feature-item">
+                                            <i class="fas fa-phone"></i>
+                                            Nömrə var
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Review Preview -->
+                                    {% if place.reviews.exists %}
+                                    <div class="review-preview">
+                                        <div class="review-excerpt">
+                                            <i class="fas fa-quote-left"></i>
+                                            "{{ place.reviews.first.comment|truncatechars:80 }}"
+                                        </div>
+                                        <div class="review-author">
+                                            — {{ place.reviews.first.reviewer_name }}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="place-footer-enhanced">
+                                        <a href="{{ place.get_absolute_url }}" class="btn btn-primary btn-sm">
+                                            Ətraflı bax <i class="fas fa-arrow-right ms-1"></i>
+                                        </a>
+                                        {% if place.website %}
+                                        <a href="{{ place.website }}" target="_blank" class="btn btn-outline-secondary btn-sm" title="Veb sayt">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Places pagination" class="mt-5">
                     <ul class="pagination justify-content-center">
                         {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if district_filter %}&district={{ district_filter }}{% endif %}{% if price_filter %}&price={{ price_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Əvvəlki</a>
-                            </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if district_filter %}&district={{ district_filter }}{% endif %}{% if price_filter %}&price={{ price_filter }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}{% if verified_only %}&verified={{ verified_only }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">
+                                <i class="fas fa-chevron-left"></i> Əvvəlki
+                            </a>
+                        </li>
                         {% endif %}
                         
                         {% for num in page_obj.paginator.page_range %}
                             {% if page_obj.number == num %}
-                                <li class="page-item active">
-                                    <span class="page-link">{{ num }}</span>
-                                </li>
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
                             {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if district_filter %}&district={{ district_filter }}{% endif %}{% if price_filter %}&price={{ price_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">{{ num }}</a>
-                                </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if district_filter %}&district={{ district_filter }}{% endif %}{% if price_filter %}&price={{ price_filter }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}{% if verified_only %}&verified={{ verified_only }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">{{ num }}</a>
+                            </li>
                             {% endif %}
                         {% endfor %}
                         
                         {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if district_filter %}&district={{ district_filter }}{% endif %}{% if price_filter %}&price={{ price_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Növbəti</a>
-                            </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if district_filter %}&district={{ district_filter }}{% endif %}{% if price_filter %}&price={{ price_filter }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}{% if verified_only %}&verified={{ verified_only }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">
+                                Növbəti <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
                         {% endif %}
                     </ul>
                 </nav>
+                {% endif %}
+                
+                {% else %}
+                <!-- No Results -->
+                <div class="no-results text-center py-5">
+                    <div class="no-results-icon mb-4">
+                        <i class="fas fa-search fa-4x text-muted"></i>
+                    </div>
+                    <h3 class="mb-3">Məkan tapılmadı</h3>
+                    <p class="text-muted mb-4">Axtarış parametrlərini dəyişərək yenidən cəhd edin.</p>
+                    <a href="{% url 'places:places_list' %}" class="btn btn-primary">
+                        <i class="fas fa-undo me-2"></i>Bütün məkanları gör
+                    </a>
+                </div>
+                {% endif %}
             </div>
         </div>
-        {% endif %}
-        
-        {% else %}
-        <div class="row">
-            <div class="col-12 text-center py-5">
-                <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                <h3 class="text-muted">Məkan tapılmadı</h3>
-                <p class="text-muted">Axtarış parametrlərini dəyişərək yenidən cəhd edin.</p>
-                <a href="{% url 'places:places_list' %}" class="btn btn-primary">Bütün məkanları gör</a>
-            </div>
-        </div>
-        {% endif %}
     </div>
 </section>
 {% endblock %}
 
 {% block extra_css %}
 <style>
-/* Custom CSS for 5-column layout */
-@media (min-width: 1200px) {
-    .col-xl-20 {
-        flex: 0 0 20%;
-        max-width: 20%;
-    }
+/* Enhanced Hero Section */
+.places-hero-section {
+    background: linear-gradient(135deg, #4BC5AA 0%, #5DD3BE 50%, #6BE8D0 100%);
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Places Search Hero Section */
-.places-hero-section {
-    background: linear-gradient(135deg, #f8fdfc 0%, #e0f2ef 100%);
-    padding: 4rem 0 5rem;
-    position: relative;
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
 }
 
 .places-hero-content {
-    max-width: 1000px;
-    margin: 0 auto;
+    position: relative;
+    z-index: 2;
 }
 
 .places-hero-title {
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 800;
-    color: var(--dark-text);
+    color: white;
     margin-bottom: 1rem;
-    line-height: 1.2;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.2);
 }
 
 .places-hero-subtitle {
     font-size: 1.25rem;
-    color: var(--gray-text);
-    margin-bottom: 3rem;
+    color: rgba(255,255,255,0.95);
+    margin-bottom: 2.5rem;
     font-weight: 400;
 }
 
-/* Main Search Container */
+/* Advanced Search Container */
 .main-search-container {
     background: white;
     border-radius: 24px;
-    padding: 1.5rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
     margin-bottom: 2rem;
-    border: 1px solid rgba(93, 211, 190, 0.1);
-}
-
-.main-search-box {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
 }
 
 .search-input-wrapper {
     position: relative;
-    flex: 1;
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .search-icon {
@@ -352,46 +578,57 @@
     left: 1.5rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--gray-text);
+    color: #6c757d;
     font-size: 1.1rem;
+    z-index: 3;
 }
 
 .search-input {
-    width: 100%;
+    flex: 1;
     padding: 1.25rem 1.5rem 1.25rem 3.5rem;
-    border: 2px solid #f1f5f9;
+    border: 2px solid #e9ecef;
     border-radius: 16px;
     font-size: 1.1rem;
-    background: #f8fafc;
+    background: #f8f9fa;
     transition: all 0.3s ease;
-    color: var(--dark-text);
 }
 
 .search-input:focus {
     outline: none;
-    border-color: var(--primary-color);
+    border-color: #5DD3BE;
     background: white;
     box-shadow: 0 0 0 4px rgba(93, 211, 190, 0.1);
 }
 
-.search-input::placeholder {
-    color: var(--gray-text);
-    font-weight: 400;
+.search-submit-btn {
+    padding: 1.25rem 2rem;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
-/* Search Tabs */
+.search-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(93, 211, 190, 0.3);
+}
+
 .search-tabs {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
     justify-content: center;
 }
 
 .search-tab {
     padding: 0.75rem 1.5rem;
-    border: none;
-    background: #f1f5f9;
-    color: var(--gray-text);
+    border: 2px solid #e9ecef;
+    background: white;
+    color: #6c757d;
     border-radius: 24px;
     font-weight: 600;
     font-size: 0.95rem;
@@ -399,142 +636,285 @@
     cursor: pointer;
 }
 
-.search-tab.active {
-    background: var(--dark-text);
+.search-tab.active,
+.search-tab:hover {
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
     color: white;
+    border-color: #5DD3BE;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(93, 211, 190, 0.3);
 }
 
-.search-tab:hover:not(.active) {
-    background: #e2e8f0;
-    color: var(--dark-text);
-}
-
-/* Filter Buttons */
-.filter-buttons {
+/* Statistics Bar */
+.hero-stats {
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 3rem;
     flex-wrap: wrap;
-    margin-top: 1rem;
+    margin-top: 2rem;
 }
 
-.filter-btn {
-    padding: 0.75rem 1.25rem;
-    border: 2px solid #e2e8f0;
-    background: white;
-    color: var(--dark-text);
-    border-radius: 12px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-}
-
-.filter-btn:hover {
-    border-color: var(--primary-color);
-    background: rgba(93, 211, 190, 0.05);
-    color: var(--primary-color);
-}
-
-.filter-btn i {
-    color: var(--primary-color);
-}
-
-.sort-section {
+.stat-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-left: auto;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
 }
 
-.sort-text {
-    font-size: 0.9rem;
-    color: var(--gray-text);
-    font-weight: 500;
+.stat-item i {
+    font-size: 1.5rem;
+    opacity: 0.9;
 }
 
-/* Place Cards */
-.place-card {
+/* Popular Districts */
+.popular-districts-section {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.district-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.district-card:hover {
+    background: white;
+    border-color: #5DD3BE;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    color: inherit;
+    text-decoration: none;
+}
+
+.district-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+}
+
+.district-name {
+    font-weight: 600;
+    color: #1a2e2a;
+    margin-bottom: 0.25rem;
+}
+
+.district-count {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Filters Sidebar */
+.filters-sidebar {
     background: white;
     border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 100px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+.filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.clear-filters-btn {
+    text-decoration: none !important;
+}
+
+.clear-filters-btn:hover {
+    text-decoration: none !important;
+}
+
+.filter-group {
+    margin-bottom: 2rem;
+}
+
+.filter-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a2e2a;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.filter-checkbox:hover {
+    background: #f8f9fa;
+}
+
+.filter-checkbox input[type="radio"],
+.filter-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.filter-checkbox input[type="radio"] + .checkmark {
+    border-radius: 50%;
+}
+
+.filter-checkbox input:checked + .checkmark {
+    background: #5DD3BE;
+    border-color: #5DD3BE;
+}
+
+.filter-checkbox input:checked + .checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* Results Header */
+.results-header {
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.results-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a2e2a;
+}
+
+.results-count {
+    font-size: 0.95rem;
+}
+
+.view-toggle .btn {
+    border-radius: 8px !important;
+}
+
+.view-toggle .btn.active {
+    background: #5DD3BE;
+    color: white;
+    border-color: #5DD3BE;
+}
+
+/* Enhanced Place Cards */
+.places-container.grid-view .place-item {
+    flex: 0 0 25%;
+    max-width: 25%;
+}
+
+.place-card-enhanced {
+    background: white;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     transition: all 0.3s ease;
-    border: 1px solid #f1f5f9;
+    border: 1px solid #e9ecef;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.place-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+.place-card-enhanced:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
 }
 
-.place-card.featured {
-    border: 2px solid var(--primary-color);
-    box-shadow: 0 8px 30px rgba(93, 211, 190, 0.15);
-}
-
-.place-image {
+.place-image-enhanced {
     position: relative;
     height: 180px;
     overflow: hidden;
+    background: #f8f9fa;
 }
 
-.place-image img {
+.place-image-enhanced img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s ease;
 }
 
-.place-card:hover .place-image img {
-    transform: scale(1.05);
+.place-card-enhanced:hover .place-image-enhanced img {
+    transform: scale(1.1);
 }
 
-.place-badge {
+.place-overlay {
     position: absolute;
-    top: 12px;
-    left: 12px;
-    z-index: 2;
-}
-
-.place-badge .badge {
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.5rem 0.75rem;
-    border-radius: 20px;
-}
-
-.place-verified {
-    position: absolute;
-    top: 12px;
-    right: 50px;
-    color: var(--primary-color);
-    background: white;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
 }
 
-.place-heart {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    color: white;
-    background: rgba(0, 0, 0, 0.4);
+.place-card-enhanced:hover .place-overlay {
+    opacity: 1;
+}
+
+.place-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.action-btn {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    border: none;
+    background: rgba(255,255,255,0.9);
+    color: #1a2e2a;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -542,158 +922,351 @@
     transition: all 0.3s ease;
 }
 
-.place-heart:hover {
-    background: var(--primary-color);
+.action-btn:hover {
+    background: #5DD3BE;
+    color: white;
+    transform: scale(1.1);
+}
+
+.photo-count {
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: rgba(0,0,0,0.5);
+    padding: 0.35rem 0.75rem;
+    border-radius: 16px;
+    align-self: flex-start;
+}
+
+.place-badges {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    z-index: 2;
+}
+
+.category-badge,
+.verified-badge,
+.featured-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.35rem 0.6rem;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.verified-badge {
+    background: #28a745 !important;
     color: white;
 }
 
-.place-content {
-    padding: 1.25rem;
+.featured-badge {
+    background: #ffc107 !important;
+    color: #1a2e2a;
+}
+
+.place-content-enhanced {
+    padding: 1rem;
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-.place-meta {
+.place-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 0.75rem;
-    font-size: 0.85rem;
+    gap: 1rem;
 }
 
-.place-price {
-    color: var(--primary-color);
-    font-weight: 700;
+.place-title-enhanced {
     font-size: 1rem;
-}
-
-.place-district {
-    color: var(--gray-text);
-    font-weight: 500;
-}
-
-.place-title {
-    margin-bottom: 0.75rem;
-    font-size: 1.1rem;
     font-weight: 700;
+    margin: 0;
+    flex: 1;
     line-height: 1.3;
 }
 
-.place-title a {
-    color: var(--dark-text);
+.place-title-enhanced a {
+    color: #1a2e2a;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-.place-title a:hover {
-    color: var(--primary-color);
+.place-title-enhanced a:hover {
+    color: #5DD3BE;
 }
 
-.place-rating {
+/* Trending Places Name Styling */
+.place-name-trending a {
+    color: #1a2e2a;
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.3s ease;
+}
+
+.place-name-trending a:hover {
+    color: #5DD3BE;
+    text-decoration: none;
+}
+
+.place-price-badge {
+    background: #f8f9fa;
+    color: #5DD3BE;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+.place-rating-enhanced {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: 0.75rem;
 }
 
 .star-rating {
     display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    font-size: 0.85rem;
+    gap: 0.15rem;
 }
 
 .star-rating i {
     color: #ffc107;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
 }
 
-.rating-score {
-    font-weight: 600;
-    color: var(--dark-text);
-    margin-left: 0.25rem;
+.rating-value {
+    font-weight: 700;
+    color: #1a2e2a;
+    font-size: 1rem;
 }
 
 .rating-count {
-    color: var(--gray-text);
-    font-size: 0.8rem;
+    color: #6c757d;
+    font-size: 0.85rem;
 }
 
-.place-description {
-    color: var(--gray-text);
-    font-size: 0.9rem;
-    line-height: 1.4;
-    margin-bottom: 1rem;
+.place-description-enhanced {
+    color: #6c757d;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
     flex: 1;
 }
 
-.place-footer {
+.place-features {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.feature-item {
+    display: flex;
     align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.feature-item i {
+    color: #5DD3BE;
+}
+
+.review-preview {
+    background: #f8f9fa;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    border-left: 3px solid #5DD3BE;
+}
+
+.review-excerpt {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.review-author {
+    font-size: 0.8rem;
+    color: #1a2e2a;
+    font-weight: 600;
+}
+
+.place-footer-enhanced {
+    display: flex;
     gap: 0.5rem;
     margin-top: auto;
 }
 
-.place-location {
-    color: var(--gray-text);
-    font-size: 0.8rem;
+/* Trending Places */
+.place-card-trending {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
     display: flex;
-    align-items: center;
-    flex: 1;
-    min-width: 0;
+    gap: 1rem;
+    border: 2px solid transparent;
 }
 
-.place-location i {
-    color: var(--primary-color);
+.place-card-trending:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    border-color: #5DD3BE;
+}
+
+.place-image-trending {
+    width: 180px;
+    height: 180px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.place-image-trending img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.trending-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.place-content-trending {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.place-meta-trending {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.place-meta-trending i {
+    color: #5DD3BE;
     margin-right: 0.25rem;
 }
 
-.place-view-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border-radius: 8px;
-    white-space: nowrap;
+/* No Results */
+.no-results {
+    padding: 4rem 2rem;
 }
 
-/* Responsive Design */
-@media (max-width: 1199px) {
-    .col-xl-20 {
-        flex: 0 0 25%;
-        max-width: 25%;
+.no-results-icon {
+    opacity: 0.3;
+}
+
+/* List View */
+.places-container.list-view .place-item {
+    width: 100%;
+    max-width: 100%;
+}
+
+.places-container.list-view .place-card-enhanced {
+    flex-direction: row;
+}
+
+.places-container.list-view .place-image-enhanced {
+    width: 300px;
+    height: 220px;
+    flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .places-container.grid-view .place-item {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
     }
 }
 
 @media (max-width: 991px) {
-    .place-image {
-        height: 160px;
+    .filters-sidebar {
+        position: static;
+        max-height: none;
+        margin-bottom: 2rem;
     }
     
-    .place-content {
-        padding: 1rem;
+    .places-hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .search-input-wrapper {
+        flex-direction: column;
+    }
+    
+    .search-submit-btn {
+        width: 100%;
+    }
+    
+    .hero-stats {
+        gap: 1.5rem;
+    }
+    
+    .place-card-trending {
+        flex-direction: column;
+    }
+    
+    .place-image-trending {
+        width: 100%;
+        height: 200px;
+    }
+    
+    .places-container.grid-view .place-item {
+        flex: 0 0 50%;
+        max-width: 50%;
     }
 }
 
 @media (max-width: 768px) {
+    .places-container.grid-view .place-item {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .places-hero-section {
+        padding: 3rem 0 3rem;
+    }
+    
     .places-hero-title {
-        font-size: 2.25rem;
+        font-size: 2rem;
     }
     
     .places-hero-subtitle {
-        font-size: 1.1rem;
-    }
-    
-    .main-search-container {
-        padding: 1rem;
-        border-radius: 16px;
-    }
-    
-    .search-input {
-        padding: 1rem 1rem 1rem 3rem;
         font-size: 1rem;
     }
     
-    .search-icon {
-        left: 1rem;
+    .main-search-container {
+        padding: 1.5rem;
     }
     
     .search-tabs {
@@ -704,45 +1277,122 @@
     
     .search-tab {
         white-space: nowrap;
-        padding: 0.6rem 1.2rem;
-        font-size: 0.9rem;
     }
     
-    .filter-buttons {
-        justify-content: flex-start;
-        overflow-x: auto;
-        padding-bottom: 0.5rem;
-    }
-    
-    .filter-btn {
-        white-space: nowrap;
-        padding: 0.6rem 1rem;
-        font-size: 0.85rem;
-    }
-    
-    .sort-section {
-        margin-left: 0;
-        order: -1;
-        margin-bottom: 0.5rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .places-hero-section {
-        padding: 3rem 0 4rem;
-    }
-    
-    .filter-buttons {
+    .hero-stats {
         flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .sort-section {
-        order: 0;
-        margin-bottom: 1rem;
-        justify-content: center;
+        gap: 1rem;
+        align-items: center;
     }
 }
 </style>
 {% endblock %}
 
+{% block extra_js %}
+<script>
+function setCategory(category) {
+    const form = document.getElementById('places-search-form');
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'category';
+    input.value = category;
+    form.appendChild(input);
+    form.submit();
+}
+
+function clearFilters() {
+    window.location.href = '{% url "places:places_list" %}';
+}
+
+function setView(view) {
+    const container = document.getElementById('places-container');
+    const gridBtn = document.getElementById('grid-view-btn');
+    const listBtn = document.getElementById('list-view-btn');
+    
+    if (view === 'list') {
+        container.classList.remove('grid-view');
+        container.classList.add('list-view');
+        gridBtn.classList.remove('active');
+        listBtn.classList.add('active');
+        localStorage.setItem('places-view', 'list');
+    } else {
+        container.classList.remove('list-view');
+        container.classList.add('grid-view');
+        listBtn.classList.remove('active');
+        gridBtn.classList.add('active');
+        localStorage.setItem('places-view', 'grid');
+    }
+}
+
+// Load saved view preference
+document.addEventListener('DOMContentLoaded', function() {
+    const savedView = localStorage.getItem('places-view') || 'grid';
+    setView(savedView);
+});
+
+function toggleFavorite(placeId) {
+    fetch(`/places/${placeId}/toggle-favorite/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update heart icon
+            const heartButtons = document.querySelectorAll(`[onclick*="toggleFavorite(${placeId})"]`);
+            heartButtons.forEach(btn => {
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    if (data.is_favorited) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        btn.classList.add('favorited');
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        btn.classList.remove('favorited');
+                    }
+                }
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function sharePlace(placeId) {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Məkanı yoxla',
+            url: window.location.origin + '/places/' + placeId + '/'
+        });
+    } else {
+        // Fallback: Copy to clipboard
+        const url = window.location.origin + '/places/' + placeId + '/';
+        navigator.clipboard.writeText(url);
+        alert('Link kopyalandı!');
+    }
+}
+</script>
+{% endblock %}

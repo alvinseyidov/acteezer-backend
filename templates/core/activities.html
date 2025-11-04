@@ -4,7 +4,7 @@
 {% block title %}Aktivitə Axtar - Acteezer{% endblock %}
 
 {% block content %}
-<!-- Activities Search Hero Section -->
+<!-- Advanced Hero Section with Search -->
 <section class="activities-hero-section">
     <div class="container">
         <div class="row justify-content-center">
@@ -13,242 +13,298 @@
                     <h1 class="activities-hero-title">Bakıda Fəaliyyətlər</h1>
                     <p class="activities-hero-subtitle">Şəhərdə ən maraqlı aktivitələri kəşf edin və yeni dostlar tapın</p>
                     
-                    <!-- Main Search Bar -->
-                    <div class="main-search-container">
+                    <!-- Advanced Search Bar -->
+                    <form method="GET" action="{% url 'activities:activities_list' %}" id="searchForm" class="main-search-container">
                         <div class="main-search-box">
                             <div class="search-input-wrapper">
                                 <i class="fas fa-search search-icon"></i>
-                                <input type="text" class="search-input" placeholder="Hansı aktivitə axtarırsınız?">
-                            </div>
-                            <div class="search-tabs">
-                                <button class="search-tab active">Bütün Aktivitələr</button>
-                                <button class="search-tab">İdman</button>
-                                <button class="search-tab">Mədəniyyət</button>
-                                <button class="search-tab">Təbiət</button>
-                                <button class="search-tab">Sənət</button>
-                                <button class="search-tab">Yemək</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Filter Buttons -->
-                    <div class="filter-buttons">
-                        <!-- District Filter -->
-                        <div class="dropdown">
-                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown" id="districtFilter">
-                                <i class="fas fa-map-marker-alt me-2"></i>Rayon
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" data-district="">Bütün Rayonlar</a></li>
-                                <li><a class="dropdown-item" href="#" data-district="nizami">Nizami</a></li>
-                                <li><a class="dropdown-item" href="#" data-district="sabail">Sabail</a></li>
-                                <li><a class="dropdown-item" href="#" data-district="yasamal">Yasamal</a></li>
-                                <li><a class="dropdown-item" href="#" data-district="binagadi">Binəqədi</a></li>
-                                <li><a class="dropdown-item" href="#" data-district="khazar">Xəzər</a></li>
-                                <li><a class="dropdown-item" href="#" data-district="sabunchu">Sabunçu</a></li>
-                                <li><a class="dropdown-item" href="#" data-district="surakhani">Suraxanı</a></li>
-                                <li><a class="dropdown-item" href="#" data-district="khatai">Xətai</a></li>
-                                <li><a class="dropdown-item" href="#" data-district="narimanov">Nərimanov</a></li>
-                                <li><a class="dropdown-item" href="#" data-district="nasimi">Nəsimi</a></li>
-                                <li><a class="dropdown-item" href="#" data-district="pirallahi">Pirallahı</a></li>
-                                <li><a class="dropdown-item" href="#" data-district="other">Digər</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Time Filter -->
-                        <div class="dropdown">
-                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown" id="timeFilter">
-                                <i class="fas fa-clock me-2"></i>Vaxt
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" data-date="">Bütün Vaxtlar</a></li>
-                                <li><a class="dropdown-item" href="#" data-date="today">Bu gün</a></li>
-                                <li><a class="dropdown-item" href="#" data-date="tomorrow">Sabah</a></li>
-                                <li><a class="dropdown-item" href="#" data-date="week">Bu həftə</a></li>
-                                <li><a class="dropdown-item" href="#" data-date="upcoming">Gələcək</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Participants Filter -->
-                        <div class="dropdown">
-                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown" id="participantsFilter">
-                                <i class="fas fa-users me-2"></i>İştirakçı Sayı
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" data-participants="">Bütün Ölçülər</a></li>
-                                <li><a class="dropdown-item" href="#" data-participants="small">Kiçik (2-10)</a></li>
-                                <li><a class="dropdown-item" href="#" data-participants="medium">Orta (11-25)</a></li>
-                                <li><a class="dropdown-item" href="#" data-participants="large">Böyük (26-50)</a></li>
-                                <li><a class="dropdown-item" href="#" data-participants="xlarge">Çox Böyük (50+)</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Price Filter -->
-                        <div class="dropdown">
-                            <button class="filter-btn dropdown-toggle" data-bs-toggle="dropdown" id="priceFilter">
-                                <i class="fas fa-star me-2"></i>Qiymət
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" data-price="">Bütün Qiymətlər</a></li>
-                                <li><a class="dropdown-item" href="#" data-price="free">Pulsuz</a></li>
-                                <li><a class="dropdown-item" href="#" data-price="paid">Ödənişli</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Sort Section -->
-                        <div class="sort-section">
-                            <span class="sort-text">Tarixə görə sırala</span>
-                            <div class="dropdown">
-                                <button class="sort-btn dropdown-toggle" data-bs-toggle="dropdown" id="sortFilter">
-                                    <i class="fas fa-calendar-alt"></i>
+                                <input type="text" 
+                                       name="search" 
+                                       class="search-input" 
+                                       placeholder="Hansı aktivitə axtarırsınız?" 
+                                       value="{{ search_query }}">
+                                <button type="submit" class="search-submit-btn">
+                                    <i class="fas fa-search"></i>
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" data-sort="featured">Tövsiyə edilən</a></li>
-                                    <li><a class="dropdown-item" href="#" data-sort="date">Tarixə görə</a></li>
-                                    <li><a class="dropdown-item" href="#" data-sort="newest">Ən yeni</a></li>
-                                    <li><a class="dropdown-item" href="#" data-sort="price_low">Ucuzdan bahaya</a></li>
-                                    <li><a class="dropdown-item" href="#" data-sort="price_high">Bahadan ucuza</a></li>
-                                </ul>
+                            </div>
+                            
+                            <!-- Category Tabs -->
+                            <div class="search-tabs">
+                                <button type="button" class="search-tab {% if not category_filter %}active{% endif %}" data-category="">
+                                    <i class="fas fa-th-large me-1"></i>Bütün Aktivitələr
+                                </button>
+                                {% for cat_type, cat_name in category_types %}
+                                <button type="button" class="search-tab {% if category_filter == cat_type %}active{% endif %}" data-category="{{ cat_type }}">
+                                    <i class="fas fa-{{ cat_type|slice:':1' }} me-1"></i>{{ cat_name }}
+                                </button>
+                                {% endfor %}
                             </div>
                         </div>
-                    </div>
+                        
+                        <!-- Advanced Filter Panel -->
+                        <div class="advanced-filters-panel" id="filtersPanel">
+                            <div class="row g-3">
+                                <!-- District Filter -->
+                                <div class="col-md-3 col-sm-6">
+                                    <label class="filter-label">
+                                        <i class="fas fa-map-marker-alt me-2"></i>Rayon
+                                    </label>
+                                    <select name="district" class="form-select filter-select" id="districtFilter">
+                                        <option value="">Bütün rayonlar</option>
+                                        {% for district_code, district_name in district_choices %}
+                                        <option value="{{ district_code }}" {% if district_filter == district_code %}selected{% endif %}>
+                                            {{ district_name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <!-- Date Filter -->
+                                <div class="col-md-3 col-sm-6">
+                                    <label class="filter-label">
+                                        <i class="fas fa-calendar-alt me-2"></i>Vaxt
+                                    </label>
+                                    <select name="date" class="form-select filter-select" id="dateFilter">
+                                        <option value="">Bütün tarixlər</option>
+                                        <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Bu gün</option>
+                                        <option value="tomorrow" {% if date_filter == 'tomorrow' %}selected{% endif %}>Sabah</option>
+                                        <option value="week" {% if date_filter == 'week' %}selected{% endif %}>Bu həftə</option>
+                                        <option value="upcoming" {% if date_filter == 'upcoming' %}selected{% endif %}>Gələcək</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Price Filter -->
+                                <div class="col-md-3 col-sm-6">
+                                    <label class="filter-label">
+                                        <i class="fas fa-money-bill-wave me-2"></i>Qiymət
+                                    </label>
+                                    <select name="price" class="form-select filter-select" id="priceFilter">
+                                        <option value="">Bütün qiymətlər</option>
+                                        <option value="free" {% if price_filter == 'free' %}selected{% endif %}>Pulsuz</option>
+                                        <option value="paid" {% if price_filter == 'paid' %}selected{% endif %}>Ödənişli</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Difficulty Filter -->
+                                <div class="col-md-3 col-sm-6">
+                                    <label class="filter-label">
+                                        <i class="fas fa-signal me-2"></i>Çətinlik
+                                    </label>
+                                    <select name="difficulty" class="form-select filter-select" id="difficultyFilter">
+                                        <option value="">Bütün səviyyələr</option>
+                                        {% for diff_code, diff_name in difficulty_choices %}
+                                        <option value="{{ diff_code }}" {% if difficulty_filter == diff_code %}selected{% endif %}>
+                                            {{ diff_name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Sort Options -->
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="sort-options">
+                                        <label class="filter-label me-3">
+                                            <i class="fas fa-sort me-2"></i>Sıralama:
+                                        </label>
+                                        <div class="sort-buttons">
+                                            <button type="button" class="sort-btn {% if sort_by == 'featured' or not sort_by %}active{% endif %}" data-sort="featured">
+                                                <i class="fas fa-star me-1"></i>Seçilmiş
+                                            </button>
+                                            <button type="button" class="sort-btn {% if sort_by == 'date' %}active{% endif %}" data-sort="date">
+                                                <i class="fas fa-calendar me-1"></i>Tarix
+                                            </button>
+                                            <button type="button" class="sort-btn {% if sort_by == 'newest' %}active{% endif %}" data-sort="newest">
+                                                <i class="fas fa-clock me-1"></i>Ən yeni
+                                            </button>
+                                            <button type="button" class="sort-btn {% if sort_by == 'price_low' %}active{% endif %}" data-sort="price_low">
+                                                <i class="fas fa-sort-amount-down me-1"></i>Qiymət (aşağıdan)
+                                            </button>
+                                            <button type="button" class="sort-btn {% if sort_by == 'price_high' %}active{% endif %}" data-sort="price_high">
+                                                <i class="fas fa-sort-amount-up me-1"></i>Qiymət (yuxarıdan)
+                                            </button>
+                                        </div>
+                                        <input type="hidden" name="sort" id="sortInput" value="{{ sort_by|default:'featured' }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Filter Actions -->
+                            <div class="row mt-3">
+                                <div class="col-12 text-end">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="clearFilters">
+                                        <i class="fas fa-times me-1"></i>Filtrləri təmizlə
+                                    </button>
+                                    <button type="submit" class="btn btn-primary btn-sm ms-2">
+                                        <i class="fas fa-filter me-1"></i>Filtr tətbiq et
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Toggle Filters Button -->
+                        <div class="text-center mt-3">
+                            <button type="button" class="btn btn-link text-decoration-none toggle-filters-btn" id="toggleFilters">
+                                <i class="fas fa-filter me-2"></i>
+                                <span id="toggleFiltersText">Ətraflı filtrlər</span>
+                                <i class="fas fa-chevron-down ms-2" id="toggleFiltersIcon"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Latest Activities Section -->
-<section class="py-5 bg-white">
+<!-- Results Count -->
+{% if total_count %}
+<section class="results-count-section py-3 bg-light">
     <div class="container">
-        <div class="row text-center mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="mb-0">
+                    <i class="fas fa-search me-2 text-primary"></i>
+                    <strong>{{ total_count }}</strong> aktivitə tapıldı
+                </h5>
+            </div>
+            <div class="col-md-6 text-md-end">
+                {% if search_query or category_filter or district_filter or date_filter or price_filter or difficulty_filter %}
+                <a href="{% url 'activities:activities_list' %}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-redo me-1"></i>Bütün filtrləri təmizlə
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Activities Section -->
+{% if featured_activities %}
+<section class="featured-activities-section py-5">
+    <div class="container">
+        <div class="row text-center mb-4">
             <div class="col-lg-8 mx-auto">
-                <h2 class="fw-bold mb-3">Bakıda Bu Həftə</h2>
-                <p class="text-muted">Şəhərdə ən populyar və maraqlı aktivitələr</p>
+                <h2 class="section-title-main">
+                    <i class="fas fa-star text-warning me-2"></i>
+                    Seçilmiş Aktivitələr
+                </h2>
+                <p class="section-subtitle">Bakıda bu həftə ən populyar aktivitələr</p>
             </div>
         </div>
         
-        {% if featured_activities %}
         <div class="row g-4">
             {% for activity in featured_activities %}
             <div class="col-lg-3 col-md-6">
-                <div class="activity-card" onclick="window.location.href='{{ activity.get_absolute_url }}';" style="cursor: pointer;">
-                    <div class="activity-image">
+                <div class="activity-card-modern">
+                    <div class="activity-image-wrapper">
                         {% if activity.main_image %}
-                            <img src="{{ activity.main_image.url }}" alt="{{ activity.image_alt|default:activity.title }}" class="img-fluid">
+                            <img src="{{ activity.main_image.url }}" alt="{{ activity.image_alt|default:activity.title }}" class="activity-image">
                         {% else %}
-                            <img src="{% static '1.png' %}" alt="{{ activity.title }}" class="img-fluid">
+                            <img src="{% static '1.png' %}" alt="{{ activity.title }}" class="activity-image">
                         {% endif %}
+                        <div class="activity-overlay">
+                            <div class="activity-badges-top">
+                                <span class="badge activity-category-badge" style="background-color: {{ activity.category.color|default:'#5DD3BE' }};">
+                                    <i class="{{ activity.category.icon|default:'fas fa-calendar' }} me-1"></i>{{ activity.category.name }}
+                                </span>
+                            </div>
+                            <div class="activity-actions-overlay">
+                                <a href="{{ activity.get_absolute_url }}" class="btn btn-light btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Ətraflı
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="activity-content">
-                        <h5 class="activity-title">{{ activity.title }}</h5>
+                    <div class="activity-content-modern">
+                        <h5 class="activity-title-modern">
+                            <a href="{{ activity.get_absolute_url }}">{{ activity.title }}</a>
+                        </h5>
+                        <p class="activity-description-modern">{{ activity.short_description|truncatewords:15 }}</p>
                         
-                        <div class="activity-date">
-                            <i class="fas fa-calendar me-2"></i>
-                            {{ activity.start_date|date:"d M Y, H:i" }}
+                        <div class="activity-meta-modern">
+                            <div class="meta-item">
+                                <i class="fas fa-calendar text-primary"></i>
+                                <span>{{ activity.start_date|date:"d M Y, H:i" }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-map-marker-alt text-danger"></i>
+                                <span>{{ activity.district|title }}</span>
+                            </div>
                         </div>
                         
-                        <div class="activity-address">
-                            <i class="fas fa-map-marker-alt me-2"></i>
-                            {{ activity.address }}
-                        </div>
-                        
-                        <div class="activity-people-info">
-                            <img src="{% static 'people.png' %}" alt="People" class="people-icon">
-                            <i class="fas fa-user me-1"></i>
-                            <span class="participant-number">{{ activity.max_participants }}</span>
-                        </div>
-                        
-                        <div class="activity-buttons">
-                            <a href="{{ activity.get_absolute_url }}" class="btn btn-primary btn-sm activity-join-btn" onclick="event.stopPropagation();">
+                        <div class="activity-footer-modern">
+                            <div class="participants-info">
+                                <i class="fas fa-users text-muted"></i>
+                                <span>{{ activity.participants_count }}/{{ activity.max_participants }}</span>
+                            </div>
+                            <a href="{{ activity.get_absolute_url }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus me-1"></i>Qoşul
                             </a>
-                            <button class="btn btn-outline-secondary btn-sm activity-share-btn" onclick="event.stopPropagation();">
-                                <i class="fas fa-share me-1"></i>Paylaş
-                            </button>
                         </div>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-        {% else %}
-        <div class="row">
-            <div class="col-12 text-center py-5">
-                <i class="fas fa-calendar fa-3x text-muted mb-3"></i>
-                <h3 class="text-muted">Seçilmiş aktivitə yoxdur</h3>
-                <p class="text-muted">Yeni aktivitələr tezliklə əlavə ediləcək.</p>
-            </div>
-        </div>
-        {% endif %}
-        
-        <div class="text-center mt-5">
-            <a href="{% url 'activities:activities_list' %}" class="btn btn-primary btn-lg">
-                <i class="fas fa-search me-2"></i>
-                Bakıda bütün aktivitələri gör
-            </a>
-        </div>
     </div>
 </section>
+{% endif %}
 
 <!-- All Activities Section -->
-<section class="py-5 bg-white">
+<section class="all-activities-section py-5 {% if featured_activities %}bg-light{% else %}bg-white{% endif %}">
     <div class="container">
-        <div class="row text-center mb-4">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="fw-bold mb-3">
-                    {% if search_query %}
-                        "{{ search_query }}" üçün axtarış nəticələri
-                    {% elif category_filter %}
-                        {{ category_filter|title }} Aktivitələri
-                    {% else %}
-                        Bütün Aktivitələr
-                    {% endif %}
-                </h2>
-                {% if total_count %}
-                    <p class="text-muted">{{ total_count }} aktivitə tapıldı</p>
-                {% endif %}
-            </div>
-        </div>
-        
         {% if activities %}
         <div class="row g-4">
             {% for activity in activities %}
             <div class="col-lg-3 col-md-6">
-                <div class="activity-card" onclick="window.location.href='{{ activity.get_absolute_url }}';" style="cursor: pointer;">
-                    <div class="activity-image">
+                <div class="activity-card-modern">
+                    <div class="activity-image-wrapper">
                         {% if activity.main_image %}
-                            <img src="{{ activity.main_image.url }}" alt="{{ activity.image_alt|default:activity.title }}" class="img-fluid">
+                            <img src="{{ activity.main_image.url }}" alt="{{ activity.image_alt|default:activity.title }}" class="activity-image">
                         {% else %}
-                            <img src="{% static '1.png' %}" alt="{{ activity.title }}" class="img-fluid">
+                            <img src="{% static '1.png' %}" alt="{{ activity.title }}" class="activity-image">
                         {% endif %}
+                        <div class="activity-overlay">
+                            <div class="activity-badges-top">
+                                <span class="badge activity-category-badge" style="background-color: {{ activity.category.color|default:'#5DD3BE' }};">
+                                    <i class="{{ activity.category.icon|default:'fas fa-calendar' }} me-1"></i>{{ activity.category.name }}
+                                </span>
+                            </div>
+                            <div class="activity-actions-overlay">
+                                <a href="{{ activity.get_absolute_url }}" class="btn btn-light btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Ətraflı
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="activity-content">
-                        <h5 class="activity-title">{{ activity.title }}</h5>
+                    <div class="activity-content-modern">
+                        <h5 class="activity-title-modern">
+                            <a href="{{ activity.get_absolute_url }}">{{ activity.title }}</a>
+                        </h5>
+                        <p class="activity-description-modern">{{ activity.short_description|truncatewords:15 }}</p>
                         
-                        <div class="activity-date">
-                            <i class="fas fa-calendar me-2"></i>
-                            {{ activity.start_date|date:"d M Y, H:i" }}
+                        <div class="activity-meta-modern">
+                            <div class="meta-item">
+                                <i class="fas fa-calendar text-primary"></i>
+                                <span>{{ activity.start_date|date:"d M Y, H:i" }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-map-marker-alt text-danger"></i>
+                                <span>{{ activity.get_district_display }}</span>
+                            </div>
                         </div>
                         
-                        <div class="activity-address">
-                            <i class="fas fa-map-marker-alt me-2"></i>
-                            {{ activity.address }}
-                        </div>
-                        
-                        <div class="activity-people-info">
-                            <img src="{% static 'people.png' %}" alt="People" class="people-icon">
-                            <i class="fas fa-user me-1"></i>
-                            <span class="participant-number">{{ activity.max_participants }}</span>
-                        </div>
-                        
-                        <div class="activity-buttons">
-                            <a href="{{ activity.get_absolute_url }}" class="btn btn-primary btn-sm activity-join-btn" onclick="event.stopPropagation();">
+                        <div class="activity-footer-modern">
+                            <div class="participants-info">
+                                <i class="fas fa-users text-muted"></i>
+                                <span>{{ activity.participants_count }}/{{ activity.max_participants }}</span>
+                            </div>
+                            <a href="{{ activity.get_absolute_url }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus me-1"></i>Qoşul
                             </a>
-                            <button class="btn btn-outline-secondary btn-sm activity-share-btn" onclick="event.stopPropagation();">
-                                <i class="fas fa-share me-1"></i>Paylaş
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -261,10 +317,12 @@
         <div class="row mt-5">
             <div class="col-12">
                 <nav aria-label="Activities pagination">
-                    <ul class="pagination justify-content-center">
+                    <ul class="pagination justify-content-center pagination-modern">
                         {% if page_obj.has_previous %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if district_filter %}&district={{ district_filter }}{% endif %}{% if date_filter %}&date={{ date_filter }}{% endif %}{% if price_filter %}&price={{ price_filter }}{% endif %}{% if difficulty_filter %}&difficulty={{ difficulty_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Əvvəlki</a>
+                                <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">
+                                    <i class="fas fa-chevron-left"></i> Əvvəlki
+                                </a>
                             </li>
                         {% endif %}
                         
@@ -275,14 +333,16 @@
                                 </li>
                             {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if district_filter %}&district={{ district_filter }}{% endif %}{% if date_filter %}&date={{ date_filter }}{% endif %}{% if price_filter %}&price={{ price_filter }}{% endif %}{% if difficulty_filter %}&difficulty={{ difficulty_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">{{ num }}</a>
+                                    <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
                                 </li>
                             {% endif %}
                         {% endfor %}
                         
                         {% if page_obj.has_next %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if district_filter %}&district={{ district_filter }}{% endif %}{% if date_filter %}&date={{ date_filter }}{% endif %}{% if price_filter %}&price={{ price_filter }}{% endif %}{% if difficulty_filter %}&difficulty={{ difficulty_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Növbəti</a>
+                                <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">
+                                    Növbəti <i class="fas fa-chevron-right"></i>
+                                </a>
                             </li>
                         {% endif %}
                     </ul>
@@ -292,12 +352,17 @@
         {% endif %}
         
         {% else %}
+        <!-- No Results -->
         <div class="row">
             <div class="col-12 text-center py-5">
-                <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                <h3 class="text-muted">Aktivitə tapılmadı</h3>
-                <p class="text-muted">Axtarış parametrlərini dəyişərək yenidən cəhd edin.</p>
-                <a href="{% url 'activities:activities_list' %}" class="btn btn-primary">Bütün aktivitələri gör</a>
+                <div class="no-results-container">
+                    <i class="fas fa-search fa-4x text-muted mb-4"></i>
+                    <h3 class="text-muted mb-3">Aktivitə tapılmadı</h3>
+                    <p class="text-muted mb-4">Axtarış parametrlərini dəyişərək yenidən cəhd edin.</p>
+                    <a href="{% url 'activities:activities_list' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-redo me-2"></i>Bütün aktivitələri gör
+                    </a>
+                </div>
             </div>
         </div>
         {% endif %}
@@ -307,52 +372,57 @@
 
 {% block extra_css %}
 <style>
-/* Activities Search Hero Section */
+/* Hero Section */
 .activities-hero-section {
-    background: linear-gradient(135deg, #f8fdfc 0%, #e0f2ef 100%);
-    padding: 4rem 0 5rem;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    padding: 5rem 0 4rem;
     position: relative;
+    overflow: hidden;
+}
+
+.activities-hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+    opacity: 0.3;
 }
 
 .activities-hero-content {
-    max-width: 1000px;
-    margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .activities-hero-title {
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 800;
-    color: var(--dark-text);
+    color: white;
     margin-bottom: 1rem;
-    line-height: 1.2;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
 .activities-hero-subtitle {
-    font-size: 1.25rem;
-    color: var(--gray-text);
+    font-size: 1.3rem;
+    color: rgba(255,255,255,0.95);
     margin-bottom: 3rem;
     font-weight: 400;
 }
 
-/* Main Search Container */
+/* Search Container */
 .main-search-container {
     background: white;
     border-radius: 24px;
-    padding: 1.5rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
     margin-bottom: 2rem;
-    border: 1px solid rgba(93, 211, 190, 0.1);
-}
-
-.main-search-box {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
 }
 
 .search-input-wrapper {
     position: relative;
-    flex: 1;
+    margin-bottom: 1.5rem;
 }
 
 .search-icon {
@@ -360,46 +430,58 @@
     left: 1.5rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--gray-text);
+    color: #6c757d;
     font-size: 1.1rem;
+    z-index: 2;
 }
 
 .search-input {
     width: 100%;
-    padding: 1.25rem 1.5rem 1.25rem 3.5rem;
-    border: 2px solid #f1f5f9;
+    padding: 1.25rem 4rem 1.25rem 3.5rem;
+    border: 2px solid #e9ecef;
     border-radius: 16px;
     font-size: 1.1rem;
-    background: #f8fafc;
     transition: all 0.3s ease;
-    color: var(--dark-text);
 }
 
 .search-input:focus {
     outline: none;
-    border-color: var(--primary-color);
-    background: white;
+    border-color: #5DD3BE;
     box-shadow: 0 0 0 4px rgba(93, 211, 190, 0.1);
 }
 
-.search-input::placeholder {
-    color: var(--gray-text);
-    font-weight: 400;
+.search-submit-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-/* Search Tabs */
+.search-submit-btn:hover {
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 4px 15px rgba(93, 211, 190, 0.4);
+}
+
+/* Category Tabs */
 .search-tabs {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
     justify-content: center;
 }
 
 .search-tab {
     padding: 0.75rem 1.5rem;
-    border: none;
-    background: #f1f5f9;
-    color: var(--gray-text);
+    border: 2px solid #e9ecef;
+    background: white;
+    color: #6c757d;
     border-radius: 24px;
     font-weight: 600;
     font-size: 0.95rem;
@@ -407,87 +489,125 @@
     cursor: pointer;
 }
 
+.search-tab:hover {
+    border-color: #5DD3BE;
+    color: #5DD3BE;
+    transform: translateY(-2px);
+}
+
 .search-tab.active {
-    background: var(--dark-text);
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
     color: white;
+    border-color: transparent;
 }
 
-.search-tab:hover:not(.active) {
-    background: #e2e8f0;
-    color: var(--dark-text);
+/* Advanced Filters Panel */
+.advanced-filters-panel {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #f1f5f9;
+    display: none;
 }
 
-/* Filter Buttons */
-.filter-buttons {
+.advanced-filters-panel.active {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filter-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: block;
+    font-size: 0.9rem;
+}
+
+.filter-select {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.filter-select:focus {
+    border-color: #5DD3BE;
+    box-shadow: 0 0 0 4px rgba(93, 211, 190, 0.1);
+}
+
+.sort-options {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 1rem;
     flex-wrap: wrap;
-    margin-top: 1rem;
+    gap: 1rem;
 }
 
-.filter-btn {
-    padding: 0.75rem 1.25rem;
-    border: 2px solid #e2e8f0;
+.sort-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.sort-btn {
+    padding: 0.6rem 1.2rem;
+    border: 2px solid #e9ecef;
     background: white;
-    color: var(--dark-text);
+    color: #6c757d;
     border-radius: 12px;
     font-weight: 500;
     font-size: 0.9rem;
     transition: all 0.3s ease;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-}
-
-.filter-btn:hover {
-    border-color: var(--primary-color);
-    background: rgba(93, 211, 190, 0.05);
-    color: var(--primary-color);
-}
-
-.filter-btn i {
-    color: var(--primary-color);
-}
-
-.sort-section {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-left: auto;
-}
-
-.sort-text {
-    font-size: 0.9rem;
-    color: var(--gray-text);
-    font-weight: 500;
-}
-
-.sort-btn {
-    width: 40px;
-    height: 40px;
-    border: 2px solid #e2e8f0;
-    background: white;
-    color: var(--gray-text);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
 }
 
 .sort-btn:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    background: rgba(93, 211, 190, 0.05);
+    border-color: #5DD3BE;
+    color: #5DD3BE;
+    transform: translateY(-2px);
+}
+
+.sort-btn.active {
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    color: white;
+    border-color: transparent;
+}
+
+.toggle-filters-btn {
+    color: #5DD3BE;
+    font-weight: 600;
+    border: none;
+    background: none;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.toggle-filters-btn:hover {
+    color: #4BC5AA;
+}
+
+/* Results Count */
+.results-count-section {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.results-count-section .text-primary {
+    color: #5DD3BE !important;
 }
 
 /* Activity Cards */
-.activity-card {
+.activity-card-modern {
     background: white;
-    border-radius: 16px;
+    border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
@@ -497,139 +617,175 @@
     flex-direction: column;
 }
 
-.activity-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+.activity-card-modern:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
-.activity-image {
+.activity-image-wrapper {
     position: relative;
-    height: 200px;
+    height: 220px;
     overflow: hidden;
 }
 
-.activity-image img {
+.activity-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s ease;
 }
 
-.activity-card:hover .activity-image img {
-    transform: scale(1.05);
+.activity-card-modern:hover .activity-image {
+    transform: scale(1.1);
 }
 
-.activity-content {
-    padding: 1.25rem;
+.activity-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
+}
+
+.activity-card-modern:hover .activity-overlay {
+    opacity: 1;
+}
+
+.activity-badges-top {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.activity-category-badge {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.activity-actions-overlay {
+    display: flex;
+    justify-content: center;
+}
+
+.activity-content-modern {
+    padding: 1.5rem;
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
 }
 
-.activity-title {
-    font-size: 1.1rem;
+.activity-title-modern {
+    font-size: 1.15rem;
     font-weight: 700;
+    margin-bottom: 0.75rem;
     line-height: 1.3;
-    color: var(--dark-text);
-    margin: 0;
 }
 
-.activity-date {
-    display: flex;
-    align-items: center;
+.activity-title-modern a {
+    color: #212529;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.activity-title-modern a:hover {
+    color: #5DD3BE;
+}
+
+.activity-description-modern {
+    color: #6c757d;
     font-size: 0.9rem;
-    color: var(--gray-text);
-    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    flex: 1;
 }
 
-.activity-date i {
-    color: var(--primary-color);
-}
-
-.activity-address {
+.activity-meta-modern {
     display: flex;
-    align-items: center;
-    font-size: 0.9rem;
-    color: var(--gray-text);
-    line-height: 1.4;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
 }
 
-.activity-address i {
-    color: var(--primary-color);
-    margin-top: 0.1rem;
-    align-self: flex-start;
-}
-
-.activity-people-info {
+.meta-item {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.9rem;
-    color: var(--gray-text);
-    font-weight: 500;
+    font-size: 0.85rem;
+    color: #6c757d;
 }
 
-.people-icon {
-    width: 28px !important;
-    height: 28px !important;
-    object-fit: contain;
-    display: inline-block !important;
-    flex-shrink: 0;
-}
-
-.participant-number {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #333;
-}
-
-.activity-buttons {
+.activity-footer-modern {
     display: flex;
-    gap: 0.5rem;
+    justify-content: space-between;
+    align-items: center;
     margin-top: auto;
 }
 
-.activity-join-btn,
-.activity-share-btn {
-    flex: 1;
-    padding: 0.6rem 1rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border-radius: 8px;
-    text-align: center;
-    border: none;
+.participants-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Pagination */
+.pagination-modern .page-link {
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    color: #5DD3BE;
+    margin: 0 0.25rem;
+    padding: 0.75rem 1rem;
     transition: all 0.3s ease;
 }
 
-.activity-join-btn {
-    background: var(--primary-color);
+.pagination-modern .page-link:hover {
+    background: #5DD3BE;
     color: white;
-    text-decoration: none;
+    border-color: #5DD3BE;
+    transform: translateY(-2px);
 }
 
-.activity-join-btn:hover {
-    background: #4bb3a1;
+.pagination-modern .page-item.active .page-link {
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    border-color: transparent;
     color: white;
-    transform: translateY(-1px);
 }
 
-.activity-share-btn {
-    background: transparent;
-    color: var(--gray-text);
-    border: 2px solid #e2e8f0;
+/* Section Titles */
+.section-title-main {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #212529;
+    margin-bottom: 0.5rem;
 }
 
-.activity-share-btn:hover {
-    background: #f8fafc;
-    border-color: var(--primary-color);
-    color: var(--primary-color);
+.section-subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
 }
 
-/* Responsive Design */
+/* No Results */
+.no-results-container {
+    padding: 3rem;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
     .activities-hero-title {
-        font-size: 2.25rem;
+        font-size: 2.5rem;
     }
     
     .activities-hero-subtitle {
@@ -637,17 +793,7 @@
     }
     
     .main-search-container {
-        padding: 1rem;
-        border-radius: 16px;
-    }
-    
-    .search-input {
-        padding: 1rem 1rem 1rem 3rem;
-        font-size: 1rem;
-    }
-    
-    .search-icon {
-        left: 1rem;
+        padding: 1.5rem;
     }
     
     .search-tabs {
@@ -659,88 +805,26 @@
     .search-tab {
         white-space: nowrap;
         padding: 0.6rem 1.2rem;
-        font-size: 0.9rem;
-    }
-    
-    .filter-buttons {
-        justify-content: flex-start;
-        overflow-x: auto;
-        padding-bottom: 0.5rem;
-    }
-    
-    .filter-btn {
-        white-space: nowrap;
-        padding: 0.6rem 1rem;
         font-size: 0.85rem;
     }
     
-    .sort-section {
-        margin-left: 0;
-        order: -1;
-        margin-bottom: 0.5rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .activities-hero-section {
-        padding: 3rem 0 4rem;
-    }
-    
-    .filter-buttons {
+    .sort-options {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-start;
     }
     
-    .sort-section {
-        order: 0;
-        margin-bottom: 1rem;
-        justify-content: center;
+    .sort-buttons {
+        width: 100%;
+        flex-direction: column;
     }
-}
-
-/* Activity Price and Difficulty Tags */
-.activity-price {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-}
-
-.price-tag {
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.price-tag.free {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.price-tag.paid {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
-
-.difficulty-tag {
-    padding: 0.25rem 0.5rem;
-    border-radius: 8px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: white;
-}
-
-.activity-status {
-    position: absolute;
-    top: 12px;
-    right: 50px;
-    z-index: 2;
-}
-
-.activity-status .badge {
-    font-size: 0.7rem;
-    padding: 0.4rem 0.6rem;
+    
+    .sort-btn {
+        width: 100%;
+    }
+    
+    .section-title-main {
+        font-size: 2rem;
+    }
 }
 </style>
 {% endblock %}
@@ -748,250 +832,95 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.querySelector('.search-input');
+    // Toggle filters panel
+    const toggleFiltersBtn = document.getElementById('toggleFilters');
+    const filtersPanel = document.getElementById('filtersPanel');
+    const toggleFiltersText = document.getElementById('toggleFiltersText');
+    const toggleFiltersIcon = document.getElementById('toggleFiltersIcon');
     
-    if (searchInput) {
-        // Handle Enter key press
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                performSearch();
+    if (toggleFiltersBtn && filtersPanel) {
+        toggleFiltersBtn.addEventListener('click', function() {
+            filtersPanel.classList.toggle('active');
+            if (filtersPanel.classList.contains('active')) {
+                toggleFiltersText.textContent = 'Filtrləri gizlət';
+                toggleFiltersIcon.classList.remove('fa-chevron-down');
+                toggleFiltersIcon.classList.add('fa-chevron-up');
+            } else {
+                toggleFiltersText.textContent = 'Ətraflı filtrlər';
+                toggleFiltersIcon.classList.remove('fa-chevron-up');
+                toggleFiltersIcon.classList.add('fa-chevron-down');
             }
         });
-        
-        // Handle search icon click if needed
-        const searchIcon = document.querySelector('.search-icon');
-        if (searchIcon) {
-            searchIcon.addEventListener('click', performSearch);
-            searchIcon.style.cursor = 'pointer';
-        }
-        
-        // Populate search input if there's a search parameter in URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const searchParam = urlParams.get('search');
-        if (searchParam) {
-            searchInput.value = searchParam;
-        }
     }
     
-    function performSearch() {
-        const searchTerm = searchInput.value.trim();
-        const currentUrl = new URL(window.location);
-        
-        if (searchTerm) {
-            currentUrl.searchParams.set('search', searchTerm);
-        } else {
-            currentUrl.searchParams.delete('search');
-        }
-        
-        // Navigate to the search results
-        window.location.href = currentUrl.toString();
-    }
+    // Category tabs
+    const categoryTabs = document.querySelectorAll('.search-tab[data-category]');
+    const categoryInput = document.createElement('input');
+    categoryInput.type = 'hidden';
+    categoryInput.name = 'category';
+    categoryInput.id = 'categoryInput';
+    document.getElementById('searchForm').appendChild(categoryInput);
     
-    // Handle category tabs
-    const searchTabs = document.querySelectorAll('.search-tab');
-    searchTabs.forEach(tab => {
+    categoryTabs.forEach(tab => {
         tab.addEventListener('click', function() {
             // Remove active class from all tabs
-            searchTabs.forEach(t => t.classList.remove('active'));
+            categoryTabs.forEach(t => t.classList.remove('active'));
             // Add active class to clicked tab
             this.classList.add('active');
-            
-            const currentUrl = new URL(window.location);
-            const categoryText = this.textContent.trim();
-            
-            // Map category names to category types
-            const categoryMap = {
-                'Bütün Aktivitələr': '',
-                'İdman': 'sports',
-                'Mədəniyyət': 'culture',
-                'Təbiət': 'nature',
-                'Sənət': 'art',
-                'Yemək': 'food'
-            };
-            
-            const categoryType = categoryMap[categoryText];
-            if (categoryType) {
-                currentUrl.searchParams.set('category', categoryType);
-            } else {
-                currentUrl.searchParams.delete('category');
-            }
-            
-            // Navigate to filtered results
-            window.location.href = currentUrl.toString();
+            // Set category value
+            categoryInput.value = this.dataset.category;
+            // Submit form
+            document.getElementById('searchForm').submit();
         });
     });
     
-    // Set active tab based on URL parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const categoryParam = urlParams.get('category');
-    if (categoryParam) {
-        const categoryMap = {
-            'sports': 'İdman',
-            'culture': 'Mədəniyyət',
-            'nature': 'Təbiət',
-            'art': 'Sənət',
-            'food': 'Yemək'
-        };
-        
-        const categoryName = categoryMap[categoryParam];
-        if (categoryName) {
-            searchTabs.forEach(tab => {
-                tab.classList.remove('active');
-                if (tab.textContent.trim() === categoryName) {
-                    tab.classList.add('active');
-                }
-            });
-        }
+    // Sort buttons
+    const sortButtons = document.querySelectorAll('.sort-btn[data-sort]');
+    const sortInput = document.getElementById('sortInput');
+    
+    sortButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active class from all buttons
+            sortButtons.forEach(b => b.classList.remove('active'));
+            // Add active class to clicked button
+            this.classList.add('active');
+            // Set sort value
+            sortInput.value = this.dataset.sort;
+            // Submit form
+            document.getElementById('searchForm').submit();
+        });
+    });
+    
+    // Clear filters
+    const clearFiltersBtn = document.getElementById('clearFilters');
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', function() {
+            window.location.href = '{% url "activities:activities_list" %}';
+        });
     }
     
-    // Handle filter dropdowns
-    function applyFilter(filterType, filterValue) {
-        const currentUrl = new URL(window.location);
-        
-        if (filterValue) {
-            currentUrl.searchParams.set(filterType, filterValue);
-        } else {
-            currentUrl.searchParams.delete(filterType);
-        }
-        
-        // Navigate to filtered results
-        window.location.href = currentUrl.toString();
-    }
-    
-    // District filter
-    const districtItems = document.querySelectorAll('[data-district]');
-    districtItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const district = this.getAttribute('data-district');
-            applyFilter('district', district);
+    // Auto-submit on filter change
+    const filterSelects = document.querySelectorAll('.filter-select');
+    filterSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            // Small delay to allow multiple selections
+            setTimeout(() => {
+                document.getElementById('searchForm').submit();
+            }, 100);
         });
     });
     
-    // Time/Date filter
-    const dateItems = document.querySelectorAll('[data-date]');
-    dateItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const date = this.getAttribute('data-date');
-            applyFilter('date', date);
-        });
-    });
-    
-    // Participants filter
-    const participantItems = document.querySelectorAll('[data-participants]');
-    participantItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const participants = this.getAttribute('data-participants');
-            applyFilter('participants', participants);
-        });
-    });
-    
-    // Price filter
-    const priceItems = document.querySelectorAll('[data-price]');
-    priceItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const price = this.getAttribute('data-price');
-            applyFilter('price', price);
-        });
-    });
-    
-    // Sort filter
-    const sortItems = document.querySelectorAll('[data-sort]');
-    sortItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const sort = this.getAttribute('data-sort');
-            applyFilter('sort', sort);
-        });
-    });
-    
-    // Update filter button text based on current URL parameters
-    function updateFilterButtonText() {
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        // Update district filter button
-        const districtParam = urlParams.get('district');
-        const districtButton = document.getElementById('districtFilter');
-        if (districtParam) {
-            const districtNames = {
-                'nizami': 'Nizami',
-                'sabail': 'Sabail',
-                'yasamal': 'Yasamal',
-                'binagadi': 'Binəqədi',
-                'khazar': 'Xəzər',
-                'sabunchu': 'Sabunçu',
-                'surakhani': 'Suraxanı',
-                'khatai': 'Xətai',
-                'narimanov': 'Nərimanov',
-                'nasimi': 'Nəsimi',
-                'pirallahi': 'Pirallahı',
-                'other': 'Digər'
-            };
-            const districtName = districtNames[districtParam] || districtParam;
-            districtButton.innerHTML = `<i class="fas fa-map-marker-alt me-2"></i>${districtName}`;
-        }
-        
-        // Update time filter button
-        const dateParam = urlParams.get('date');
-        const timeButton = document.getElementById('timeFilter');
-        if (dateParam) {
-            const dateNames = {
-                'today': 'Bu gün',
-                'tomorrow': 'Sabah',
-                'week': 'Bu həftə',
-                'upcoming': 'Gələcək'
-            };
-            const dateName = dateNames[dateParam] || dateParam;
-            timeButton.innerHTML = `<i class="fas fa-clock me-2"></i>${dateName}`;
-        }
-        
-        // Update participants filter button
-        const participantsParam = urlParams.get('participants');
-        const participantsButton = document.getElementById('participantsFilter');
-        if (participantsParam) {
-            const participantNames = {
-                'small': 'Kiçik (2-10)',
-                'medium': 'Orta (11-25)',
-                'large': 'Böyük (26-50)',
-                'xlarge': 'Çox Böyük (50+)'
-            };
-            const participantName = participantNames[participantsParam] || participantsParam;
-            participantsButton.innerHTML = `<i class="fas fa-users me-2"></i>${participantName}`;
-        }
-        
-        // Update price filter button
-        const priceParam = urlParams.get('price');
-        const priceButton = document.getElementById('priceFilter');
-        if (priceParam) {
-            const priceNames = {
-                'free': 'Pulsuz',
-                'paid': 'Ödənişli'
-            };
-            const priceName = priceNames[priceParam] || priceParam;
-            priceButton.innerHTML = `<i class="fas fa-star me-2"></i>${priceName}`;
-        }
-        
-        // Update sort button (keeping the text but could show selected sort)
-        const sortParam = urlParams.get('sort');
-        if (sortParam && sortParam !== 'featured') {
-            const sortButton = document.querySelector('.sort-section .sort-text');
-            const sortNames = {
-                'date': 'Tarixə görə',
-                'newest': 'Ən yeni',
-                'price_low': 'Ucuzdan bahaya',
-                'price_high': 'Bahadan ucuza',
-                'featured': 'Tövsiyə edilən'
-            };
-            const sortName = sortNames[sortParam] || 'Tarixə görə sırala';
-            sortButton.textContent = sortName;
+    // Show filters panel if any filter is active
+    {% if category_filter or district_filter or date_filter or price_filter or difficulty_filter %}
+    if (filtersPanel) {
+        filtersPanel.classList.add('active');
+        if (toggleFiltersText) toggleFiltersText.textContent = 'Filtrləri gizlət';
+        if (toggleFiltersIcon) {
+            toggleFiltersIcon.classList.remove('fa-chevron-down');
+            toggleFiltersIcon.classList.add('fa-chevron-up');
         }
     }
-    
-    // Initialize filter button text on page load
-    updateFilterButtonText();
+    {% endif %}
 });
 </script>
 {% endblock %}

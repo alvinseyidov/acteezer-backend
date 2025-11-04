@@ -5,281 +5,411 @@
 
 {% block extra_css %}
 <style>
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #f0fdf9 0%, #f7fefb 100%);
+    min-height: 100vh;
+}
+
 .auth-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem 0;
+    padding: 2rem 1rem;
 }
 
 .auth-card {
-    max-width: 700px;
+    max-width: 600px;
     width: 100%;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 32px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     overflow: hidden;
-    margin: 0 1rem;
+    animation: slideUp 0.6s ease;
 }
 
-.auth-header {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    padding: 2rem 2rem 1.5rem;
-    text-align: center;
-    position: relative;
-}
-
-.auth-logo {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    backdrop-filter: blur(10px);
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .step-progress {
-    padding: 1.5rem 2rem;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
+    padding: 2rem 2rem 1.75rem;
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.05) 0%, rgba(75, 197, 170, 0.05) 100%);
 }
 
-.step-indicator {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+.progress-container {
     position: relative;
 }
 
-.step-indicator::before {
+.progress-track {
+    width: 100%;
+    height: 6px;
+    background: #e8f0f5;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #5DD3BE 0%, #4BC5AA 100%);
+    border-radius: 10px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    width: 55%;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4));
+    border-radius: 0 10px 10px 0;
+}
+
+.progress-indicator {
+    position: absolute;
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: white;
+    border: 3px solid #4BC5AA;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(75, 197, 170, 0.3);
+    z-index: 10;
+    transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.progress-indicator::before {
     content: '';
     position: absolute;
     top: 50%;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: #e9ecef;
-    z-index: 1;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: #4BC5AA;
+    border-radius: 50%;
 }
 
-.step {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    background: #e9ecef;
-    color: #6c757d;
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    font-size: 0.8125rem;
+}
+
+.progress-step {
+    color: #4BC5AA;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.progress-percentage {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.auth-header {
+    padding: 2.5rem 2.5rem 2rem;
+    text-align: center;
+}
+
+.auth-logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    border-radius: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    font-size: 0.9rem;
-    position: relative;
-    z-index: 2;
-    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(93, 211, 190, 0.4);
+    animation: pulse 2s ease-in-out infinite;
 }
 
-.step.active {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    transform: scale(1.1);
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
 }
 
-.step.completed {
-    background: #28a745;
+.auth-logo i {
+    font-size: 2.5rem;
     color: white;
 }
 
-.progress {
-    height: 8px;
-    border-radius: 4px;
-    overflow: hidden;
-    background: #e9ecef;
+.auth-header h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
 }
 
-.progress-bar {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    transition: width 0.6s ease;
+.auth-header p {
+    color: #718096;
+    font-size: 1rem;
 }
 
 .auth-body {
-    padding: 2.5rem 2rem;
+    padding: 2rem 2.5rem 3rem;
 }
 
-.step-title {
-    text-align: center;
+.date-picker-wrapper {
+    position: relative;
     margin-bottom: 2rem;
 }
 
-.step-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    margin: 0 auto 1rem;
-    font-size: 2rem;
-}
-
-.form-floating {
+.date-input-container {
+    position: relative;
     margin-bottom: 1.5rem;
 }
 
-.form-floating > .form-control {
-    height: 60px;
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
+.date-input-label {
+    display: block;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.form-floating > .form-control:focus {
-    border-color: #28a745;
-    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
-}
-
-.form-floating > label {
-    color: #6c757d;
-    font-weight: 500;
+.date-input-label i {
+    color: #4BC5AA;
+    font-size: 1.1rem;
 }
 
 .date-input {
-    height: 70px !important;
-    font-size: 1.1rem !important;
-    font-weight: 500;
+    width: 100%;
+    height: 64px;
+    padding: 0 1.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1a202c;
+    background: #f7fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
     text-align: center;
+    cursor: pointer;
+}
+
+.date-input:hover {
+    border-color: #4BC5AA;
+    background: white;
+    transform: translateY(-1px);
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: #4BC5AA;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(75, 197, 170, 0.1);
+    transform: translateY(-2px);
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.date-input::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+.age-preview {
+    text-align: center;
+    padding: 1.25rem 1.5rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: none;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.age-preview.show {
+    display: block;
+}
+
+.age-preview.valid {
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.15) 0%, rgba(75, 197, 170, 0.15) 100%);
+    border: 2px solid #4BC5AA;
+    color: #155724;
+}
+
+.age-preview.invalid {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.15) 0%, rgba(255, 82, 82, 0.15) 100%);
+    border: 2px solid #FF6B6B;
+    color: #721c24;
+}
+
+.age-preview.warning {
+    background: linear-gradient(135deg, rgba(255, 184, 77, 0.15) 0%, rgba(255, 193, 7, 0.15) 100%);
+    border: 2px solid #FFB84D;
+    color: #856404;
+}
+
+.age-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: inline-block;
+    margin: 0 0.25rem;
+    color: #4BC5AA;
+}
+
+.age-preview.invalid .age-number {
+    color: #FF6B6B;
+}
+
+.info-card {
+    background: rgba(93, 211, 190, 0.1);
+    border-left: 4px solid #4BC5AA;
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    color: #155724;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.info-card i {
+    color: #4BC5AA;
+    font-size: 1.125rem;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+}
+
+.requirement-card {
+    background: #f7fafc;
+    border: 2px solid #e2e8f0;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.requirement-card i {
+    color: #4BC5AA;
+    margin-right: 0.5rem;
 }
 
 .auth-btn {
-    height: 60px;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    width: 100%;
+    height: 56px;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    color: white;
     border: none;
-    transition: all 0.3s ease;
+    border-radius: 16px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 10px 25px rgba(93, 211, 190, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.auth-btn:hover::before {
+    left: 100%;
 }
 
 .auth-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+    box-shadow: 0 15px 35px rgba(93, 211, 190, 0.5);
+}
+
+.auth-btn:active {
+    transform: translateY(0);
 }
 
 .auth-btn:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
+    cursor: not-allowed;
     transform: none;
-    box-shadow: none;
-}
-
-.info-box {
-    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-    border: none;
-    border-left: 4px solid #17a2b8;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-}
-
-.age-display {
-    border-radius: 12px;
-    padding: 1rem;
-    margin-top: 1rem;
-    text-align: center;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.age-display.success {
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-    border-left: 4px solid #28a745;
-    color: #155724;
-}
-
-.age-display.danger {
-    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-    border-left: 4px solid #dc3545;
-    color: #721c24;
-}
-
-.age-display.warning {
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-    border-left: 4px solid #ffc107;
-    color: #856404;
-}
-
-.birthday-info {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    color: #6c757d;
-    text-align: center;
+    box-shadow: 0 5px 15px rgba(93, 211, 190, 0.2);
 }
 
 .back-link {
-    display: inline-block;
-    margin-top: 1rem;
-    padding: 0.75rem 1.5rem;
-    background: white;
-    border: 2px solid #6c757d;
-    color: #6c757d;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #718096;
     text-decoration: none;
-    border-radius: 8px;
     font-weight: 500;
+    margin-top: 1rem;
     transition: all 0.3s ease;
 }
 
 .back-link:hover {
-    background: #6c757d;
-    color: white;
-    text-decoration: none;
-    transform: translateY(-1px);
+    color: #4BC5AA;
+    transform: translateX(-2px);
 }
 
-@media (max-width: 768px) {
-    .auth-container {
-        padding: 1rem 0;
-    }
-    
+@media (max-width: 640px) {
     .auth-card {
+        border-radius: 24px;
         margin: 0 0.5rem;
     }
     
     .auth-body {
-        padding: 2rem 1.5rem;
-    }
-    
-    .step {
-        width: 30px;
-        height: 30px;
-        font-size: 0.8rem;
+        padding: 1.5rem 1.5rem 2rem;
     }
     
     .date-input {
-        height: 60px !important;
-        font-size: 1rem !important;
-    }
-}
-
-@media (max-width: 576px) {
-    .step-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5rem;
+        height: 56px;
+        font-size: 1rem;
     }
     
-    .auth-btn {
-        height: 50px;
-        font-size: 1rem;
+    .step-progress {
+        padding: 1.5rem 1.5rem 1.25rem;
     }
 }
 </style>
@@ -288,81 +418,74 @@
 {% block content %}
 <div class="auth-container">
     <div class="auth-card">
-        <div class="auth-header">
-            <div class="auth-logo">
-                <i class="fas fa-birthday-cake fa-2x"></i>
-            </div>
-            <h2 class="mb-2">Doğum Tarixi</h2>
-            <p class="mb-0 opacity-90">Sizə uyğun aktivitələr tapaq</p>
-        </div>
-                
         <div class="step-progress">
-            <div class="step-indicator">
-                <div class="step completed">1</div>
-                <div class="step completed">2</div>
-                <div class="step completed">3</div>
-                <div class="step completed">4</div>
-                <div class="step active">5</div>
-                <div class="step">6</div>
-                <div class="step">7</div>
-                <div class="step">8</div>
-                <div class="step">9</div>
+            <div class="progress-container">
+                <div class="progress-track">
+                    <div class="progress-fill" style="width: 55%"></div>
+                </div>
+                <div class="progress-indicator" style="left: 55%"></div>
             </div>
-                    
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-info">
+                <span class="progress-step">Addım 5 / 9</span>
+                <span class="progress-percentage">55%</span>
             </div>
         </div>
         
-        <div class="auth-body">
-            <div class="step-title">
-                <div class="step-icon">
-                    <i class="fas fa-calendar-day"></i>
-                </div>
-                <h4 class="fw-bold">Doğum Tarixiniz</h4>
-                <p class="text-muted">Yaşa uyğun aktivitələr göstərmək üçün lazımdır</p>
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-birthday-cake"></i>
             </div>
-                    
+            <h2>Doğum Tarixiniz</h2>
+            <p>Sizə uyğun aktivitələr tapaq</p>
+        </div>
+        
+        <div class="auth-body">
             <form method="post" id="birthday-form">
                 {% csrf_token %}
                 
-                <div class="birthday-info">
-                    <i class="fas fa-info-circle me-2"></i>
+                <div class="requirement-card">
+                    <i class="fas fa-info-circle"></i>
                     Acteezer-də qeydiyyat üçün ən azı 16 yaşında olmalısınız
                 </div>
                 
-                <div class="form-floating">
-                    <input 
-                        type="date" 
-                        class="form-control date-input" 
-                        id="birthday" 
-                        name="birthday" 
-                        placeholder="Doğum tarixi"
-                        required
-                        value="{{ user.birthday|default:'' }}"
-                        max="{% now 'Y-m-d' %}"
-                    >
-                    <label for="birthday">
-                        <i class="fas fa-calendar me-2"></i>
+                <div class="date-picker-wrapper">
+                    <label for="birthday" class="date-input-label">
+                        <i class="fas fa-calendar-alt"></i>
                         Doğum Tarixi
                     </label>
+                    <div class="date-input-container">
+                        <input 
+                            type="date" 
+                            class="date-input" 
+                            id="birthday" 
+                            name="birthday" 
+                            required
+                            value="{{ user.birthday|default:'' }}"
+                            max="{% now 'Y-m-d' %}"
+                        >
+                    </div>
                 </div>
                 
-                <div id="age-display" style="display: none;"></div>
-                        
-                <div class="info-box">
-                    <i class="fas fa-user-shield me-2"></i>
-                    <strong>Məxfilik:</strong> Dəqiq doğum tarixiniz məxfi qalır. Digər istifadəçilər yalnız yaş aralığınızı görər.
+                <div class="age-preview" id="age-preview">
+                    <i class="fas fa-user-check" id="age-icon"></i>
+                    <span id="age-message"></span>
                 </div>
-                        
-                <button type="submit" class="btn auth-btn w-100 text-white mb-3" id="submit-btn">
-                    <i class="fas fa-arrow-right me-2"></i>
-                    Davam Et
+                
+                <div class="info-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <strong>Məxfilik:</strong> Dəqiq doğum tarixiniz məxfi qalır. Digər istifadəçilər yalnız yaş aralığınızı görər.
+                    </div>
+                </div>
+                
+                <button type="submit" class="auth-btn" id="submit-btn" disabled>
+                    <i class="fas fa-arrow-right"></i>
+                    <span>Davam Et</span>
                 </button>
-                        
-                <div class="text-center">
+                
+                <div style="text-align: center; margin-top: 1.5rem;">
                     <a href="{% url 'accounts:languages_registration' %}" class="back-link">
-                        <i class="fas fa-arrow-left me-2"></i>
+                        <i class="fas fa-arrow-left"></i>
                         Geri
                     </a>
                 </div>
@@ -374,46 +497,51 @@
 
 {% block extra_js %}
 <script>
-// Yaş hesablama və göstərmə
 function calculateAge() {
     const birthdayInput = document.getElementById('birthday');
     const birthday = new Date(birthdayInput.value);
     const today = new Date();
+    const agePreview = document.getElementById('age-preview');
+    const ageMessage = document.getElementById('age-message');
+    const ageIcon = document.getElementById('age-icon');
+    const submitBtn = document.getElementById('submit-btn');
     
-    if (birthday && birthday < today) {
-        const age = today.getFullYear() - birthday.getFullYear();
-        const monthDiff = today.getMonth() - birthday.getMonth();
-        
-        const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate()) 
-            ? age - 1 
-            : age;
-        
-        // Yaş önizləməsini göstər
-        let ageDisplay = document.getElementById('age-display');
-        ageDisplay.style.display = 'block';
-        
-        if (actualAge < 16) {
-            ageDisplay.className = 'age-display danger';
-            ageDisplay.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Acteezer-ə qoşulmaq üçün ən azı 16 yaşında olmalısınız.';
-            document.getElementById('submit-btn').disabled = true;
-        } else if (actualAge > 100) {
-            ageDisplay.className = 'age-display warning';
-            ageDisplay.innerHTML = '<i class="fas fa-question-circle me-2"></i>Zəhmət olmasa doğum tarixinizi yoxlayın.';
-            document.getElementById('submit-btn').disabled = false;
-        } else {
-            ageDisplay.className = 'age-display success';
-            ageDisplay.innerHTML = `<i class="fas fa-check-circle me-2"></i>Siz ${actualAge} yaşındasınız. Mükəmməl!`;
-            document.getElementById('submit-btn').disabled = false;
-        }
+    if (!birthdayInput.value || birthday >= today) {
+        agePreview.classList.remove('show', 'valid', 'invalid', 'warning');
+        submitBtn.disabled = true;
+        return;
+    }
+    
+    const age = today.getFullYear() - birthday.getFullYear();
+    const monthDiff = today.getMonth() - birthday.getMonth();
+    const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate()) 
+        ? age - 1 
+        : age;
+    
+    agePreview.classList.add('show');
+    agePreview.classList.remove('valid', 'invalid', 'warning');
+    
+    if (actualAge < 16) {
+        agePreview.classList.add('invalid');
+        ageIcon.className = 'fas fa-exclamation-triangle';
+        ageMessage.innerHTML = `Siz <span class="age-number">${actualAge}</span> yaşındasınız. Acteezer-ə qoşulmaq üçün ən azı 16 yaşında olmalısınız.`;
+        submitBtn.disabled = true;
+    } else if (actualAge > 100) {
+        agePreview.classList.add('warning');
+        ageIcon.className = 'fas fa-question-circle';
+        ageMessage.innerHTML = `Siz <span class="age-number">${actualAge}</span> yaşındasınız. Zəhmət olmasa doğum tarixinizi yoxlayın.`;
+        submitBtn.disabled = false;
     } else {
-        document.getElementById('age-display').style.display = 'none';
-        document.getElementById('submit-btn').disabled = true;
+        agePreview.classList.add('valid');
+        ageIcon.className = 'fas fa-check-circle';
+        ageMessage.innerHTML = `Siz <span class="age-number">${actualAge}</span> yaşındasınız. Mükəmməl!`;
+        submitBtn.disabled = false;
     }
 }
 
 document.getElementById('birthday').addEventListener('change', calculateAge);
+document.getElementById('birthday').addEventListener('input', calculateAge);
 
-// Form göndərmə
 document.getElementById('birthday-form').addEventListener('submit', function(e) {
     const birthdayInput = document.getElementById('birthday');
     const birthday = new Date(birthdayInput.value);
@@ -421,11 +549,9 @@ document.getElementById('birthday-form').addEventListener('submit', function(e) 
     
     if (!birthdayInput.value) {
         e.preventDefault();
-        alert('Zəhmət olmasa doğum tarixinizi seçin.');
         return;
     }
     
-    // Yaş yoxlaması
     const age = today.getFullYear() - birthday.getFullYear();
     const monthDiff = today.getMonth() - birthday.getMonth();
     const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate()) 
@@ -434,30 +560,19 @@ document.getElementById('birthday-form').addEventListener('submit', function(e) 
     
     if (actualAge < 16) {
         e.preventDefault();
-        alert('Təəssüf ki, Acteezer-ə qoşulmaq üçün ən azı 16 yaşında olmalısınız.');
         return;
     }
     
     const submitBtn = e.target.querySelector('button[type="submit"]');
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yadda saxlanılır...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yadda saxlanılır...';
     submitBtn.disabled = true;
-    
-    // Əgər xəta olarsa, düyməni bərpa et
-    setTimeout(() => {
-        if (submitBtn.disabled) {
-            submitBtn.innerHTML = '<i class="fas fa-arrow-right me-2"></i>Davam Et';
-            submitBtn.disabled = false;
-        }
-    }, 5000);
 });
 
-// Tarix məhdudiyyətlərini təyin et
 document.addEventListener('DOMContentLoaded', function() {
     const birthdayInput = document.getElementById('birthday');
     const today = new Date();
     const maxDate = today.toISOString().split('T')[0];
     
-    // 120 il əvvəlki tarix
     const minDate = new Date();
     minDate.setFullYear(today.getFullYear() - 120);
     const minDateStr = minDate.toISOString().split('T')[0];
@@ -465,14 +580,9 @@ document.addEventListener('DOMContentLoaded', function() {
     birthdayInput.max = maxDate;
     birthdayInput.min = minDateStr;
     
-    // Əgər doğum tarixi daxil edilmişsə, yaşı hesabla
     if (birthdayInput.value) {
         calculateAge();
     }
-    
-    // İlkin vəziyyətdə submit düyməsini söndür
-    document.getElementById('submit-btn').disabled = true;
 });
 </script>
 {% endblock %}
-

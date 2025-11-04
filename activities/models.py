@@ -227,34 +227,26 @@ class Activity(models.Model):
     def pending_requests_count(self):
         return self.participants.filter(status='pending').count()
     
-    def can_user_join(self, user):
-        """Check if a user can join this activity"""
-        if not user.is_authenticated:
-            return False, "Qoşulmaq üçün daxil olmalısınız"
-        
-        if user == self.organizer:
-            return False, "Öz təşkil etdiyiniz aktivitəyə qoşula bilməzsiniz"
-        
-        if self.status != 'published':
-            return False, "Bu aktivitə hal-hazırda mövcud deyil"
-        
-        if self.is_past:
-            return False, "Bu aktivitə artıq keçmişdə qalıb"
-        
-        if self.is_full:
-            return False, "Bu aktivitə doludur"
-        
-        # Check if user already has a request
-        existing_request = self.participants.filter(user=user).first()
-        if existing_request:
-            if existing_request.status == 'approved':
-                return False, "Siz artıq bu aktivitəyə qoşulmusunuz"
-            elif existing_request.status == 'pending':
-                return False, "Sizin qoşulma sorğunuz gözləmədədir"
-            elif existing_request.status == 'rejected':
-                return False, "Sizin qoşulma sorğunuz rədd edilib"
-        
-        return True, "Qoşula bilərsiniz"
+    def get_status_badge_class(self):
+        """Return Bootstrap badge class for status"""
+        status_classes = {
+            'draft': 'bg-secondary',
+            'published': 'bg-success',
+            'cancelled': 'bg-danger',
+            'completed': 'bg-info'
+        }
+        return status_classes.get(self.status, 'bg-secondary')
+    
+    def get_difficulty_badge_class(self):
+        """Return Bootstrap badge class for difficulty level"""
+        difficulty_classes = {
+            'beginner': 'bg-success',
+            'intermediate': 'bg-info',
+            'advanced': 'bg-warning',
+            'expert': 'bg-danger'
+        }
+        return difficulty_classes.get(self.difficulty_level, 'bg-secondary')
+    
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

@@ -16,136 +16,430 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
     <style>
+        /* Modern Advanced Header Styles */
         .navbar {
             z-index: 1030 !important;
-            position: relative !important;
+            position: sticky !important;
+            top: 0 !important;
+            backdrop-filter: blur(20px) saturate(180%) !important;
+            background: rgba(255, 255, 255, 0.85) !important;
+            border-bottom: 1px solid rgba(93, 211, 190, 0.1) !important;
+            padding: 0.75rem 0 !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+            transition: all 0.3s ease !important;
         }
+        
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
+            padding: 0.5rem 0 !important;
+        }
+        
         .dropdown-menu {
             z-index: 99999 !important;
             position: absolute !important;
         }
+        
         .navbar .dropdown-menu {
             z-index: 99999 !important;
         }
+        
         /* Ensure main content doesn't overlap navbar */
         main {
             position: relative;
             z-index: 1;
         }
-        /* Create Activity Button */
+        
+        /* Brand Logo */
+        .navbar-brand {
+            padding: 0.5rem 0 !important;
+            transition: transform 0.3s ease !important;
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05) !important;
+        }
+        
+        .navbar-logo {
+            height: 40px !important;
+            width: auto !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        /* Navigation Links - Modern Design */
+        .navbar-nav .nav-link {
+            font-size: 0.95rem !important;
+            font-weight: 500 !important;
+            color: #1a2e2a !important;
+            padding: 0.5rem 1rem !important;
+            margin: 0 0.25rem !important;
+            border-radius: 10px !important;
+            position: relative !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        
+        .navbar-nav .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, #5DD3BE 0%, #4BC5AA 100%);
+            border-radius: 2px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: #5DD3BE !important;
+            background: rgba(93, 211, 190, 0.08) !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        .navbar-nav .nav-link:hover::before {
+            transform: translateX(-50%) scaleX(1);
+        }
+        
+        .navbar-nav .nav-link.active {
+            color: #5DD3BE !important;
+            background: rgba(93, 211, 190, 0.1) !important;
+        }
+        
+        .navbar-nav .nav-link.active::before {
+            transform: translateX(-50%) scaleX(1);
+        }
+        
+        /* Create Activity Button - Modern Gradient */
         .create-activity-btn {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%) !important;
             border: none !important;
-            border-radius: 15px !important;
-            padding: 0.4rem 0.8rem !important;
+            border-radius: 12px !important;
+            padding: 0.6rem 1.25rem !important;
             font-weight: 600 !important;
             text-decoration: none !important;
-            transition: all 0.3s ease !important;
-            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
-            font-size: 0.85rem !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 4px 15px rgba(93, 211, 190, 0.3) !important;
+            font-size: 0.9rem !important;
+            color: white !important;
+            position: relative !important;
+            overflow: hidden !important;
         }
+        
+        .create-activity-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
         .create-activity-btn:hover {
             transform: translateY(-2px) !important;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4) !important;
+            box-shadow: 0 8px 25px rgba(93, 211, 190, 0.4) !important;
             color: white !important;
         }
-        /* User Dropdown Styling */
+        
+        .create-activity-btn:hover::before {
+            left: 100%;
+        }
+        
+        .create-activity-btn i {
+            margin-right: 0.5rem !important;
+            font-size: 0.85rem !important;
+        }
+        
+        /* User Dropdown Toggle - Modern Design */
         .user-dropdown-toggle {
             display: flex !important;
             align-items: center !important;
-            gap: 0 !important; /* Remove gap since we're hiding the name */
-            padding: 0.3rem !important;
-            border-radius: 50% !important;
-            transition: all 0.3s ease !important;
+            gap: 0.75rem !important;
+            padding: 0.4rem 0.75rem !important;
+            border-radius: 50px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            background: transparent !important;
+            border: 2px solid transparent !important;
         }
+        
         .user-dropdown-toggle:hover {
-            background: rgba(40, 167, 69, 0.1) !important;
+            background: rgba(93, 211, 190, 0.1) !important;
+            border-color: rgba(93, 211, 190, 0.2) !important;
+            transform: translateY(-1px) !important;
         }
+        
+        .user-dropdown-toggle::after {
+            margin-left: 0.5rem !important;
+            border-top-color: #5DD3BE !important;
+            transition: transform 0.3s ease !important;
+        }
+        
+        .user-dropdown-toggle[aria-expanded="true"]::after {
+            transform: rotate(180deg) !important;
+        }
+        
         .user-avatar {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(93, 211, 190, 0.3);
+            transition: all 0.3s ease;
         }
+        
+        .user-dropdown-toggle:hover .user-avatar {
+            box-shadow: 0 6px 20px rgba(93, 211, 190, 0.4);
+            transform: scale(1.05);
+        }
+        
         .user-avatar-img {
             width: 100%;
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
         }
+        
         .user-name {
-            font-weight: 500;
-            color: #333 !important;
-            display: none !important; /* Hide the user name text */
+            font-weight: 600;
+            color: #1a2e2a !important;
+            font-size: 0.9rem !important;
+            display: block !important;
         }
         
-        /* Navigation font size adjustment */
-        .navbar-nav .nav-link {
-            font-size: 0.9rem !important;
-        }
+        /* Custom Dropdown Menu - Modern Glass Effect */
         .custom-dropdown {
             border: none !important;
-            border-radius: 15px !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(93, 211, 190, 0.1) !important;
             padding: 0 !important;
-            min-width: 280px !important;
-            margin-top: 0.5rem !important;
+            min-width: 300px !important;
+            margin-top: 0.75rem !important;
+            backdrop-filter: blur(20px) saturate(180%) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            overflow: hidden !important;
+            animation: dropdownFadeIn 0.3s ease !important;
         }
+        
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .custom-dropdown .dropdown-header {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%) !important;
             color: white !important;
-            padding: 1rem 1.5rem !important;
-            border-radius: 15px 15px 0 0 !important;
+            padding: 1.25rem 1.5rem !important;
+            border-radius: 0 !important;
+            border-bottom: none !important;
         }
+        
         .user-info {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
+        
         .user-avatar-large {
-            width: 50px;
-            height: 50px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
+        
+        .user-details {
+            flex: 1;
+        }
+        
         .user-details strong {
             font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
         }
+        
+        .user-details small {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
         .custom-dropdown .dropdown-item {
-            padding: 0.75rem 1.5rem !important;
-            color: #333 !important;
+            padding: 0.875rem 1.5rem !important;
+            color: #1a2e2a !important;
             font-weight: 500 !important;
-            transition: all 0.3s ease !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border-left: 3px solid transparent !important;
+            display: flex !important;
+            align-items: center !important;
         }
+        
         .custom-dropdown .dropdown-item:hover {
-            background: rgba(40, 167, 69, 0.1) !important;
-            color: #28a745 !important;
+            background: linear-gradient(90deg, rgba(93, 211, 190, 0.1) 0%, rgba(93, 211, 190, 0.05) 100%) !important;
+            color: #5DD3BE !important;
+            border-left-color: #5DD3BE !important;
             transform: translateX(5px) !important;
+            padding-left: 1.75rem !important;
         }
+        
         .custom-dropdown .dropdown-item i {
-            color: #28a745 !important;
-            width: 20px !important;
+            color: #5DD3BE !important;
+            width: 24px !important;
+            margin-right: 0.75rem !important;
+            font-size: 1rem !important;
+            transition: transform 0.3s ease !important;
         }
-        .custom-dropdown .dropdown-item.text-danger:hover {
-            background: rgba(220, 53, 69, 0.1) !important;
+        
+        .custom-dropdown .dropdown-item:hover i {
+            transform: scale(1.1) !important;
+        }
+        
+        .custom-dropdown .dropdown-item.text-danger {
             color: #dc3545 !important;
         }
+        
+        .custom-dropdown .dropdown-item.text-danger:hover {
+            background: linear-gradient(90deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%) !important;
+            color: #dc3545 !important;
+            border-left-color: #dc3545 !important;
+        }
+        
         .custom-dropdown .dropdown-item.text-danger i {
             color: #dc3545 !important;
         }
+        
         .custom-dropdown .dropdown-divider {
             margin: 0.5rem 0 !important;
-            border-color: #e9ecef !important;
+            border-color: rgba(93, 211, 190, 0.15) !important;
+            opacity: 1 !important;
+        }
+        
+        /* Join Button for Non-authenticated Users */
+        .navbar-nav .btn-primary {
+            background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%) !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 0.6rem 1.5rem !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 15px rgba(93, 211, 190, 0.3) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        
+        .navbar-nav .btn-primary:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(93, 211, 190, 0.4) !important;
+        }
+        
+        /* Mobile Menu Button - Modern Hamburger */
+        .mobile-menu-btn {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-around !important;
+            width: 32px !important;
+            height: 32px !important;
+            background: transparent !important;
+            border: none !important;
+            cursor: pointer !important;
+            padding: 0 !important;
+            z-index: 1001 !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .mobile-menu-btn span {
+            width: 100% !important;
+            height: 3px !important;
+            background: #5DD3BE !important;
+            border-radius: 3px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transform-origin: center !important;
+        }
+        
+        .mobile-menu-btn:hover span {
+            background: #4BC5AA !important;
+        }
+        
+        .mobile-menu-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px) !important;
+        }
+        
+        .mobile-menu-btn.active span:nth-child(2) {
+            opacity: 0 !important;
+        }
+        
+        .mobile-menu-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px) !important;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 991.98px) {
+            .navbar {
+                padding: 0.75rem 0 !important;
+            }
+            
+            .navbar-nav {
+                padding: 1rem 0 !important;
+            }
+            
+            .navbar-nav .nav-link {
+                padding: 0.75rem 1rem !important;
+                margin: 0.25rem 0 !important;
+                border-radius: 12px !important;
+            }
+            
+            .navbar-nav .nav-link::before {
+                display: none !important;
+            }
+            
+            .create-activity-btn {
+                width: 100% !important;
+                margin: 0.5rem 0 !important;
+                justify-content: center !important;
+            }
+            
+            .user-dropdown-toggle {
+                width: 100% !important;
+                justify-content: center !important;
+                padding: 0.75rem 1rem !important;
+            }
+            
+            .custom-dropdown {
+                min-width: 100% !important;
+                margin-top: 0.5rem !important;
+            }
+        }
+        
+        @media (max-width: 575.98px) {
+            .navbar-logo {
+                height: 32px !important;
+            }
+            
+            .user-name {
+                display: none !important;
+            }
+            
+            .user-dropdown-toggle {
+                gap: 0 !important;
+                padding: 0.4rem !important;
+            }
         }
         
         /* App Store Section */
@@ -971,6 +1265,7 @@
                     <li><a href="{% url 'accounts:joined_activities' %}"><i class="fas fa-calendar-check"></i> Qoşulduğum Aktivitələr</a></li>
                     <li><a href="{% url 'accounts:friends_list' %}"><i class="fas fa-user-friends"></i> Dostlarım</a></li>
                     <li><a href="{% url 'accounts:friend_requests' %}"><i class="fas fa-user-plus"></i> Dostluq Sorğuları</a></li>
+                    <li><a href="{% url 'places:liked_places' %}"><i class="fas fa-heart"></i> Bəyəndiyim Məkanlar</a></li>
                     <li><a href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt"></i> Çıxış</a></li>
                 </ul>
             {% else %}
@@ -990,58 +1285,58 @@
     <div class="mobile-sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light" id="mainNavbar">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <img src="{% static 'logo.png' %}" alt="Acteezer" class="navbar-logo me-2">
+                <img src="{% static 'logo.png' %}" alt="Acteezer" class="navbar-logo">
             </a>
             
             <!-- Mobile Menu Button -->
-            <button class="mobile-menu-btn d-lg-none" id="openSidebar">
+            <button class="mobile-menu-btn d-lg-none" id="openSidebar" aria-label="Menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
             
-            <button class="navbar-toggler d-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler d-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto ms-4">
+                <ul class="navbar-nav me-auto ms-lg-4">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}">Ana səhifə</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Ana səhifə</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'about' %}">Haqqımızda</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">Haqqımızda</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'activities:activities_list' %}">Aktivitələr</a>
+                        <a class="nav-link {% if 'activities' in request.resolver_match.namespace %}active{% endif %}" href="{% url 'activities:activities_list' %}">Aktivitələr</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:people_list' %}">İnsanlar</a>
+                        <a class="nav-link {% if 'people_list' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'accounts:people_list' %}">İnsanlar</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'places:places_list' %}">Məkanlar</a>
+                        <a class="nav-link {% if 'places' in request.resolver_match.namespace %}active{% endif %}" href="{% url 'places:places_list' %}">Məkanlar</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'blog' %}">Bloq</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'blog' %}active{% endif %}" href="{% url 'blog' %}">Bloq</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'contact' %}">Əlaqə</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Əlaqə</a>
                     </li>
                 </ul>
                 
-                <ul class="navbar-nav align-items-center">
+                <ul class="navbar-nav align-items-center gap-2">
                     {% if user.is_authenticated %}
-                        <li class="nav-item me-3">
-                            <a href="{% url 'activities:create_activity' %}" class="btn btn-success btn-sm create-activity-btn">
-                                <i class="fas fa-plus me-1"></i>
+                        <li class="nav-item d-none d-lg-block">
+                            <a href="{% url 'activities:create_activity' %}" class="create-activity-btn">
+                                <i class="fas fa-plus"></i>
                                 Aktivite Yarat
                             </a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle user-dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle user-dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <div class="user-avatar">
                                     {% if user.profile_image %}
                                         <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name }}" class="user-avatar-img">
@@ -1049,9 +1344,9 @@
                                         <i class="fas fa-user"></i>
                                     {% endif %}
                                 </div>
-                                <span class="user-name">{{ user.get_full_name|default:user.phone }}</span>
+                                <span class="user-name d-none d-xl-inline">{{ user.get_full_name|default:user.phone }}</span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end custom-dropdown" style="z-index: 99999 !important; position: absolute !important;">
+                            <ul class="dropdown-menu dropdown-menu-end custom-dropdown" aria-labelledby="navbarDropdown">
                                 <li class="dropdown-header">
                                     <div class="user-info">
                                         <div class="user-avatar-large">
@@ -1063,26 +1358,29 @@
                                         </div>
                                         <div class="user-details">
                                             <strong>{{ user.get_full_name|default:"İstifadəçi" }}</strong>
-                                            <small class="text-muted d-block">{{ user.phone }}</small>
+                                            <small class="d-block">{{ user.phone }}</small>
                                         </div>
                                     </div>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-user me-2"></i>Profil</a></li>
-                                <li><a class="dropdown-item" href="{% url 'accounts:my_activities' %}"><i class="fas fa-calendar-plus me-2"></i>Təşkil Etdiyim Aktivitələr</a></li>
-                                <li><a class="dropdown-item" href="{% url 'accounts:joined_activities' %}"><i class="fas fa-calendar-check me-2"></i>Qoşulduğum Aktivitələr</a></li>
-                                <li><a class="dropdown-item" href="{% url 'accounts:friends_list' %}"><i class="fas fa-user-friends me-2"></i>Dostlarım</a></li>
-                                <li><a class="dropdown-item" href="{% url 'accounts:friend_requests' %}"><i class="fas fa-user-plus me-2"></i>Dostluq Sorğuları</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-user"></i>Profil</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:my_activities' %}"><i class="fas fa-calendar-plus"></i>Təşkil Etdiyim Aktivitələr</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:joined_activities' %}"><i class="fas fa-calendar-check"></i>Qoşulduğum Aktivitələr</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:friends_list' %}"><i class="fas fa-user-friends"></i>Dostlarım</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:friend_requests' %}"><i class="fas fa-user-plus"></i>Dostluq Sorğuları</a></li>
+                                <li><a class="dropdown-item" href="{% url 'places:liked_places' %}"><i class="fas fa-heart"></i>Bəyəndiyim Məkanlar</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Tənzimləmələr</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i>Kömək</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i>Tənzimləmələr</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle"></i>Kömək</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Çıxış</a></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt"></i>Çıxış</a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="btn btn-primary" href="{% url 'accounts:phone_registration' %}">Qoşulun</a>
+                            <a class="btn btn-primary" href="{% url 'accounts:phone_registration' %}">
+                                <i class="fas fa-user-plus me-2"></i>Qoşulun
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
@@ -1289,6 +1587,25 @@
     <!-- Mobile Sidebar & Newsletter Subscription Script -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('mainNavbar');
+        let lastScroll = 0;
+        
+        function handleScroll() {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+            
+            lastScroll = currentScroll;
+        }
+        
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll(); // Initial check
+        
         // Mobile Sidebar Functionality
         const mobileSidebar = document.getElementById('mobileSidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -1300,6 +1617,7 @@
             openSidebarBtn.addEventListener('click', function() {
                 mobileSidebar.classList.add('active');
                 sidebarOverlay.classList.add('active');
+                openSidebarBtn.classList.add('active');
                 document.body.style.overflow = 'hidden';
             });
         }
@@ -1308,6 +1626,9 @@
         function closeSidebar() {
             mobileSidebar.classList.remove('active');
             sidebarOverlay.classList.remove('active');
+            if (openSidebarBtn) {
+                openSidebarBtn.classList.remove('active');
+            }
             document.body.style.overflow = '';
         }
         

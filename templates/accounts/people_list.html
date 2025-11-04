@@ -5,622 +5,828 @@
 
 {% block extra_css %}
 <style>
-.people-container {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    min-height: 100vh;
-    padding: 2rem 0;
+:root {
+    --primary-color: #5DD3BE;
+    --primary-dark: #4BC5AA;
+    --primary-light: #7CDDC9;
+    --gradient-primary: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    --gradient-soft: linear-gradient(135deg, rgba(93, 211, 190, 0.1) 0%, rgba(75, 197, 170, 0.1) 100%);
+    --text-dark: #1a2e2a;
+    --text-gray: #64748b;
+    --bg-light: #f8fafc;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+    --shadow-primary: 0 8px 25px rgba(93, 211, 190, 0.3);
 }
 
-.search-header {
+.people-page {
+    background: var(--bg-light);
+    min-height: 100vh;
+    padding: 2rem 0 4rem;
+}
+
+/* Hero Search Section */
+.search-hero {
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.1) 0%, rgba(75, 197, 170, 0.05) 100%);
+    border-radius: 24px;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+}
+
+.search-hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.search-hero h1 i {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+}
+
+.search-hero p {
+    color: var(--text-gray);
+    margin-bottom: 2rem;
+    font-size: 1.05rem;
+}
+
+/* Advanced Search Form */
+.advanced-search {
     background: white;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     padding: 2rem;
-    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+    margin-top: 1.5rem;
 }
 
-.search-form {
+.search-form-modern {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
     align-items: end;
 }
 
-.form-group {
+.form-group-modern {
     position: relative;
 }
 
-.form-control {
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-    height: 50px;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.form-control:focus {
-    border-color: #28a745;
-    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
-}
-
-.form-label {
+.form-group-modern label {
+    display: block;
     font-weight: 600;
-    color: #495057;
+    color: var(--text-dark);
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.search-btn {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    border: none;
+.form-group-modern label i {
+    color: var(--primary-color);
+    font-size: 0.85rem;
+}
+
+.form-control-modern {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    color: var(--text-dark);
+}
+
+.form-control-modern:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(93, 211, 190, 0.1);
+    transform: translateY(-1px);
+}
+
+.search-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.btn-search {
+    background: var(--gradient-primary);
     color: white;
-    height: 50px;
-    padding: 0 2rem;
+    border: none;
+    padding: 0.875rem 2rem;
     border-radius: 12px;
     font-weight: 600;
-    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
 }
 
-.search-btn:hover {
+.btn-search:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+    box-shadow: 0 12px 35px rgba(93, 211, 190, 0.4);
 }
 
-.clear-btn {
-    background: #6c757d;
-    border: none;
-    color: white;
-    height: 50px;
-    padding: 0 1.5rem;
+.btn-clear {
+    background: white;
+    color: var(--text-gray);
+    border: 2px solid #e2e8f0;
+    padding: 0.875rem 1.5rem;
     border-radius: 12px;
     font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
     text-decoration: none;
     display: flex;
     align-items: center;
-    margin-left: 0.5rem;
-    transition: all 0.3s ease;
+    gap: 0.5rem;
 }
 
-.clear-btn:hover {
-    background: #5a6268;
-    color: white;
+.btn-clear:hover {
+    background: #f1f5f9;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
     text-decoration: none;
 }
 
-.results-header {
+/* Results Header */
+.results-header-modern {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
-    background: white;
     padding: 1.5rem 2rem;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.results-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .results-count {
     font-size: 1.1rem;
-    color: #495057;
+    font-weight: 600;
+    color: var(--text-dark);
 }
 
-.view-toggle {
-    display: flex;
-    gap: 0.5rem;
+.results-count strong {
+    color: var(--primary-color);
+    font-size: 1.3rem;
 }
 
-.view-btn {
-    width: 40px;
-    height: 40px;
-    border: 2px solid #e9ecef;
-    background: white;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.filter-badge {
+    background: var(--gradient-soft);
+    color: var(--primary-dark);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
-.view-btn.active,
-.view-btn:hover {
-    border-color: #28a745;
-    color: #28a745;
-}
-
-.people-grid {
+/* People Grid - Clean Modern Style */
+.people-grid-modern {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
     margin-bottom: 3rem;
 }
 
-.person-card {
+.person-card-modern {
     background: white;
-    border-radius: 20px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+}
+
+.person-card-modern:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(93, 211, 190, 0.15);
+    border-color: var(--primary-light);
+}
+
+.person-card-header-modern {
+    position: relative;
+    padding: 1.5rem 1.5rem 0;
+    background: linear-gradient(180deg, rgba(93, 211, 190, 0.05) 0%, transparent 100%);
+}
+
+.person-avatar-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
     position: relative;
 }
 
-.person-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.person-card-header {
-    position: relative;
-    height: 200px;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    overflow: hidden;
-}
-
-.person-avatar {
+.person-avatar-modern {
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    border: 4px solid white;
-    position: absolute;
-    bottom: -50px;
-    left: 50%;
-    transform: translateX(-50%);
     object-fit: cover;
-    background: white;
+    border: 4px solid white;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    background: var(--gradient-soft);
 }
 
-.person-info {
-    padding: 3rem 1.5rem 1.5rem;
+.person-card-modern:hover .person-avatar-modern {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(93, 211, 190, 0.25);
+}
+
+.status-badge-modern {
+    position: absolute;
+    bottom: 8px;
+    right: calc(50% - 50px + 8px);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #10b981;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+}
+
+.person-info-modern {
+    padding: 0 1.5rem 1.5rem;
     text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-.person-name {
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: #2c3e50;
+.person-name-modern {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
     margin-bottom: 0.5rem;
+    line-height: 1.3;
 }
 
-.person-age {
-    color: #6c757d;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-}
-
-.person-location {
-    color: #28a745;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+.person-meta {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.875rem;
+}
+
+.person-age-modern {
+    color: var(--text-gray);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
     gap: 0.25rem;
 }
 
-.person-bio {
-    color: #6c757d;
-    font-size: 0.9rem;
-    line-height: 1.4;
+.person-age-modern i {
+    color: var(--primary-color);
+    font-size: 0.75rem;
+}
+
+.person-location-modern {
+    color: var(--primary-color);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.person-location-modern i {
+    font-size: 0.75rem;
+}
+
+.person-bio-modern {
+    color: var(--text-gray);
+    font-size: 0.875rem;
+    line-height: 1.5;
     margin-bottom: 1rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    min-height: 2.625rem;
+    flex: 1;
 }
 
-.person-interests {
+.person-interests-modern {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.4rem;
     justify-content: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
+    min-height: 1.5rem;
 }
 
-.interest-tag {
-    background: #e9ecef;
-    color: #495057;
-    padding: 0.25rem 0.75rem;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.person-actions {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-}
-
-.friend-btn {
-    flex: 1;
-    padding: 0.75rem 1rem;
+.interest-tag-modern {
+    background: #f8fafc;
+    color: var(--primary-dark);
+    padding: 0.3rem 0.75rem;
     border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.interest-tag-modern:hover {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.person-actions-modern {
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.friend-btn-modern {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
     font-weight: 600;
     border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
 }
 
-.friend-btn.send-request {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+.friend-btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.friend-btn-modern:hover::before {
+    left: 100%;
+}
+
+.friend-btn-modern.send-request {
+    background: var(--gradient-primary);
     color: white;
+    box-shadow: 0 2px 8px rgba(93, 211, 190, 0.3);
 }
 
-.friend-btn.send-request:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+.friend-btn-modern.send-request:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(93, 211, 190, 0.4);
 }
 
-.friend-btn.pending {
-    background: #ffc107;
-    color: #000;
+.friend-btn-modern.pending {
+    background: #fef3c7;
+    color: #92400e;
     cursor: not-allowed;
 }
 
-.friend-btn.friends {
-    background: #28a745;
-    color: white;
+.friend-btn-modern.friends {
+    background: #d1fae5;
+    color: #065f46;
     cursor: default;
 }
 
-.friend-btn.rejected {
-    background: #dc3545;
-    color: white;
+.friend-btn-modern.rejected {
+    background: #fee2e2;
+    color: #991b1b;
     cursor: not-allowed;
 }
 
-.view-profile-btn {
-    background: #17a2b8;
-    color: white;
-    text-decoration: none;
-    padding: 0.75rem 1rem;
-    border-radius: 12px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
+/* Pagination Modern */
+.pagination-modern {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 3rem;
 }
 
-.view-profile-btn:hover {
-    background: #138496;
-    color: white;
+.page-link-modern {
+    min-width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    color: var(--text-dark);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.page-link-modern:hover {
+    border-color: var(--primary-color);
+    background: var(--gradient-soft);
+    color: var(--primary-color);
     text-decoration: none;
     transform: translateY(-2px);
 }
 
-.pagination-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 3rem;
-}
-
-.pagination {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.page-link {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    border: 2px solid #e9ecef;
-    background: white;
-    color: #495057;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.page-link:hover,
-.page-link.active {
-    border-color: #28a745;
-    background: #28a745;
+.page-link-modern.active {
+    background: var(--gradient-primary);
+    border-color: var(--primary-color);
     color: white;
-    text-decoration: none;
+    box-shadow: var(--shadow-primary);
 }
 
-.empty-state {
+/* Empty State */
+.empty-state-modern {
     text-align: center;
-    padding: 4rem 2rem;
+    padding: 5rem 2rem;
     background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 24px;
+    box-shadow: var(--shadow-md);
 }
 
-.empty-icon {
-    font-size: 4rem;
-    color: #e9ecef;
+.empty-icon-modern {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.5rem;
+    background: var(--gradient-soft);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    color: var(--primary-color);
+}
+
+.empty-title-modern {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark);
     margin-bottom: 1rem;
 }
 
-.empty-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #495057;
-    margin-bottom: 1rem;
-}
-
-.empty-message {
-    color: #6c757d;
+.empty-message-modern {
+    color: var(--text-gray);
     font-size: 1.1rem;
     margin-bottom: 2rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.status-badge {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 15px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.status-online {
-    background: #28a745;
-    color: white;
-}
-
-.status-away {
-    background: #ffc107;
-    color: #000;
+/* Responsive Design */
+@media (max-width: 992px) {
+    .search-form-modern {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .people-grid-modern {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
 }
 
 @media (max-width: 768px) {
-    .search-form {
+    .people-page {
+        padding: 1rem 0 2rem;
+    }
+    
+    .search-hero {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-radius: 16px;
+    }
+    
+    .search-hero h1 {
+        font-size: 1.5rem;
+    }
+    
+    .advanced-search {
+        padding: 1.5rem;
+    }
+    
+    .search-form-modern {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
     
-    .results-header {
+    .search-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-search,
+    .btn-clear {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .results-header-modern {
         flex-direction: column;
         gap: 1rem;
         text-align: center;
+        padding: 1.25rem;
     }
     
-    .people-grid {
+    .people-grid-modern {
         grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .person-actions {
-        flex-direction: column;
+        gap: 1.25rem;
     }
 }
 
 @media (max-width: 576px) {
-    .people-container {
-        padding: 1rem 0;
-    }
-    
-    .search-header {
-        padding: 1.5rem;
+    .search-hero {
         margin: 0 1rem 1rem;
     }
     
-    .results-header {
+    .advanced-search {
         margin: 0 1rem 1rem;
-        padding: 1rem;
     }
     
-    .people-grid {
+    .results-header-modern {
+        margin: 0 1rem 1rem;
+    }
+    
+    .people-grid-modern {
         margin: 0 1rem;
+    }
+    
+    .person-info-modern {
+        padding: 0 1.25rem 1.25rem;
+    }
+    
+    .person-name-modern {
+        font-size: 1.15rem;
+    }
+    
+    .person-avatar-modern {
+        width: 90px;
+        height: 90px;
     }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="people-container">
-    <div class="container-fluid">
-        <!-- Search Header -->
-        <div class="search-header">
-            <h2 class="mb-3">
-                <i class="fas fa-users text-primary me-2"></i>
+<div class="people-page">
+    <div class="container">
+        <!-- Hero Search Section -->
+        <div class="search-hero">
+            <h1>
+                <i class="fas fa-users"></i>
                 İnsanları Kəşf Et
-            </h2>
+            </h1>
+            <p>Yeni dostlar tapın və maraqlı insanlarla tanış olun</p>
             
-            <form method="get" class="search-form">
-                <div class="form-group">
-                    <label class="form-label">Ad və ya Bio</label>
-                    <input type="text" name="q" class="form-control" placeholder="Ad, soyad və ya bio axtarın..." value="{{ query }}">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Şəhər</label>
-                    <select name="city" class="form-control">
-                        <option value="">Bütün şəhərlər</option>
-                        {% for city in cities %}
-                            <option value="{{ city }}" {% if city == city_filter %}selected{% endif %}>{{ city }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Maraqlar</label>
-                    <select name="interest" class="form-control">
-                        <option value="">Bütün maraqlar</option>
-                        {% for interest in interests %}
-                            <option value="{{ interest.id }}" {% if interest.id|stringformat:"s" == interest_filter %}selected{% endif %}>{{ interest.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Min yaş</label>
-                    <input type="number" name="age_min" class="form-control" placeholder="18" min="18" max="100" value="{{ age_min }}">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Max yaş</label>
-                    <input type="number" name="age_max" class="form-control" placeholder="65" min="18" max="100" value="{{ age_max }}">
-                </div>
-                
-                <div class="form-group" style="display: flex; gap: 0.5rem;">
-                    <button type="submit" class="search-btn">
-                        <i class="fas fa-search me-2"></i>
-                        Axtar
-                    </button>
-                    <a href="{% url 'accounts:people_list' %}" class="clear-btn">
-                        <i class="fas fa-times"></i>
-                    </a>
-                </div>
-            </form>
+            <!-- Advanced Search Form -->
+            <div class="advanced-search">
+                <form method="get" class="search-form-modern">
+                    <div class="form-group-modern">
+                        <label>
+                            <i class="fas fa-search"></i>
+                            Ad və ya Bio
+                        </label>
+                        <input type="text" name="q" class="form-control-modern" placeholder="Ad, soyad və ya bio axtarın..." value="{{ query }}">
+                    </div>
+                    
+                    <div class="form-group-modern">
+                        <label>
+                            <i class="fas fa-map-marker-alt"></i>
+                            Şəhər
+                        </label>
+                        <select name="city" class="form-control-modern">
+                            <option value="">Bütün şəhərlər</option>
+                            {% for city in cities %}
+                                <option value="{{ city }}" {% if city == city_filter %}selected{% endif %}>{{ city }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group-modern">
+                        <label>
+                            <i class="fas fa-heart"></i>
+                            Maraqlar
+                        </label>
+                        <select name="interest" class="form-control-modern">
+                            <option value="">Bütün maraqlar</option>
+                            {% for interest in interests %}
+                                <option value="{{ interest.id }}" {% if interest.id|stringformat:"s" == interest_filter %}selected{% endif %}>{{ interest.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group-modern">
+                        <label>
+                            <i class="fas fa-birthday-cake"></i>
+                            Min yaş
+                        </label>
+                        <input type="number" name="age_min" class="form-control-modern" placeholder="18" min="18" max="100" value="{{ age_min }}">
+                    </div>
+                    
+                    <div class="form-group-modern">
+                        <label>
+                            <i class="fas fa-birthday-cake"></i>
+                            Max yaş
+                        </label>
+                        <input type="number" name="age_max" class="form-control-modern" placeholder="65" min="18" max="100" value="{{ age_max }}">
+                    </div>
+                    
+                    <div class="form-group-modern search-actions">
+                        <button type="submit" class="btn-search">
+                            <i class="fas fa-search"></i>
+                            Axtar
+                        </button>
+                        <a href="{% url 'accounts:people_list' %}" class="btn-clear">
+                            <i class="fas fa-times"></i>
+                            Təmizlə
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
         
         <!-- Results Header -->
-        <div class="results-header">
-            <div class="results-count">
-                <strong>{{ page_obj.paginator.count }}</strong> nəfər tapıldı
+        <div class="results-header-modern">
+            <div class="results-info">
+                <div class="results-count">
+                    <strong>{{ page_obj.paginator.count }}</strong> nəfər tapıldı
+                </div>
                 {% if query or city_filter or interest_filter or age_min or age_max %}
-                    (filtrlənmiş nəticələr)
+                    <span class="filter-badge">
+                        <i class="fas fa-filter"></i>
+                        Filtrlənmiş
+                    </span>
                 {% endif %}
-            </div>
-            
-            <div class="view-toggle">
-                <div class="view-btn active" data-view="grid">
-                    <i class="fas fa-th"></i>
-                </div>
-                <div class="view-btn" data-view="list">
-                    <i class="fas fa-list"></i>
-                </div>
             </div>
         </div>
         
         <!-- People Grid -->
         {% if page_obj.object_list %}
-            <div class="people-grid" id="people-container">
+            <div class="people-grid-modern" id="people-container">
                 {% for person in page_obj.object_list %}
-                    <div class="person-card">
-                        <div class="person-card-header">
-                            {% if person.images.first %}
-                                <img src="{{ person.images.first.image.url }}" alt="{{ person.get_full_name }}" class="person-avatar">
-                            {% else %}
-                                <div class="person-avatar" style="background: #e9ecef; display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-user fa-2x" style="color: #6c757d;"></i>
-                                </div>
-                            {% endif %}
-                            
-                            <div class="status-badge status-online">Aktiv</div>
+                    <a href="{% url 'accounts:user_detail' person.id %}" class="person-card-modern" style="text-decoration: none; color: inherit;">
+                        <div class="person-card-header-modern">
+                            <div class="person-avatar-wrapper">
+                                {% if person.images.first %}
+                                    <img src="{{ person.images.first.image.url }}" alt="{{ person.get_full_name }}" class="person-avatar-modern">
+                                {% else %}
+                                    <div class="person-avatar-modern" style="display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-user" style="color: var(--primary-color); font-size: 2.5rem;"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="status-badge-modern"></div>
+                            </div>
                         </div>
                         
-                        <div class="person-info">
-                            <h5 class="person-name">{{ person.get_full_name }}</h5>
-                            {% if person.age %}
-                                <p class="person-age">{{ person.age }} yaş</p>
-                            {% endif %}
+                        <div class="person-info-modern">
+                            <h5 class="person-name-modern">{{ person.get_full_name }}</h5>
                             
-                            {% if person.city %}
-                                <p class="person-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    {{ person.city }}
-                                </p>
-                            {% endif %}
+                            <div class="person-meta">
+                                {% if person.age %}
+                                    <span class="person-age-modern">
+                                        <i class="fas fa-birthday-cake"></i>
+                                        {{ person.age }} yaş
+                                    </span>
+                                {% endif %}
+                                
+                                {% if person.city %}
+                                    <span class="person-location-modern">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ person.city }}
+                                    </span>
+                                {% endif %}
+                            </div>
                             
                             {% if person.bio %}
-                                <p class="person-bio">{{ person.bio }}</p>
+                                <p class="person-bio-modern">{{ person.bio }}</p>
+                            {% else %}
+                                <p class="person-bio-modern" style="color: #cbd5e1; font-style: italic;">Bio məlumatı yoxdur</p>
                             {% endif %}
                             
                             {% if person.interests.all %}
-                                <div class="person-interests">
+                                <div class="person-interests-modern">
                                     {% for interest in person.interests.all|slice:":3" %}
-                                        <span class="interest-tag">{{ interest.name }}</span>
+                                        <span class="interest-tag-modern">{{ interest.name }}</span>
                                     {% endfor %}
                                     {% if person.interests.count > 3 %}
-                                        <span class="interest-tag">+{{ person.interests.count|add:"-3" }}</span>
+                                        <span class="interest-tag-modern">+{{ person.interests.count|add:"-3" }}</span>
                                     {% endif %}
                                 </div>
+                            {% else %}
+                                <div class="person-interests-modern"></div>
                             {% endif %}
                             
-                            <div class="person-actions">
+                            <div class="person-actions-modern" onclick="event.stopPropagation();">
                                 {% if user.is_authenticated %}
                                     {% if not person.friendship_status %}
-                                        <button class="friend-btn send-request" onclick="sendFriendRequest({{ person.id }}, this)">
-                                            <i class="fas fa-user-plus me-1"></i>
-                                            Dostluq sorğusu
+                                        <button class="friend-btn-modern send-request" onclick="event.stopPropagation(); sendFriendRequest({{ person.id }}, this); return false;">
+                                            <i class="fas fa-user-plus"></i>
+                                            <span>Dostluq sorğusu</span>
                                         </button>
                                     {% elif person.friendship_status.status == 'pending' %}
                                         {% if person.friendship_status.initiated_by.id == user.id %}
-                                            <button class="friend-btn pending" disabled>
-                                                <i class="fas fa-clock me-1"></i>
-                                                Gözləyir
+                                            <button class="friend-btn-modern pending" disabled onclick="event.stopPropagation(); return false;">
+                                                <i class="fas fa-clock"></i>
+                                                <span>Gözləyir</span>
                                             </button>
                                         {% else %}
-                                            <button class="friend-btn send-request" onclick="respondFriendRequest({{ person.friendship_status.friendship.id }}, 'accept', this)">
-                                                <i class="fas fa-check me-1"></i>
-                                                Qəbul et
+                                            <button class="friend-btn-modern send-request" onclick="event.stopPropagation(); respondFriendRequest({{ person.friendship_status.friendship.id }}, 'accept', this); return false;">
+                                                <i class="fas fa-check"></i>
+                                                <span>Qəbul et</span>
                                             </button>
                                         {% endif %}
                                     {% elif person.friendship_status.status == 'accepted' %}
-                                        <button class="friend-btn friends" disabled>
-                                            <i class="fas fa-check-circle me-1"></i>
-                                            Dostdur
+                                        <button class="friend-btn-modern friends" disabled onclick="event.stopPropagation(); return false;">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Dostdur</span>
                                         </button>
                                     {% elif person.friendship_status.status == 'rejected' %}
-                                        <button class="friend-btn rejected" disabled>
-                                            <i class="fas fa-times me-1"></i>
-                                            Rədd edildi
+                                        <button class="friend-btn-modern rejected" disabled onclick="event.stopPropagation(); return false;">
+                                            <i class="fas fa-times"></i>
+                                            <span>Rədd edildi</span>
                                         </button>
                                     {% endif %}
+                                {% else %}
+                                    <a href="{% url 'accounts:login' %}" class="friend-btn-modern send-request" style="text-decoration: none;" onclick="event.stopPropagation();">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                        <span>Daxil olun</span>
+                                    </a>
                                 {% endif %}
-                                
-                                <a href="#" class="view-profile-btn">
-                                    <i class="fas fa-eye me-1"></i>
-                                    Profil
-                                </a>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 {% endfor %}
             </div>
             
             <!-- Pagination -->
             {% if page_obj.has_other_pages %}
-                <div class="pagination-container">
-                    <div class="pagination">
-                        {% if page_obj.has_previous %}
-                            <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-link">
-                                <i class="fas fa-chevron-left"></i>
-                            </a>
+                <div class="pagination-modern">
+                    {% if page_obj.has_previous %}
+                        <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-link-modern">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="page-link-modern active">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ num }}" class="page-link-modern">{{ num }}</a>
                         {% endif %}
-                        
-                        {% for num in page_obj.paginator.page_range %}
-                            {% if page_obj.number == num %}
-                                <span class="page-link active">{{ num }}</span>
-                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                                <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ num }}" class="page-link">{{ num }}</a>
-                            {% endif %}
-                        {% endfor %}
-                        
-                        {% if page_obj.has_next %}
-                            <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-link">
-                                <i class="fas fa-chevron-right"></i>
-                            </a>
-                        {% endif %}
-                    </div>
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-link-modern">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
                 </div>
             {% endif %}
         {% else %}
             <!-- Empty State -->
-            <div class="empty-state">
-                <div class="empty-icon">
+            <div class="empty-state-modern">
+                <div class="empty-icon-modern">
                     <i class="fas fa-search"></i>
                 </div>
-                <h3 class="empty-title">Heç kim tapılmadı</h3>
-                <p class="empty-message">
+                <h3 class="empty-title-modern">Heç kim tapılmadı</h3>
+                <p class="empty-message-modern">
                     {% if query or city_filter or interest_filter or age_min or age_max %}
                         Axtarış kriteriyalarınızı dəyişdirərək yenidən cəhd edin.
                     {% else %}
                         Hazırda heç bir istifadəçi mövcud deyil.
                     {% endif %}
                 </p>
-                <a href="{% url 'accounts:people_list' %}" class="search-btn">
-                    <i class="fas fa-refresh me-2"></i>
+                <a href="{% url 'accounts:people_list' %}" class="btn-search">
+                    <i class="fas fa-redo"></i>
                     Yenidən Axtar
                 </a>
             </div>
@@ -633,8 +839,8 @@
 <script>
 // Friend request functionality
 async function sendFriendRequest(userId, button) {
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Göndərilir...';
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Göndərilir...</span>';
     button.disabled = true;
     
     try {
@@ -642,7 +848,7 @@ async function sendFriendRequest(userId, button) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
                 user_id: userId
@@ -652,27 +858,25 @@ async function sendFriendRequest(userId, button) {
         const data = await response.json();
         
         if (data.success) {
-            button.innerHTML = '<i class="fas fa-clock me-1"></i>Gözləyir';
-            button.className = 'friend-btn pending';
+            button.innerHTML = '<i class="fas fa-clock"></i><span>Gözləyir</span>';
+            button.className = 'friend-btn-modern pending';
             button.disabled = true;
-            
-            // Show success message
             showMessage(data.message, 'success');
         } else {
-            button.innerHTML = originalText;
+            button.innerHTML = originalHTML;
             button.disabled = false;
             showMessage(data.message, 'error');
         }
     } catch (error) {
-        button.innerHTML = originalText;
+        button.innerHTML = originalHTML;
         button.disabled = false;
         showMessage('Bir xəta baş verdi. Yenidən cəhd edin.', 'error');
     }
 }
 
 async function respondFriendRequest(friendshipId, action, button) {
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Emal edilir...';
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Emal edilir...</span>';
     button.disabled = true;
     
     try {
@@ -680,7 +884,7 @@ async function respondFriendRequest(friendshipId, action, button) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
                 friendship_id: friendshipId,
@@ -692,125 +896,79 @@ async function respondFriendRequest(friendshipId, action, button) {
         
         if (data.success) {
             if (action === 'accept') {
-                button.innerHTML = '<i class="fas fa-check-circle me-1"></i>Dostdur';
-                button.className = 'friend-btn friends';
+                button.innerHTML = '<i class="fas fa-check-circle"></i><span>Dostdur</span>';
+                button.className = 'friend-btn-modern friends';
             } else {
-                button.innerHTML = '<i class="fas fa-times me-1"></i>Rədd edildi';
-                button.className = 'friend-btn rejected';
+                button.innerHTML = '<i class="fas fa-times"></i><span>Rədd edildi</span>';
+                button.className = 'friend-btn-modern rejected';
             }
             button.disabled = true;
-            
             showMessage(data.message, 'success');
         } else {
-            button.innerHTML = originalText;
+            button.innerHTML = originalHTML;
             button.disabled = false;
             showMessage(data.message, 'error');
         }
     } catch (error) {
-        button.innerHTML = originalText;
+        button.innerHTML = originalHTML;
         button.disabled = false;
         showMessage('Bir xəta baş verdi. Yenidən cəhd edin.', 'error');
     }
 }
 
 function showMessage(message, type) {
-    // Create message element
     const messageDiv = document.createElement('div');
     messageDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-    messageDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    messageDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border-radius: 12px;';
     messageDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" style="font-size: 1.2rem;"></i>
+            <span>${message}</span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
     
     document.body.appendChild(messageDiv);
     
-    // Auto remove after 5 seconds
     setTimeout(() => {
         if (messageDiv.parentNode) {
-            messageDiv.remove();
+            messageDiv.style.transition = 'opacity 0.3s ease';
+            messageDiv.style.opacity = '0';
+            setTimeout(() => messageDiv.remove(), 300);
         }
     }, 5000);
 }
 
-// View toggle functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const viewBtns = document.querySelectorAll('.view-btn');
-    const peopleContainer = document.getElementById('people-container');
-    
-    viewBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            viewBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            
-            const view = this.dataset.view;
-            if (view === 'list') {
-                peopleContainer.style.display = 'flex';
-                peopleContainer.style.flexDirection = 'column';
-                peopleContainer.style.gap = '1rem';
-                
-                // Modify cards for list view
-                const cards = peopleContainer.querySelectorAll('.person-card');
-                cards.forEach(card => {
-                    card.style.display = 'flex';
-                    card.style.flexDirection = 'row';
-                    card.style.alignItems = 'center';
-                    card.style.padding = '1rem';
-                    
-                    const header = card.querySelector('.person-card-header');
-                    header.style.height = '80px';
-                    header.style.width = '80px';
-                    header.style.flexShrink = '0';
-                    header.style.borderRadius = '50%';
-                    
-                    const avatar = card.querySelector('.person-avatar');
-                    avatar.style.position = 'static';
-                    avatar.style.transform = 'none';
-                    avatar.style.width = '60px';
-                    avatar.style.height = '60px';
-                    avatar.style.margin = '10px';
-                    
-                    const info = card.querySelector('.person-info');
-                    info.style.textAlign = 'left';
-                    info.style.padding = '0 1rem';
-                    info.style.flex = '1';
-                });
-            } else {
-                // Reset to grid view
-                peopleContainer.style.display = 'grid';
-                peopleContainer.style.flexDirection = '';
-                
-                const cards = peopleContainer.querySelectorAll('.person-card');
-                cards.forEach(card => {
-                    card.style.display = 'block';
-                    card.style.flexDirection = '';
-                    card.style.alignItems = '';
-                    card.style.padding = '';
-                    
-                    const header = card.querySelector('.person-card-header');
-                    header.style.height = '200px';
-                    header.style.width = '';
-                    header.style.flexShrink = '';
-                    header.style.borderRadius = '';
-                    
-                    const avatar = card.querySelector('.person-avatar');
-                    avatar.style.position = 'absolute';
-                    avatar.style.transform = 'translateX(-50%)';
-                    avatar.style.width = '100px';
-                    avatar.style.height = '100px';
-                    avatar.style.margin = '';
-                    
-                    const info = card.querySelector('.person-info');
-                    info.style.textAlign = 'center';
-                    info.style.padding = '3rem 1.5rem 1.5rem';
-                    info.style.flex = '';
-                });
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
-        });
+        }
+    }
+    return cookieValue;
+}
+
+// Smooth scroll to top on page load
+document.addEventListener('DOMContentLoaded', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Add fade-in animation to cards
+    const cards = document.querySelectorAll('.person-card-modern');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 50);
     });
 });
 </script>
-
-<!-- Add CSRF token for AJAX requests -->
-{% csrf_token %}
 {% endblock %}

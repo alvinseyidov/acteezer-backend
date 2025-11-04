@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import PlaceCategory, Place, PlaceImage, PlaceReview
+from .models import PlaceCategory, Place, PlaceImage, PlaceReview, PlaceFavorite
 
 
 @admin.register(PlaceCategory)
@@ -126,3 +126,12 @@ class PlaceReviewAdmin(admin.ModelAdmin):
         queryset.update(is_approved=False)
         self.message_user(request, f"{queryset.count()} reviews disapproved.")
     disapprove_reviews.short_description = "Disapprove selected reviews"
+
+
+@admin.register(PlaceFavorite)
+class PlaceFavoriteAdmin(admin.ModelAdmin):
+    list_display = ['user', 'place', 'created_at']
+    list_filter = ['created_at', 'place__category']
+    search_fields = ['user__phone', 'user__first_name', 'user__last_name', 'place__name']
+    ordering = ['-created_at']
+    readonly_fields = ['created_at']

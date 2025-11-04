@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from datetime import timedelta
@@ -119,8 +120,8 @@ def phone_registration(request):
             messages.error(request, 'Please enter a phone number.')
             return render(request, 'accounts/phone_registration.html')
         
-        # Generate OTP
-        otp = str(random.randint(100000, 999999))
+        # For development: always use OTP 1234
+        otp = '1234'
         
         # Create or get user
         user, created = User.objects.get_or_create(
@@ -136,13 +137,11 @@ def phone_registration(request):
         # Create OTP verification record
         OTPVerification.objects.create(
             phone=phone,
-            otp_code=otp,
-            purpose='registration'
+            otp_code=otp
         )
         
         # In a real app, send SMS here
         # For development, we'll just show the OTP
-        messages.info(request, f'OTP sent! For testing: {otp}')
         
         # Store phone in session for next step
         request.session['phone'] = phone
@@ -163,10 +162,10 @@ def otp_verification(request):
         try:
             user = User.objects.get(phone=phone)
             
-            # Check if OTP is valid and not expired (5 minutes)
-            if (user.otp_code == otp and 
+            # Check if OTP is valid (1234 for everyone for now, or the stored OTP)
+            if (otp == '1234' or (user.otp_code == otp and 
                 user.otp_created_at and 
-                timezone.now() - user.otp_created_at < timedelta(minutes=5)):
+                timezone.now() - user.otp_created_at < timedelta(minutes=5))):
                 
                 user.is_phone_verified = True
                 user.registration_step = 1
@@ -175,7 +174,7 @@ def otp_verification(request):
                 
                 # Update OTP verification record
                 otp_verification = OTPVerification.objects.filter(
-                    phone=phone, otp_code=otp, purpose='registration'
+                    phone=phone, otp_code=otp
                 ).first()
                 if otp_verification:
                     otp_verification.is_verified = True
@@ -183,7 +182,6 @@ def otp_verification(request):
                 
                 # Login user
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-                messages.success(request, 'Phone verified successfully!')
                 return redirect('accounts:full_name_registration')
             else:
                 messages.error(request, 'Invalid or expired OTP.')
@@ -211,7 +209,6 @@ def full_name_registration(request):
             request.user.registration_step = 2
             request.user.save()
             
-            messages.success(request, 'Name saved successfully!')
             return redirect('accounts:languages_registration')
         else:
             messages.error(request, 'Please enter both first and last name.')
@@ -234,16 +231,24 @@ def languages_registration(request):
             request.user.registration_step = 3
             request.user.save()
             
-            messages.success(request, 'Languages saved successfully!')
             return redirect('accounts:birthday_registration')
         else:
             messages.error(request, 'Please select at least one language.')
     
     languages = Language.objects.all()
     user_languages = request.user.languages.all()
+    
+    # Auto-select Azerbaijan if no languages selected
+    if not user_languages.exists():
+        azerbaijan_lang = Language.objects.filter(code='az').first()
+        if azerbaijan_lang:
+            user_languages = [azerbaijan_lang]
+    
     return render(request, 'accounts/languages_registration.html', {
         'languages': languages,
-        'user_languages': user_languages
+        'user_languages': user_languages,
+        'default_country': 'Azerbaijan',
+        'default_language': 'az'
     })
 
 
@@ -261,7 +266,6 @@ def birthday_registration(request):
             request.user.registration_step = 4
             request.user.save()
             
-            messages.success(request, 'Birthday saved successfully!')
             return redirect('accounts:images_registration')
         else:
             messages.error(request, 'Please enter your birthday.')
@@ -294,7 +298,6 @@ def images_registration(request):
             request.user.registration_step = 5
             request.user.save()
             
-            messages.success(request, 'Images uploaded successfully!')
             return redirect('accounts:bio_registration')
         else:
             messages.error(request, 'Please upload at least 2 images.')
@@ -319,7 +322,6 @@ def bio_registration(request):
             request.user.registration_step = 6
             request.user.save()
             
-            messages.success(request, 'Bio saved successfully!')
             return redirect('accounts:interests_registration')
         else:
             messages.error(request, 'Please enter your bio.')
@@ -342,16 +344,38 @@ def interests_registration(request):
             request.user.registration_step = 7
             request.user.save()
             
-            messages.success(request, 'Interests saved successfully!')
             return redirect('accounts:location_registration')
         else:
             messages.error(request, 'Please select at least one interest.')
     
-    interests = Interest.objects.all()
+    # Get all interests, categorized
+    all_interests = Interest.objects.all()
+    general_interests = Interest.objects.filter(is_general=True)
     user_interests = request.user.interests.all()
+    
+    # Create a mapping of category to related categories for showing related interests
+    # When user selects an interest from a category, show interests from related categories
+    category_relations = {
+        'beauty': ['beauty', 'lifestyle'],  # Selecting beauty shows beauty + lifestyle
+        'lifestyle': ['lifestyle', 'beauty', 'nature'],  # Selecting lifestyle shows lifestyle + beauty + nature
+        'travel': ['travel', 'nature'],
+        'music': ['music', 'arts'],
+        'arts': ['arts', 'music'],
+        'food': ['food', 'lifestyle'],
+        'sports': ['sports', 'health', 'nature'],
+        'health': ['health', 'sports', 'nature'],
+        'nature': ['nature', 'health', 'lifestyle'],
+        'education': ['education', 'arts'],
+        'tech': ['tech', 'education'],
+        'social': ['social', 'lifestyle'],
+    }
+    
+    import json
     return render(request, 'accounts/interests_registration.html', {
-        'interests': interests,
-        'user_interests': user_interests
+        'interests': all_interests,
+        'general_interests': general_interests,
+        'user_interests': user_interests,
+        'category_relations_json': json.dumps(category_relations),
     })
 
 
@@ -366,33 +390,59 @@ def location_registration(request):
         return redirect('accounts:interests_registration')
     
     if request.method == 'POST':
+        print("=" * 60)
         print("📋 POST request received")
+        print(f"📋 User: {request.user.id} ({request.user.phone})")
+        print(f"📋 Registration step before: {request.user.registration_step}")
+        print("=" * 60)
+        
         city = request.POST.get('city')
         address = request.POST.get('address')
         latitude = request.POST.get('latitude')
         longitude = request.POST.get('longitude')
         
-        print(f"📊 POST data received: city='{city}', address='{address}', latitude='{latitude}', longitude='{longitude}'")
+        print(f"📊 POST data received:")
+        print(f"   city='{city}'")
+        print(f"   address='{address}'")
+        print(f"   latitude='{latitude}'")
+        print(f"   longitude='{longitude}'")
+        print(f"📊 All POST keys: {list(request.POST.keys())}")
         
         if city and latitude and longitude:
             print("✅ All required fields present, updating user")
             try:
                 request.user.city = city
-                request.user.address = address
-                request.user.latitude = latitude
-                request.user.longitude = longitude
+                request.user.address = address or ''
+                request.user.latitude = float(latitude)
+                request.user.longitude = float(longitude)
                 request.user.registration_step = 8
                 request.user.is_registration_complete = True
-                request.user.save()
                 
-                print(f"✅ User updated successfully: {request.user.city}, {request.user.latitude}, {request.user.longitude}")
+                print(f"📝 User data before save:")
+                print(f"   city: {request.user.city}")
+                print(f"   latitude: {request.user.latitude}")
+                print(f"   longitude: {request.user.longitude}")
+                print(f"   registration_step: {request.user.registration_step}")
+                print(f"   is_registration_complete: {request.user.is_registration_complete}")
+                
+                request.user.save(update_fields=['city', 'address', 'latitude', 'longitude', 'registration_step', 'is_registration_complete'])
+                
+                print(f"✅ User saved successfully!")
                 print(f"🎉 Registration complete: {request.user.is_registration_complete}")
                 
                 messages.success(request, 'Registration completed successfully!')
-                print("🔄 Redirecting to registration_complete")
-                return redirect('accounts:registration_complete')
+                
+                redirect_url = reverse('accounts:registration_complete')
+                print(f"🔄 Redirecting to: {redirect_url}")
+                print("=" * 60)
+                
+                # Use HttpResponseRedirect for explicit redirect
+                return HttpResponseRedirect(redirect_url)
             except Exception as e:
+                import traceback
                 print(f"❌ Error saving user: {e}")
+                print(traceback.format_exc())
+                print("=" * 60)
                 messages.error(request, f'Error saving registration: {e}')
         else:
             print("❌ Missing required fields")
@@ -401,6 +451,7 @@ def location_registration(request):
             if not latitude: missing_fields.append('latitude')
             if not longitude: missing_fields.append('longitude')
             print(f"Missing fields: {missing_fields}")
+            print("=" * 60)
             messages.error(request, 'Please select your city and pin location on the map.')
     else:
         print("📄 GET request - rendering form")
@@ -414,7 +465,12 @@ def registration_complete(request):
     if not request.user.is_registration_complete:
         return redirect('accounts:phone_registration')
     
-    return render(request, 'accounts/registration_complete.html')
+    # Get user's interests for display
+    user_interests = request.user.interests.all()
+    
+    return render(request, 'accounts/registration_complete.html', {
+        'user_interests': user_interests
+    })
 
 
 @login_required
@@ -482,132 +538,105 @@ def joined_activities(request):
     return render(request, 'accounts/joined_activities.html', context)
 
 def user_login(request):
-    """Login page - Step 1: Phone number entry"""
+    """Login page with phone and OTP"""
     if request.user.is_authenticated:
-        if request.user.is_registration_complete:
-            return redirect('home')
-        else:
-            # Redirect to appropriate registration step
-            step_urls = [
-                'accounts:phone_registration', 'accounts:otp_verification', 'accounts:full_name_registration',
-                'accounts:languages_registration', 'accounts:birthday_registration', 'accounts:images_registration',
-                'accounts:bio_registration', 'accounts:interests_registration', 'accounts:location_registration'
-            ]
-            if request.user.registration_step < len(step_urls):
-                return redirect(step_urls[request.user.registration_step])
+        # If already logged in, redirect to home
+        return redirect('home')
+    
+    # Check if user wants to reset phone (go back to phone step)
+    if request.GET.get('reset') == 'phone':
+        request.session.pop('login_phone', None)
+        request.session.pop('login_step', None)
+        return redirect('accounts:login')
+    
+    phone = request.session.get('login_phone')
+    step = request.session.get('login_step', 'phone')  # 'phone' or 'otp'
     
     if request.method == 'POST':
-        phone = request.POST.get('phone')
-        
-        if phone:
-            try:
-                # Check if user exists with this phone number
-                user = User.objects.get(phone=phone)
+        if step == 'phone':
+            phone = request.POST.get('phone')
+            if phone:
+                # For development: always use OTP 1234
+                otp_code = '1234'
                 
-                # Generate OTP for login
-                otp = str(random.randint(100000, 999999))
+                # Create or get user
+                user, created = User.objects.get_or_create(
+                    phone=phone,
+                    defaults={'registration_step': 0}
+                )
                 
                 # Save OTP
-                user.otp_code = otp
+                user.otp_code = otp_code
                 user.otp_created_at = timezone.now()
                 user.save()
                 
-                # Create OTP verification record for login
+                # Create OTP verification record
                 OTPVerification.objects.create(
                     phone=phone,
-                    otp_code=otp,
+                    otp_code=otp_code,
                     purpose='login'
                 )
                 
-                # In a real app, send SMS here
-                # For development, we'll just show the OTP
-                messages.info(request, f'OTP sent to your phone! For testing: {otp}')
-                
-                # Store phone in session for OTP verification
+                # Store phone in session for next step
                 request.session['login_phone'] = phone
-                return redirect('accounts:login_otp_verification')
-                
-            except User.DoesNotExist:
-                messages.error(request, 'Bu telefon nömrəsi ilə qeydiyyat tapılmadı. Zəhmət olmasa qeydiyyatdan keçin.')
-        else:
-            messages.error(request, 'Zəhmət olmasa telefon nömrənizi daxil edin.')
-    
-    return render(request, 'accounts/login.html')
-
-
-def login_otp_verification(request):
-    """Login OTP verification - Step 2: OTP verification"""
-    phone = request.session.get('login_phone')
-    if not phone:
-        messages.error(request, 'OTP sorğusu vaxtı keçib. Yenidən cəhd edin.')
-        return redirect('accounts:login')
-    
-    if request.method == 'POST':
-        print(f"[DEBUG] POST request received. POST data: {request.POST}")
-        print(f"[DEBUG] CSRF token: {request.POST.get('csrfmiddlewaretoken', 'NOT FOUND')}")
-        otp = request.POST.get('otp')
-        print(f"[DEBUG] OTP received: {otp}")
+                request.session['login_step'] = 'otp'
+                return redirect('accounts:login')
+            else:
+                messages.error(request, 'Please enter a phone number.')
         
-        if otp:
-            try:
-                user = User.objects.get(phone=phone)
-                
-                # Check if OTP is valid and not expired (5 minutes)
-                if (user.otp_code == otp and 
-                    user.otp_created_at and 
-                    timezone.now() - user.otp_created_at < timedelta(minutes=5)):
+        elif step == 'otp':
+            otp = request.POST.get('otp')
+            phone = request.session.get('login_phone')
+            
+            if phone and otp:
+                try:
+                    user = User.objects.get(phone=phone)
                     
-                    # Clear OTP
-                    user.otp_code = None
-                    user.otp_created_at = None
-                    user.save()
-                    
-                    # Update OTP verification record
-                    otp_verification = OTPVerification.objects.filter(
-                        phone=phone, otp_code=otp, purpose='login'
-                    ).first()
-                    if otp_verification:
-                        otp_verification.is_verified = True
-                        otp_verification.save()
-                    
-                    # Login user
-                    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-                    
-                    # Clear session data
-                    if 'login_phone' in request.session:
-                        del request.session['login_phone']
-                    
-                    messages.success(request, 'Uğurla daxil oldunuz!')
-                    
-                    # Redirect based on registration status
-                    if user.is_registration_complete:
+                    # Check if OTP is valid (1234 for everyone for now)
+                    if otp == '1234' or (user.otp_code == otp and 
+                        user.otp_created_at and 
+                        timezone.now() - user.otp_created_at < timedelta(minutes=5)):
+                        
+                        user.is_phone_verified = True
+                        user.otp_code = None
+                        user.save()
+                        
+                        # Update OTP verification record
+                        otp_verification = OTPVerification.objects.filter(
+                            phone=phone, otp_code=otp, purpose='login'
+                        ).first()
+                        if otp_verification:
+                            otp_verification.is_verified = True
+                            otp_verification.save()
+                        
+                        # Login user
+                        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                        
+                        # Clear session
+                        request.session.pop('login_phone', None)
+                        request.session.pop('login_step', None)
+                        
+                        # Always redirect to home page after successful login
                         return redirect('home')
                     else:
-                        # Redirect to appropriate registration step
-                        step_urls = [
-                            'accounts:phone_registration', 'accounts:otp_verification', 'accounts:full_name_registration',
-                            'accounts:languages_registration', 'accounts:birthday_registration', 'accounts:images_registration',
-                            'accounts:bio_registration', 'accounts:interests_registration', 'accounts:location_registration'
-                        ]
-                        if user.registration_step < len(step_urls):
-                            return redirect(step_urls[user.registration_step])
-                        return redirect('accounts:registration_complete')
-                else:
-                    messages.error(request, 'Yanlış və ya vaxtı keçmiş OTP kodu.')
-            
-            except User.DoesNotExist:
-                messages.error(request, 'İstifadəçi tapılmadı.')
-                return redirect('accounts:login')
-        else:
-            messages.error(request, 'Zəhmət olmasa OTP kodunu daxil edin.')
+                        messages.error(request, 'Invalid or expired OTP.')
+                except User.DoesNotExist:
+                    messages.error(request, 'User not found.')
+                    request.session.pop('login_phone', None)
+                    request.session.pop('login_step', None)
+                    return redirect('accounts:login')
+            else:
+                messages.error(request, 'Please enter the OTP code.')
     
-    return render(request, 'accounts/login_otp.html', {'phone': phone})
+    return render(request, 'accounts/login.html', {
+        'phone': phone,
+        'step': step
+    })
 
 
 def user_logout(request):
     """Logout user"""
     logout(request)
-    messages.success(request, 'Logged out successfully!')
     return redirect('home')
 
 
@@ -900,3 +929,63 @@ def friends_list(request):
     }
     
     return render(request, 'accounts/friends_list.html', context)
+
+
+def user_detail(request, user_id):
+    """View other user's public profile"""
+    from activities.models import ActivityParticipant, Activity
+    from django.utils import timezone
+    
+    try:
+        profile_user = User.objects.select_related().prefetch_related('images', 'interests', 'languages').get(
+            id=user_id,
+            is_registration_complete=True,
+            is_active=True
+        )
+    except User.DoesNotExist:
+        from django.http import Http404
+        raise Http404("User not found")
+    
+    # Get friendship status if current user is authenticated
+    friendship_status = None
+    if request.user.is_authenticated:
+        friendship_status = Friendship.get_friendship_status(request.user, profile_user)
+    
+    # Get user's organized activities
+    organized_activities = Activity.objects.filter(organizer=profile_user, status='published').order_by('-start_date')
+    organized_activities_count = organized_activities.count()
+    
+    # Get user's joined activities (as participant)
+    joined_participations = ActivityParticipant.objects.filter(
+        user=profile_user, 
+        status='approved'
+    ).select_related('activity').order_by('-join_requested_at')
+    joined_activities_count = joined_participations.count()
+    
+    # Get completed activities
+    completed_participations = joined_participations.filter(
+        activity__end_date__lt=timezone.now()
+    )
+    completed_activities_count = completed_participations.count()
+    
+    # Get recent activities (upcoming organized + joined)
+    upcoming_organized = organized_activities.filter(start_date__gte=timezone.now())[:5]
+    recent_joined = joined_participations.filter(activity__start_date__gte=timezone.now())[:5]
+    
+    # Get user images
+    user_images = profile_user.images.all()
+    primary_image = user_images.filter(is_primary=True).first() or user_images.first()
+    
+    context = {
+        'profile_user': profile_user,
+        'primary_image': primary_image,
+        'user_images': user_images,
+        'friendship_status': friendship_status,
+        'organized_activities_count': organized_activities_count,
+        'joined_activities_count': joined_activities_count,
+        'completed_activities_count': completed_activities_count,
+        'upcoming_organized': upcoming_organized,
+        'recent_joined': recent_joined,
+    }
+    
+    return render(request, 'accounts/user_detail.html', context)

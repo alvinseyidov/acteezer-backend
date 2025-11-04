@@ -57,8 +57,26 @@ class Language(models.Model):
 
 class Interest(models.Model):
     """Model for user interests"""
+    CATEGORY_CHOICES = [
+        ('general', 'General/Popular'),
+        ('beauty', 'Beauty & Fashion'),
+        ('lifestyle', 'Lifestyle & Home'),
+        ('sports', 'Sports & Fitness'),
+        ('arts', 'Arts & Culture'),
+        ('food', 'Food & Dining'),
+        ('travel', 'Travel & Adventure'),
+        ('tech', 'Technology'),
+        ('music', 'Music'),
+        ('nature', 'Nature & Outdoors'),
+        ('education', 'Education & Learning'),
+        ('health', 'Health & Wellness'),
+        ('social', 'Social & Volunteering'),
+    ]
+    
     name = models.CharField(max_length=100, unique=True)
     icon = models.CharField(max_length=50, blank=True, null=True)  # Font awesome icon name
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general')
+    is_general = models.BooleanField(default=False, help_text="Show in general/popular section")
     
     def __str__(self):
         return self.name

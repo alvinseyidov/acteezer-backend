@@ -5,206 +5,88 @@
 
 {% block content %}
 <!-- Place Hero Section -->
-<section class="place-hero-section">
-    <div class="container-fluid p-0">
-        <div class="place-hero-image">
-            {% if place.main_image %}
-                <img src="{{ place.main_image.url }}" alt="{{ place.image_alt|default:place.name }}" class="img-fluid w-100">
-            {% else %}
-                <img src="{% static '1.png' %}" alt="{{ place.name }}" class="img-fluid w-100">
-            {% endif %}
-            <div class="place-hero-overlay">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <div class="place-hero-content">
-                                <div class="place-badges mb-3">
-                                    <span class="badge place-category-badge" style="background-color: {{ place.category.color }};">
-                                        <i class="{{ place.category.icon }} me-1"></i>{{ place.category.name }}
-                                    </span>
-                                    {% if place.is_verified %}
-                                    <span class="badge bg-success ms-2">
-                                        <i class="fas fa-check-circle me-1"></i>Təsdiqlənmiş
-                                    </span>
+<section class="place-detail-hero">
+    <div class="hero-image-container">
+        {% if place.main_image %}
+            <img src="{{ place.main_image.url }}" alt="{{ place.image_alt|default:place.name }}" class="hero-main-image">
+        {% else %}
+            <img src="{% static '1.png' %}" alt="{{ place.name }}" class="hero-main-image">
+        {% endif %}
+        <div class="hero-overlay-gradient"></div>
+        
+        <!-- Hero Content -->
+        <div class="container position-relative">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="hero-content-wrapper">
+                        <!-- Breadcrumb -->
+                        <nav aria-label="breadcrumb" class="hero-breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url 'home' %}">Ana səhifə</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'places:places_list' %}">Məkanlar</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">{{ place.name }}</li>
+                            </ol>
+                        </nav>
+                        
+                        <!-- Badges -->
+                        <div class="hero-badges mb-3">
+                            <span class="badge-hero" style="background-color: {{ place.category.color }};">
+                                <i class="{{ place.category.icon }}"></i> {{ place.category.name }}
+                            </span>
+                            {% if place.is_verified %}
+                            <span class="badge-hero verified">
+                                <i class="fas fa-check-circle"></i> Təsdiqlənmiş
+                            </span>
+                            {% endif %}
+                            {% if place.is_featured %}
+                            <span class="badge-hero featured">
+                                <i class="fas fa-star"></i> Seçilmiş
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Title -->
+                        <h1 class="hero-title">{{ place.name }}</h1>
+                        
+                        <!-- Meta Info -->
+                        <div class="hero-meta-info">
+                            <div class="meta-rating">
+                                <div class="stars-large">
+                                    {% for i in place.get_rating_stars.full %}
+                                        <i class="fas fa-star"></i>
+                                    {% endfor %}
+                                    {% if place.get_rating_stars.half %}
+                                        <i class="fas fa-star-half-alt"></i>
                                     {% endif %}
-                                    {% if place.is_featured %}
-                                    <span class="badge bg-warning ms-2">
-                                        <i class="fas fa-star me-1"></i>Seçilmiş
-                                    </span>
-                                    {% endif %}
+                                    {% for i in place.get_rating_stars.empty %}
+                                        <i class="far fa-star"></i>
+                                    {% endfor %}
                                 </div>
-                                <h1 class="place-hero-title">{{ place.name }}</h1>
-                                <div class="place-hero-meta">
-                                    <div class="place-rating-large">
-                                        {% for i in place.get_rating_stars.full %}
-                                            <i class="fas fa-star"></i>
-                                        {% endfor %}
-                                        {% if place.get_rating_stars.half %}
-                                            <i class="fas fa-star-half-alt"></i>
-                                        {% endif %}
-                                        {% for i in place.get_rating_stars.empty %}
-                                            <i class="far fa-star"></i>
-                                        {% endfor %}
-                                        <span class="rating-score">{{ place.rating|floatformat:1 }}</span>
-                                        <span class="rating-count">({{ place.review_count }} rəy)</span>
-                                    </div>
-                                    <div class="place-price-large">{{ place.get_price_display }}</div>
-                                </div>
-                                <p class="place-hero-description">{{ place.short_description }}</p>
+                                <span class="rating-value-large">{{ place.rating|floatformat:1 }}</span>
+                                <span class="rating-count-large">({{ place.review_count }} rəy)</span>
+                            </div>
+                            <div class="meta-divider"></div>
+                            <div class="meta-price">{{ place.get_price_display }}</div>
+                            <div class="meta-divider"></div>
+                            <div class="meta-location">
+                                <i class="fas fa-map-marker-alt"></i> {{ place.get_district_display }}
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Place Details Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="row">
-            <!-- Main Content -->
-            <div class="col-lg-8">
-                <!-- About Section -->
-                <div class="place-section mb-5">
-                    <h3 class="section-title">Haqqında</h3>
-                    <p class="place-description">{{ place.description }}</p>
-                    
-                    {% if place.features %}
-                    <div class="place-features mt-4">
-                        <h5>Xüsusiyyətlər</h5>
-                        <p class="text-muted">{{ place.features }}</p>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <!-- Gallery Section -->
-                {% if place.images.all %}
-                <div class="place-section mb-5">
-                    <h3 class="section-title">Şəkillər</h3>
-                    <div class="row g-3">
-                        {% for image in place.images.all %}
-                        <div class="col-md-4">
-                            <div class="gallery-item">
-                                <img src="{{ image.image.url }}" alt="{{ image.alt_text }}" class="img-fluid rounded">
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-
-                <!-- Reviews Section -->
-                {% if reviews %}
-                <div class="place-section mb-5">
-                    <h3 class="section-title">Rəylər ({{ place.review_count }})</h3>
-                    <div class="reviews-list">
-                        {% for review in reviews %}
-                        <div class="review-item">
-                            <div class="review-header">
-                                <div class="reviewer-info">
-                                    <div class="reviewer-avatar">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="reviewer-name">{{ review.reviewer_name }}</h6>
-                                        <div class="review-rating">
-                                            {% for i in "12345" %}
-                                                {% if forloop.counter <= review.rating %}
-                                                    <i class="fas fa-star"></i>
-                                                {% else %}
-                                                    <i class="far fa-star"></i>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <small class="review-date text-muted">{{ review.created_at|date:"d M Y" }}</small>
-                            </div>
-                            <p class="review-comment">{{ review.comment }}</p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-
-            <!-- Sidebar -->
-            <div class="col-lg-4">
-                <div class="place-sidebar">
-                    <!-- Contact Information -->
-                    <div class="sidebar-section">
-                        <h5 class="sidebar-title">Əlaqə Məlumatları</h5>
-                        <div class="contact-info">
-                            <div class="contact-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <div>
-                                    <strong>Ünvan</strong>
-                                    <p>{{ place.address }}</p>
-                                </div>
-                            </div>
-                            
-                            {% if place.phone %}
-                            <div class="contact-item">
-                                <i class="fas fa-phone"></i>
-                                <div>
-                                    <strong>Telefon</strong>
-                                    <p><a href="tel:{{ place.phone }}">{{ place.phone }}</a></p>
-                                </div>
-                            </div>
-                            {% endif %}
-                            
-                            {% if place.email %}
-                            <div class="contact-item">
-                                <i class="fas fa-envelope"></i>
-                                <div>
-                                    <strong>Email</strong>
-                                    <p><a href="mailto:{{ place.email }}">{{ place.email }}</a></p>
-                                </div>
-                            </div>
-                            {% endif %}
-                            
-                            {% if place.website %}
-                            <div class="contact-item">
-                                <i class="fas fa-globe"></i>
-                                <div>
-                                    <strong>Vebsayt</strong>
-                                    <p><a href="{{ place.website }}" target="_blank">{{ place.website }}</a></p>
-                                </div>
-                            </div>
-                            {% endif %}
-                            
-                            {% if place.instagram %}
-                            <div class="contact-item">
-                                <i class="fab fa-instagram"></i>
-                                <div>
-                                    <strong>Instagram</strong>
-                                    <p><a href="https://instagram.com/{{ place.instagram }}" target="_blank">@{{ place.instagram }}</a></p>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Opening Hours -->
-                    <div class="sidebar-section">
-                        <h5 class="sidebar-title">İş Saatları</h5>
-                        <p class="opening-hours">{{ place.opening_hours }}</p>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="sidebar-section">
-                        <div class="action-buttons">
-                            <button class="btn btn-primary btn-lg w-100 mb-3">
-                                <i class="fas fa-heart me-2"></i>Bəyən
+                        
+                        <!-- Short Description -->
+                        <p class="hero-description">{{ place.short_description }}</p>
+                        
+                        <!-- Quick Actions -->
+                        <div class="hero-quick-actions">
+                            <button class="action-btn-favorite" onclick="toggleFavorite({{ place.id }})">
+                                <i class="far fa-heart"></i> Bəyən
                             </button>
-                            <button class="btn btn-outline-primary btn-lg w-100 mb-3">
-                                <i class="fas fa-share me-2"></i>Paylaş
+                            <button class="action-btn-share" onclick="sharePlace({{ place.id }})">
+                                <i class="fas fa-share-alt"></i> Paylaş
                             </button>
                             {% if place.phone %}
-                            <a href="tel:{{ place.phone }}" class="btn btn-success btn-lg w-100">
-                                <i class="fas fa-phone me-2"></i>Zəng et
+                            <a href="tel:{{ place.phone }}" class="action-btn-call">
+                                <i class="fas fa-phone"></i> Zəng et
                             </a>
                             {% endif %}
                         </div>
@@ -215,677 +97,160 @@
     </div>
 </section>
 
-<!-- Related Places Section -->
-{% if related_places %}
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="fw-bold mb-3">Oxşar Məkanlar</h2>
-                <p class="text-muted">{{ place.category.name }} kateqoriyasından digər məkanlar</p>
-            </div>
-        </div>
-        
-        <div class="row g-4">
-            {% for related_place in related_places %}
-            <div class="col-lg-3 col-md-6">
-                <div class="place-card">
-                    <div class="place-image">
-                        {% if related_place.main_image %}
-                            <img src="{{ related_place.main_image.url }}" alt="{{ related_place.image_alt|default:related_place.name }}" class="img-fluid">
-                        {% else %}
-                            <img src="{% static '1.png' %}" alt="{{ related_place.name }}" class="img-fluid">
-                        {% endif %}
-                        <div class="place-badge">
-                            <span class="badge" style="background-color: {{ related_place.category.color }};">
-                                <i class="{{ related_place.category.icon }} me-1"></i>{{ related_place.category.name }}
-                            </span>
-                        </div>
-                        <div class="place-heart">
-                            <i class="far fa-heart"></i>
-                        </div>
-                    </div>
-                    <div class="place-content">
-                        <div class="place-meta">
-                            <span class="place-price">{{ related_place.get_price_display }}</span>
-                            <span class="place-district">{{ related_place.get_district_display }}</span>
-                        </div>
-                        <h5 class="place-title">
-                            <a href="{{ related_place.get_absolute_url }}">{{ related_place.name }}</a>
-                        </h5>
-                        <div class="place-rating mb-2">
-                            <span class="star-rating">
-                                {% for i in related_place.get_rating_stars.full %}
-                                    <i class="fas fa-star"></i>
-                                {% endfor %}
-                                {% if related_place.get_rating_stars.half %}
-                                    <i class="fas fa-star-half-alt"></i>
-                                {% endif %}
-                                {% for i in related_place.get_rating_stars.empty %}
-                                    <i class="far fa-star"></i>
-                                {% endfor %}
-                                <span class="rating-score">{{ related_place.rating|floatformat:1 }}</span>
-                                <span class="rating-count">({{ related_place.review_count }} rəy)</span>
-                            </span>
-                        </div>
-                        <p class="place-description">{{ related_place.short_description|truncatechars:70 }}</p>
-                        <div class="place-footer">
-                            <span class="place-location">
-                                <i class="fas fa-map-marker-alt me-1"></i>
-                                {{ related_place.address|truncatechars:20 }}
-                            </span>
-                            <a href="{{ related_place.get_absolute_url }}" class="btn btn-primary btn-sm place-view-btn">Ətraflı</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        
-        <div class="text-center mt-5">
-            <a href="{% url 'places:places_list' %}?category={{ place.category.category_type }}" class="btn btn-primary btn-lg">
-                <i class="fas fa-search me-2"></i>
-                Bütün {{ place.category.name }} görüntülə
-            </a>
-        </div>
-    </div>
-</section>
-{% endif %}
-{% endblock %}
-
-{% block extra_css %}
-<style>
-/* Place Hero Section */
-.place-hero-section {
-    position: relative;
-    margin-top: -76px; /* Offset for navbar */
-    padding-top: 76px;
-}
-
-.place-hero-image {
-    position: relative;
-    height: 500px;
-    overflow: hidden;
-}
-
-.place-hero-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.place-hero-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-    padding: 3rem 0 2rem;
-}
-
-.place-hero-content {
-    color: white;
-}
-
-.place-category-badge {
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-weight: 600;
-}
-
-.place-hero-title {
-    font-size: 3rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.place-hero-meta {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    margin-bottom: 1rem;
-}
-
-.place-rating-large {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.1rem;
-}
-
-.place-rating-large i {
-    color: #ffc107;
-    font-size: 1.2rem;
-}
-
-.place-price-large {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-}
-
-.place-hero-description {
-    font-size: 1.2rem;
-    margin-bottom: 0;
-    opacity: 0.9;
-}
-
-/* Place Details */
-.place-section {
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    margin-bottom: 2rem;
-}
-
-.section-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--dark-text);
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid #f1f5f9;
-}
-
-.place-description {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: var(--gray-text);
-}
-
-.place-features h5 {
-    color: var(--dark-text);
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-}
-
-/* Gallery */
-.gallery-item {
-    position: relative;
-    overflow: hidden;
-    border-radius: 12px;
-    aspect-ratio: 1;
-}
-
-.gallery-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-}
-
-.gallery-item:hover img {
-    transform: scale(1.05);
-}
-
-/* Reviews */
-.reviews-list {
-    space-y: 1.5rem;
-}
-
-.review-item {
-    background: #f8fafc;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.review-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-}
-
-.reviewer-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.reviewer-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.reviewer-name {
-    margin-bottom: 0.25rem;
-    font-weight: 600;
-    color: var(--dark-text);
-}
-
-.review-rating i {
-    color: #ffc107;
-    font-size: 0.9rem;
-}
-
-.review-comment {
-    color: var(--gray-text);
-    line-height: 1.6;
-    margin-bottom: 0;
-}
-
-/* Sidebar */
-.place-sidebar {
-    position: sticky;
-    top: 100px;
-}
-
-.sidebar-section {
-    background: white;
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    margin-bottom: 1.5rem;
-}
-
-.sidebar-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--dark-text);
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.contact-info {
-    space-y: 1rem;
-}
-
-.contact-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.contact-item i {
-    color: var(--primary-color);
-    font-size: 1.1rem;
-    margin-top: 0.2rem;
-    width: 20px;
-}
-
-.contact-item strong {
-    display: block;
-    color: var(--dark-text);
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-}
-
-.contact-item p {
-    color: var(--gray-text);
-    margin-bottom: 0;
-    line-height: 1.4;
-}
-
-.contact-item a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.contact-item a:hover {
-    text-decoration: underline;
-}
-
-.opening-hours {
-    color: var(--gray-text);
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 0;
-}
-
-.action-buttons .btn {
-    font-weight: 600;
-    border-radius: 12px;
-    padding: 0.75rem 1.5rem;
-}
-
-/* Place Cards (reused from places.html) */
-.place-card {
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    border: 1px solid #f1f5f9;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.place-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-.place-image {
-    position: relative;
-    height: 180px;
-    overflow: hidden;
-}
-
-.place-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.place-card:hover .place-image img {
-    transform: scale(1.05);
-}
-
-.place-badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    z-index: 2;
-}
-
-.place-badge .badge {
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.5rem 0.75rem;
-    border-radius: 20px;
-}
-
-.place-heart {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    color: white;
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.place-heart:hover {
-    background: var(--primary-color);
-    color: white;
-}
-
-.place-content {
-    padding: 1.25rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.place-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-    font-size: 0.85rem;
-}
-
-.place-price {
-    color: var(--primary-color);
-    font-weight: 700;
-    font-size: 1rem;
-}
-
-.place-district {
-    color: var(--gray-text);
-    font-weight: 500;
-}
-
-.place-title {
-    margin-bottom: 0.75rem;
-    font-size: 1.1rem;
-    font-weight: 700;
-    line-height: 1.3;
-}
-
-.place-title a {
-    color: var(--dark-text);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.place-title a:hover {
-    color: var(--primary-color);
-}
-
-.place-rating {
-    margin-bottom: 0.75rem;
-}
-
-.star-rating {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    font-size: 0.85rem;
-}
-
-.star-rating i {
-    color: #ffc107;
-    font-size: 0.8rem;
-}
-
-.rating-score {
-    font-weight: 600;
-    color: var(--dark-text);
-    margin-left: 0.25rem;
-}
-
-.rating-count {
-    color: var(--gray-text);
-    font-size: 0.8rem;
-}
-
-.place-description {
-    color: var(--gray-text);
-    font-size: 0.9rem;
-    line-height: 1.4;
-    margin-bottom: 1rem;
-    flex: 1;
-}
-
-.place-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: auto;
-}
-
-.place-location {
-    color: var(--gray-text);
-    font-size: 0.8rem;
-    display: flex;
-    align-items: center;
-    flex: 1;
-    min-width: 0;
-}
-
-.place-location i {
-    color: var(--primary-color);
-    margin-right: 0.25rem;
-}
-
-.place-view-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border-radius: 8px;
-    white-space: nowrap;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .place-hero-title {
-        font-size: 2rem;
-    }
-    
-    .place-hero-meta {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-    
-    .place-hero-description {
-        font-size: 1rem;
-    }
-    
-    .place-section {
-        padding: 1.5rem;
-    }
-    
-    .place-sidebar {
-        position: static;
-        margin-top: 2rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .place-hero-overlay {
-        padding: 2rem 0 1.5rem;
-    }
-    
-    .place-hero-title {
-        font-size: 1.75rem;
-    }
-    
-    .place-section {
-        padding: 1rem;
-    }
-    
-    .sidebar-section {
-        padding: 1rem;
-    }
-}
-</style>
-{% endblock %}
-
-{% load static %}
-
-{% block title %}{{ place.name }} - Acteezer{% endblock %}
-
-{% block content %}
-<!-- Place Hero Section -->
-<section class="place-hero-section">
-    <div class="container-fluid p-0">
-        <div class="place-hero-image">
-            {% if place.main_image %}
-                <img src="{{ place.main_image.url }}" alt="{{ place.image_alt|default:place.name }}" class="img-fluid w-100">
-            {% else %}
-                <img src="{% static '1.png' %}" alt="{{ place.name }}" class="img-fluid w-100">
-            {% endif %}
-            <div class="place-hero-overlay">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <div class="place-hero-content">
-                                <div class="place-badges mb-3">
-                                    <span class="badge place-category-badge" style="background-color: {{ place.category.color }};">
-                                        <i class="{{ place.category.icon }} me-1"></i>{{ place.category.name }}
-                                    </span>
-                                    {% if place.is_verified %}
-                                    <span class="badge bg-success ms-2">
-                                        <i class="fas fa-check-circle me-1"></i>Təsdiqlənmiş
-                                    </span>
-                                    {% endif %}
-                                    {% if place.is_featured %}
-                                    <span class="badge bg-warning ms-2">
-                                        <i class="fas fa-star me-1"></i>Seçilmiş
-                                    </span>
-                                    {% endif %}
-                                </div>
-                                <h1 class="place-hero-title">{{ place.name }}</h1>
-                                <div class="place-hero-meta">
-                                    <div class="place-rating-large">
-                                        {% for i in place.get_rating_stars.full %}
-                                            <i class="fas fa-star"></i>
-                                        {% endfor %}
-                                        {% if place.get_rating_stars.half %}
-                                            <i class="fas fa-star-half-alt"></i>
-                                        {% endif %}
-                                        {% for i in place.get_rating_stars.empty %}
-                                            <i class="far fa-star"></i>
-                                        {% endfor %}
-                                        <span class="rating-score">{{ place.rating|floatformat:1 }}</span>
-                                        <span class="rating-count">({{ place.review_count }} rəy)</span>
-                                    </div>
-                                    <div class="place-price-large">{{ place.get_price_display }}</div>
-                                </div>
-                                <p class="place-hero-description">{{ place.short_description }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Place Details Section -->
-<section class="py-5">
+<!-- Main Content -->
+<section class="place-detail-content py-5">
     <div class="container">
         <div class="row">
-            <!-- Main Content -->
+            <!-- Left Column - Main Content -->
             <div class="col-lg-8">
-                <!-- About Section -->
-                <div class="place-section mb-5">
-                    <h3 class="section-title">Haqqında</h3>
-                    <p class="place-description">{{ place.description }}</p>
-                    
-                    {% if place.features %}
-                    <div class="place-features mt-4">
-                        <h5>Xüsusiyyətlər</h5>
-                        <p class="text-muted">{{ place.features }}</p>
-                    </div>
-                    {% endif %}
-                </div>
-
                 <!-- Gallery Section -->
                 {% if place.images.all %}
-                <div class="place-section mb-5">
-                    <h3 class="section-title">Şəkillər</h3>
-                    <div class="row g-3">
-                        {% for image in place.images.all %}
-                        <div class="col-md-4">
-                            <div class="gallery-item">
-                                <img src="{{ image.image.url }}" alt="{{ image.alt_text }}" class="img-fluid rounded">
+                <div class="content-section gallery-section">
+                    <h2 class="section-heading">
+                        <i class="fas fa-images me-2"></i>Şəkillər
+                        <span class="photo-count-badge">{{ place.images.count }}+</span>
+                    </h2>
+                    <div class="gallery-grid">
+                        {% for image in place.images.all|slice:":6" %}
+                        <div class="gallery-item-modal" onclick="openGallery({{ forloop.counter0 }})">
+                            <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:place.name }}" loading="lazy">
+                            <div class="gallery-overlay">
+                                <i class="fas fa-expand"></i>
                             </div>
                         </div>
                         {% endfor %}
                     </div>
+                    {% if place.images.count > 6 %}
+                    <button class="btn btn-outline-primary btn-sm mt-3" onclick="showAllPhotos()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+                        Bütün {{ place.images.count }} şəkli gör <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                    {% endif %}
                 </div>
                 {% endif %}
-
+                
+                <!-- About Section -->
+                <div class="content-section">
+                    <h2 class="section-heading">
+                        <i class="fas fa-info-circle me-2"></i>Haqqında
+                    </h2>
+                    <div class="about-content">
+                        <p class="place-full-description">{{ place.description|linebreaks }}</p>
+                        
+                        {% if place.features %}
+                        <div class="features-list mt-4">
+                            <h5 class="features-title">
+                                <i class="fas fa-list-check me-2"></i>Xüsusiyyətlər
+                            </h5>
+                            <div class="features-text">{{ place.features|linebreaks }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Location & Map Section -->
+                <div class="content-section">
+                    <h2 class="section-heading">
+                        <i class="fas fa-map-marker-alt me-2"></i>Ünvan və Xəritə
+                    </h2>
+                    <div class="location-info">
+                        <p class="address-text">
+                            <i class="fas fa-map-pin me-2"></i>{{ place.address }}
+                        </p>
+                        {% if place.latitude and place.longitude %}
+                        <div class="map-container" id="place-map">
+                            <iframe
+                                width="100%"
+                                height="400"
+                                style="border:0; border-radius: 12px;"
+                                loading="lazy"
+                                allowfullscreen
+                                referrerpolicy="no-referrer-when-downgrade"
+                                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dS6fm4b0Gk5qSY&q={{ place.latitude }},{{ place.longitude }}">
+                            </iframe>
+                        </div>
+                        {% else %}
+                        <div class="map-placeholder">
+                            <i class="fas fa-map-marked-alt fa-3x mb-3"></i>
+                            <p>Xəritə koordinatları əlavə edilməyib</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
                 <!-- Reviews Section -->
-                {% if reviews %}
-                <div class="place-section mb-5">
-                    <h3 class="section-title">Rəylər ({{ place.review_count }})</h3>
-                    <div class="reviews-list">
+                <div class="content-section reviews-section">
+                    <div class="reviews-header">
+                        <h2 class="section-heading mb-0">
+                            <i class="fas fa-comments me-2"></i>Rəylər
+                        </h2>
+                        <div class="reviews-summary">
+                            <div class="summary-rating">
+                                <span class="summary-score">{{ place.rating|floatformat:1 }}</span>
+                                <div class="summary-stars">
+                                    {% for i in place.get_rating_stars.full %}
+                                        <i class="fas fa-star"></i>
+                                    {% endfor %}
+                                    {% if place.get_rating_stars.half %}
+                                        <i class="fas fa-star-half-alt"></i>
+                                    {% endif %}
+                                    {% for i in place.get_rating_stars.empty %}
+                                        <i class="far fa-star"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <span class="summary-count">{{ place.review_count }} rəy</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Add Review Form -->
+                    <div class="add-review-section">
+                        <h5 class="add-review-title">
+                            <i class="fas fa-edit me-2"></i>Rəy yazın
+                        </h5>
+                        <form method="POST" action="{% url 'places:place_detail' place.pk %}" class="review-form" id="reviewForm">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Adınız</label>
+                                <input type="text" name="reviewer_name" class="form-control" required placeholder="Adınızı daxil edin">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email (istəyə bağlı)</label>
+                                <input type="email" name="reviewer_email" class="form-control" placeholder="email@example.com">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Reytinq</label>
+                                <div class="rating-input">
+                                    <input type="hidden" name="rating" id="ratingValue" value="5" required>
+                                    <div class="star-rating-input">
+                                        {% for i in "12345" %}
+                                        <i class="fas fa-star rating-star" data-rating="{{ forloop.counter }}" onclick="setRating({{ forloop.counter }})"></i>
+                                        {% endfor %}
+                                    </div>
+                                    <span class="rating-text">Reytinq seçin</span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Rəy</label>
+                                <textarea name="comment" class="form-control" rows="5" required placeholder="Məkan haqqında rəyinizi yazın..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fas fa-paper-plane me-2"></i>Rəy göndər
+                            </button>
+                        </form>
+                    </div>
+                    
+                    {% if reviews %}
+                    <div class="reviews-list-detailed">
                         {% for review in reviews %}
-                        <div class="review-item">
-                            <div class="review-header">
-                                <div class="reviewer-info">
-                                    <div class="reviewer-avatar">
+                        <div class="review-card">
+                            <div class="review-card-header">
+                                <div class="reviewer-info-detailed">
+                                    <div class="reviewer-avatar-large">
                                         <i class="fas fa-user"></i>
                                     </div>
-                                    <div>
-                                        <h6 class="reviewer-name">{{ review.reviewer_name }}</h6>
-                                        <div class="review-rating">
+                                    <div class="reviewer-details">
+                                        <h6 class="reviewer-name-detailed">{{ review.reviewer_name }}</h6>
+                                        <div class="review-rating-detailed">
                                             {% for i in "12345" %}
                                                 {% if forloop.counter <= review.rating %}
                                                     <i class="fas fa-star"></i>
@@ -896,94 +261,119 @@
                                         </div>
                                     </div>
                                 </div>
-                                <small class="review-date text-muted">{{ review.created_at|date:"d M Y" }}</small>
+                                <span class="review-date-detailed">{{ review.created_at|date:"d M Y" }}</span>
                             </div>
-                            <p class="review-comment">{{ review.comment }}</p>
+                            <p class="review-text">{{ review.comment|linebreaks }}</p>
                         </div>
                         {% endfor %}
                     </div>
+                    {% else %}
+                    <div class="no-reviews">
+                        <i class="fas fa-comment-slash fa-3x mb-3"></i>
+                        <p>Hələ heç bir rəy yoxdur. İlk rəyi siz yazın!</p>
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
             </div>
-
-            <!-- Sidebar -->
+            
+            <!-- Right Column - Sidebar -->
             <div class="col-lg-4">
-                <div class="place-sidebar">
-                    <!-- Contact Information -->
-                    <div class="sidebar-section">
-                        <h5 class="sidebar-title">Əlaqə Məlumatları</h5>
-                        <div class="contact-info">
-                            <div class="contact-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <div>
-                                    <strong>Ünvan</strong>
-                                    <p>{{ place.address }}</p>
-                                </div>
-                            </div>
-                            
+                <div class="detail-sidebar">
+                    <!-- Contact Card -->
+                    <div class="sidebar-card">
+                        <h5 class="sidebar-card-title">
+                            <i class="fas fa-phone-alt me-2"></i>Əlaqə
+                        </h5>
+                        <div class="contact-details">
                             {% if place.phone %}
-                            <div class="contact-item">
+                            <div class="contact-detail-item">
                                 <i class="fas fa-phone"></i>
                                 <div>
-                                    <strong>Telefon</strong>
-                                    <p><a href="tel:{{ place.phone }}">{{ place.phone }}</a></p>
+                                    <span class="contact-label">Telefon</span>
+                                    <a href="tel:{{ place.phone }}" class="contact-value">{{ place.phone }}</a>
                                 </div>
                             </div>
                             {% endif %}
                             
                             {% if place.email %}
-                            <div class="contact-item">
+                            <div class="contact-detail-item">
                                 <i class="fas fa-envelope"></i>
                                 <div>
-                                    <strong>Email</strong>
-                                    <p><a href="mailto:{{ place.email }}">{{ place.email }}</a></p>
+                                    <span class="contact-label">Email</span>
+                                    <a href="mailto:{{ place.email }}" class="contact-value">{{ place.email }}</a>
                                 </div>
                             </div>
                             {% endif %}
                             
                             {% if place.website %}
-                            <div class="contact-item">
+                            <div class="contact-detail-item">
                                 <i class="fas fa-globe"></i>
                                 <div>
-                                    <strong>Vebsayt</strong>
-                                    <p><a href="{{ place.website }}" target="_blank">{{ place.website }}</a></p>
+                                    <span class="contact-label">Vebsayt</span>
+                                    <a href="{{ place.website }}" target="_blank" class="contact-value">{{ place.website|truncatechars:30 }}</a>
                                 </div>
                             </div>
                             {% endif %}
                             
                             {% if place.instagram %}
-                            <div class="contact-item">
+                            <div class="contact-detail-item">
                                 <i class="fab fa-instagram"></i>
                                 <div>
-                                    <strong>Instagram</strong>
-                                    <p><a href="https://instagram.com/{{ place.instagram }}" target="_blank">@{{ place.instagram }}</a></p>
+                                    <span class="contact-label">Instagram</span>
+                                    <a href="https://instagram.com/{{ place.instagram }}" target="_blank" class="contact-value">@{{ place.instagram }}</a>
                                 </div>
                             </div>
                             {% endif %}
                         </div>
                     </div>
-
-                    <!-- Opening Hours -->
-                    <div class="sidebar-section">
-                        <h5 class="sidebar-title">İş Saatları</h5>
-                        <p class="opening-hours">{{ place.opening_hours }}</p>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="sidebar-section">
-                        <div class="action-buttons">
-                            <button class="btn btn-primary btn-lg w-100 mb-3">
-                                <i class="fas fa-heart me-2"></i>Bəyən
-                            </button>
-                            <button class="btn btn-outline-primary btn-lg w-100 mb-3">
-                                <i class="fas fa-share me-2"></i>Paylaş
-                            </button>
-                            {% if place.phone %}
-                            <a href="tel:{{ place.phone }}" class="btn btn-success btn-lg w-100">
-                                <i class="fas fa-phone me-2"></i>Zəng et
-                            </a>
-                            {% endif %}
+                    
+                    <!-- Opening Hours Card -->
+                    <div class="sidebar-card">
+                        <h5 class="sidebar-card-title">
+                            <i class="fas fa-clock me-2"></i>İş Saatları
+                        </h5>
+                        <div class="opening-hours-content">
+                            <p>{{ place.opening_hours|linebreaks }}</p>
                         </div>
+                    </div>
+                    
+                    <!-- Quick Info Card -->
+                    <div class="sidebar-card">
+                        <h5 class="sidebar-card-title">
+                            <i class="fas fa-info-circle me-2"></i>Məlumat
+                        </h5>
+                        <div class="quick-info-list">
+                            <div class="info-item">
+                                <i class="fas fa-tag"></i>
+                                <span>Kateqoriya:</span>
+                                <strong>{{ place.category.name }}</strong>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span>Qiymət:</span>
+                                <strong>{{ place.get_price_display }}</strong>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Rayon:</span>
+                                <strong>{{ place.get_district_display }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="sidebar-actions">
+                        <button class="btn btn-primary btn-lg w-100 mb-2 {% if is_favorited %}favorited{% endif %}" onclick="toggleFavorite({{ place.id }})">
+                            <i class="{% if is_favorited %}fas{% else %}far{% endif %} fa-heart me-2"></i>{% if is_favorited %}Bəyənməklərdən çıxar{% else %}Bəyənməklərə əlavə et{% endif %}
+                        </button>
+                        <button class="btn btn-outline-primary btn-lg w-100 mb-2" onclick="sharePlace({{ place.id }})">
+                            <i class="fas fa-share-alt me-2"></i>Paylaş
+                        </button>
+                        {% if place.phone %}
+                        <a href="tel:{{ place.phone }}" class="btn btn-success btn-lg w-100">
+                            <i class="fas fa-phone me-2"></i>Zəng et
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -993,43 +383,70 @@
 
 <!-- Related Places Section -->
 {% if related_places %}
-<section class="py-5 bg-light">
+<section class="related-places-section py-5 bg-light">
     <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="fw-bold mb-3">Oxşar Məkanlar</h2>
-                <p class="text-muted">{{ place.category.name }} kateqoriyasından digər məkanlar</p>
-            </div>
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title-large">Oxşar Məkanlar</h2>
+            <p class="section-subtitle">{{ place.category.name }} kateqoriyasından digər məkanlar</p>
         </div>
         
-        <div class="row g-4">
+        <div class="row g-4" id="related-places-grid">
             {% for related_place in related_places %}
-            <div class="col-lg-3 col-md-6">
-                <div class="place-card">
-                    <div class="place-image">
+            <div class="col-lg-3 col-md-6 place-item">
+                <div class="place-card-enhanced">
+                    <div class="place-image-enhanced">
                         {% if related_place.main_image %}
-                            <img src="{{ related_place.main_image.url }}" alt="{{ related_place.image_alt|default:related_place.name }}" class="img-fluid">
+                            <img src="{{ related_place.main_image.url }}" alt="{{ related_place.image_alt|default:related_place.name }}" loading="lazy">
                         {% else %}
-                            <img src="{% static '1.png' %}" alt="{{ related_place.name }}" class="img-fluid">
+                            <img src="{% static '1.png' %}" alt="{{ related_place.name }}" loading="lazy">
                         {% endif %}
-                        <div class="place-badge">
-                            <span class="badge" style="background-color: {{ related_place.category.color }};">
-                                <i class="{{ related_place.category.icon }} me-1"></i>{{ related_place.category.name }}
-                            </span>
+                        
+                        <!-- Image Overlay -->
+                        <div class="place-overlay">
+                            <div class="place-actions">
+                                <button class="action-btn {% if related_place.id in favorited_place_ids %}favorited{% endif %}" onclick="toggleFavorite({{ related_place.id }})" title="{% if related_place.id in favorited_place_ids %}Bəyənməklərdən çıxar{% else %}Bəyənməklərə əlavə et{% endif %}">
+                                    <i class="{% if related_place.id in favorited_place_ids %}fas{% else %}far{% endif %} fa-heart"></i>
+                                </button>
+                                <button class="action-btn" onclick="sharePlace({{ related_place.id }})" title="Paylaş">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Photo Count -->
+                            {% if related_place.images.exists %}
+                            <div class="photo-count">
+                                <i class="fas fa-camera"></i> {{ related_place.images.count }}+
+                            </div>
+                            {% endif %}
                         </div>
-                        <div class="place-heart">
-                            <i class="far fa-heart"></i>
+                        
+                        <!-- Badges -->
+                        <div class="place-badges">
+                            <span class="badge category-badge" style="background-color: {{ related_place.category.color }};">
+                                <i class="{{ related_place.category.icon }}"></i> {{ related_place.category.name }}
+                            </span>
+                            {% if related_place.is_verified %}
+                            <span class="badge verified-badge">
+                                <i class="fas fa-check-circle"></i> Təsdiqlənmiş
+                            </span>
+                            {% endif %}
+                            {% if related_place.is_featured %}
+                            <span class="badge featured-badge">
+                                <i class="fas fa-star"></i> Seçilmiş
+                            </span>
+                            {% endif %}
                         </div>
                     </div>
-                    <div class="place-content">
-                        <div class="place-meta">
-                            <span class="place-price">{{ related_place.get_price_display }}</span>
-                            <span class="place-district">{{ related_place.get_district_display }}</span>
+                    
+                    <div class="place-content-enhanced">
+                        <div class="place-header">
+                            <h5 class="place-title-enhanced">
+                                <a href="{{ related_place.get_absolute_url }}">{{ related_place.name }}</a>
+                            </h5>
+                            <div class="place-price-badge">{{ related_place.get_price_display }}</div>
                         </div>
-                        <h5 class="place-title">
-                            <a href="{{ related_place.get_absolute_url }}">{{ related_place.name }}</a>
-                        </h5>
-                        <div class="place-rating mb-2">
+                        
+                        <div class="place-rating-enhanced">
                             <span class="star-rating">
                                 {% for i in related_place.get_rating_stars.full %}
                                     <i class="fas fa-star"></i>
@@ -1040,17 +457,48 @@
                                 {% for i in related_place.get_rating_stars.empty %}
                                     <i class="far fa-star"></i>
                                 {% endfor %}
-                                <span class="rating-score">{{ related_place.rating|floatformat:1 }}</span>
-                                <span class="rating-count">({{ related_place.review_count }} rəy)</span>
                             </span>
+                            <span class="rating-value">{{ related_place.rating|floatformat:1 }}</span>
+                            <span class="rating-count">({{ related_place.review_count }} rəy)</span>
                         </div>
-                        <p class="place-description">{{ related_place.short_description|truncatechars:70 }}</p>
-                        <div class="place-footer">
-                            <span class="place-location">
-                                <i class="fas fa-map-marker-alt me-1"></i>
-                                {{ related_place.address|truncatechars:20 }}
+                        
+                        <p class="place-description-enhanced">{{ related_place.short_description|truncatechars:120 }}</p>
+                        
+                        <div class="place-features">
+                            <span class="feature-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ related_place.get_district_display }}
                             </span>
-                            <a href="{{ related_place.get_absolute_url }}" class="btn btn-primary btn-sm place-view-btn">Ətraflı</a>
+                            {% if related_place.phone %}
+                            <span class="feature-item">
+                                <i class="fas fa-phone"></i>
+                                Nömrə var
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Review Preview -->
+                        {% if related_place.reviews.exists %}
+                        <div class="review-preview">
+                            <div class="review-excerpt">
+                                <i class="fas fa-quote-left"></i>
+                                "{{ related_place.reviews.first.comment|truncatechars:80 }}"
+                            </div>
+                            <div class="review-author">
+                                — {{ related_place.reviews.first.reviewer_name }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="place-footer-enhanced">
+                            <a href="{{ related_place.get_absolute_url }}" class="btn btn-primary btn-sm" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                                Ətraflı bax <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                            {% if related_place.website %}
+                            <a href="{{ related_place.website }}" target="_blank" class="btn btn-outline-secondary btn-sm" title="Veb sayt" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -1059,9 +507,8 @@
         </div>
         
         <div class="text-center mt-5">
-            <a href="{% url 'places:places_list' %}?category={{ place.category.category_type }}" class="btn btn-primary btn-lg">
-                <i class="fas fa-search me-2"></i>
-                Bütün {{ place.category.name }} görüntülə
+            <a href="{% url 'places:places_list' %}?category={{ place.category.category_type }}" class="btn btn-primary">
+                <i class="fas fa-th me-2"></i>Bütün {{ place.category.name }} görüntülə
             </a>
         </div>
     </div>
@@ -1071,320 +518,707 @@
 
 {% block extra_css %}
 <style>
-/* Place Hero Section */
-.place-hero-section {
+/* Hero Section */
+.place-detail-hero {
     position: relative;
-    margin-top: -76px; /* Offset for navbar */
+    margin-top: -76px;
     padding-top: 76px;
 }
 
-.place-hero-image {
+.hero-image-container {
     position: relative;
     height: 500px;
     overflow: hidden;
 }
 
-.place-hero-image img {
+.hero-main-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.place-hero-overlay {
+.hero-overlay-gradient {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-    padding: 3rem 0 2rem;
+    height: 60%;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
 }
 
-.place-hero-content {
+.hero-content-wrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 3rem 0;
+    color: white;
+    z-index: 2;
+}
+
+.hero-breadcrumb {
+    margin-bottom: 1rem;
+}
+
+.hero-breadcrumb .breadcrumb {
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    margin: 0;
+}
+
+.hero-breadcrumb .breadcrumb-item a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.hero-breadcrumb .breadcrumb-item.active {
+    color: white;
+    font-weight: 600;
+}
+
+.hero-badges {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.badge-hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
     color: white;
 }
 
-.place-category-badge {
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-weight: 600;
+.badge-hero.verified {
+    background: rgba(40, 167, 69, 0.8);
 }
 
-.place-hero-title {
+.badge-hero.featured {
+    background: rgba(255, 193, 7, 0.8);
+    color: #1a2e2a;
+}
+
+.hero-title {
     font-size: 3rem;
     font-weight: 800;
-    margin-bottom: 1rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    line-height: 1.2;
 }
 
-.place-hero-meta {
+.hero-meta-info {
     display: flex;
     align-items: center;
-    gap: 2rem;
-    margin-bottom: 1rem;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
 }
 
-.place-rating-large {
+.meta-rating {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
+}
+
+.stars-large {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.stars-large i {
+    color: #ffc107;
     font-size: 1.1rem;
 }
 
-.place-rating-large i {
-    color: #ffc107;
-    font-size: 1.2rem;
-}
-
-.place-price-large {
-    font-size: 1.5rem;
+.rating-value-large {
+    font-size: 1.25rem;
     font-weight: 700;
-    color: var(--primary-color);
 }
 
-.place-hero-description {
-    font-size: 1.2rem;
-    margin-bottom: 0;
+.rating-count-large {
+    font-size: 1rem;
     opacity: 0.9;
 }
 
-/* Place Details */
-.place-section {
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    margin-bottom: 2rem;
+.meta-divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(255,255,255,0.3);
 }
 
-.section-title {
-    font-size: 1.5rem;
+.meta-price {
+    font-size: 1.25rem;
     font-weight: 700;
-    color: var(--dark-text);
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid #f1f5f9;
+    color: #5DD3BE;
 }
 
-.place-description {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: var(--gray-text);
+.meta-location {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    opacity: 0.95;
 }
 
-.place-features h5 {
-    color: var(--dark-text);
-    font-weight: 600;
-    margin-bottom: 0.75rem;
+.hero-description {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    max-width: 800px;
 }
 
-/* Gallery */
-.gallery-item {
-    position: relative;
-    overflow: hidden;
-    border-radius: 12px;
-    aspect-ratio: 1;
+.hero-quick-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
-.gallery-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
+.action-btn-favorite,
+.action-btn-share,
+.action-btn-call {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    color: white;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.3s ease;
     cursor: pointer;
 }
 
-.gallery-item:hover img {
-    transform: scale(1.05);
+.action-btn-favorite:hover,
+.action-btn-share:hover,
+.action-btn-call:hover {
+    background: rgba(255,255,255,0.25);
+    border-color: rgba(255,255,255,0.5);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+/* Content Sections */
+.place-detail-content {
+    background: #f8f9fa;
+}
+
+.content-section {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+
+.section-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a2e2a;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.photo-count-badge {
+    margin-left: auto;
+    background: #5DD3BE;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Gallery */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.gallery-item-modal {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item-modal:hover {
+    transform: scale(1.02);
+}
+
+.gallery-item-modal img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-item-modal:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-overlay i {
+    color: white;
+    font-size: 1.5rem;
+}
+
+/* About Content */
+.place-full-description {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #6c757d;
+}
+
+.features-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1a2e2a;
+    margin-bottom: 1rem;
+}
+
+.features-text {
+    color: #6c757d;
+    line-height: 1.7;
+}
+
+/* Location */
+.address-text {
+    font-size: 1.1rem;
+    color: #1a2e2a;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.map-container {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.map-placeholder {
+    text-align: center;
+    padding: 3rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    color: #6c757d;
 }
 
 /* Reviews */
-.reviews-list {
-    space-y: 1.5rem;
+.reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-.review-item {
-    background: #f8fafc;
+.reviews-summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.summary-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.summary-score {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a2e2a;
+}
+
+.summary-stars {
+    display: flex;
+    gap: 0.15rem;
+}
+
+.summary-stars i {
+    color: #ffc107;
+    font-size: 1.1rem;
+}
+
+.summary-count {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.reviews-list-detailed {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.review-card {
+    background: #f8f9fa;
     border-radius: 12px;
     padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    border-left: 4px solid #5DD3BE;
 }
 
-.review-header {
+.review-card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-.reviewer-info {
+.reviewer-info-detailed {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-.reviewer-avatar {
-    width: 40px;
-    height: 40px;
+.reviewer-avatar-large {
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background: var(--primary-color);
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
+    font-size: 1.25rem;
 }
 
-.reviewer-name {
-    margin-bottom: 0.25rem;
-    font-weight: 600;
-    color: var(--dark-text);
+.reviewer-name-detailed {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a2e2a;
+    margin-bottom: 0.5rem;
 }
 
-.review-rating i {
+.review-rating-detailed {
+    display: flex;
+    gap: 0.15rem;
+}
+
+.review-rating-detailed i {
     color: #ffc107;
     font-size: 0.9rem;
 }
 
-.review-comment {
-    color: var(--gray-text);
-    line-height: 1.6;
-    margin-bottom: 0;
+.review-date-detailed {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.review-text {
+    color: #6c757d;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.no-reviews {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+}
+
+/* Add Review Form */
+.add-review-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 2px dashed #e9ecef;
+}
+
+.add-review-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1a2e2a;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.review-form .form-label {
+    font-weight: 600;
+    color: #1a2e2a;
+    margin-bottom: 0.5rem;
+}
+
+.review-form .form-control {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.review-form .form-control:focus {
+    border-color: #5DD3BE;
+    box-shadow: 0 0 0 0.2rem rgba(93, 211, 190, 0.1);
+}
+
+.rating-input {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.star-rating-input {
+    display: flex;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.rating-star {
+    font-size: 1.5rem;
+    color: #dee2e6;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.rating-star:hover,
+.rating-star.active {
+    color: #ffc107;
+}
+
+.rating-text {
+    color: #6c757d;
+    font-size: 0.9rem;
 }
 
 /* Sidebar */
-.place-sidebar {
+.detail-sidebar {
     position: sticky;
     top: 100px;
 }
 
-.sidebar-section {
+.sidebar-card {
     background: white;
     border-radius: 16px;
     padding: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     margin-bottom: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
 }
 
-.sidebar-title {
+.sidebar-card-title {
     font-size: 1.2rem;
     font-weight: 700;
-    color: var(--dark-text);
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #e2e8f0;
+    color: #1a2e2a;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f1f5f9;
+    display: flex;
+    align-items: center;
 }
 
-.contact-info {
-    space-y: 1rem;
+.contact-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 }
 
-.contact-item {
+.contact-detail-item {
     display: flex;
     align-items: flex-start;
     gap: 1rem;
-    margin-bottom: 1rem;
 }
 
-.contact-item i {
-    color: var(--primary-color);
+.contact-detail-item i {
+    color: #5DD3BE;
     font-size: 1.1rem;
-    margin-top: 0.2rem;
+    margin-top: 0.25rem;
     width: 20px;
 }
 
-.contact-item strong {
+.contact-label {
     display: block;
-    color: var(--dark-text);
-    font-weight: 600;
+    font-size: 0.85rem;
+    color: #6c757d;
     margin-bottom: 0.25rem;
 }
 
-.contact-item p {
-    color: var(--gray-text);
-    margin-bottom: 0;
-    line-height: 1.4;
+.contact-value {
+    display: block;
+    color: #1a2e2a;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 0.9rem;
 }
 
-.contact-item a {
-    color: var(--primary-color);
+.contact-value:hover {
+    color: #5DD3BE;
     text-decoration: none;
 }
 
-.contact-item a:hover {
-    text-decoration: underline;
+.opening-hours-content {
+    color: #6c757d;
+    line-height: 1.7;
 }
 
-.opening-hours {
-    color: var(--gray-text);
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 0;
+.quick-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.action-buttons .btn {
-    font-weight: 600;
-    border-radius: 12px;
-    padding: 0.75rem 1.5rem;
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
 }
 
-/* Place Cards (reused from places.html) */
-.place-card {
+.info-item i {
+    color: #5DD3BE;
+    width: 20px;
+}
+
+.info-item span {
+    color: #6c757d;
+}
+
+.info-item strong {
+    color: #1a2e2a;
+    margin-left: auto;
+}
+
+.sidebar-actions .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+}
+
+.sidebar-actions .btn-lg {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+}
+
+/* Related Places - Using same styles as places list */
+.related-places-section {
+    background: #f8f9fa;
+}
+
+.section-title-large {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1a2e2a;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+/* Reuse place-card-enhanced styles from places.html */
+#related-places-grid .place-item {
+    flex: 0 0 25%;
+    max-width: 25%;
+}
+
+.place-card-enhanced {
     background: white;
-    border-radius: 16px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     transition: all 0.3s ease;
-    border: 1px solid #f1f5f9;
+    border: 1px solid #e9ecef;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.place-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+.place-card-enhanced:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
 }
 
-.place-image {
+.place-image-enhanced {
     position: relative;
     height: 180px;
     overflow: hidden;
+    background: #f8f9fa;
 }
 
-.place-image img {
+.place-image-enhanced img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s ease;
 }
 
-.place-card:hover .place-image img {
-    transform: scale(1.05);
+.place-card-enhanced:hover .place-image-enhanced img {
+    transform: scale(1.1);
 }
 
-.place-badge {
+.place-overlay {
     position: absolute;
-    top: 12px;
-    left: 12px;
-    z-index: 2;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
 }
 
-.place-badge .badge {
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.5rem 0.75rem;
-    border-radius: 20px;
+.place-card-enhanced:hover .place-overlay {
+    opacity: 1;
 }
 
-.place-heart {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    color: white;
-    background: rgba(0, 0, 0, 0.4);
+.place-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.action-btn {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    border: none;
+    background: rgba(255,255,255,0.9);
+    color: #1a2e2a;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1392,162 +1226,367 @@
     transition: all 0.3s ease;
 }
 
-.place-heart:hover {
-    background: var(--primary-color);
+.action-btn:hover {
+    background: #5DD3BE;
+    color: white;
+    transform: scale(1.1);
+}
+
+.photo-count {
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: rgba(0,0,0,0.5);
+    padding: 0.35rem 0.75rem;
+    border-radius: 16px;
+    align-self: flex-start;
+}
+
+.place-badges {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    z-index: 2;
+}
+
+.category-badge,
+.verified-badge,
+.featured-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.35rem 0.6rem;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.verified-badge {
+    background: #28a745 !important;
     color: white;
 }
 
-.place-content {
-    padding: 1.25rem;
+.featured-badge {
+    background: #ffc107 !important;
+    color: #1a2e2a;
+}
+
+.place-content-enhanced {
+    padding: 1rem;
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-.place-meta {
+.place-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 0.75rem;
-    font-size: 0.85rem;
+    gap: 1rem;
 }
 
-.place-price {
-    color: var(--primary-color);
-    font-weight: 700;
+.place-title-enhanced {
     font-size: 1rem;
-}
-
-.place-district {
-    color: var(--gray-text);
-    font-weight: 500;
-}
-
-.place-title {
-    margin-bottom: 0.75rem;
-    font-size: 1.1rem;
     font-weight: 700;
+    margin: 0;
+    flex: 1;
     line-height: 1.3;
 }
 
-.place-title a {
-    color: var(--dark-text);
+.place-title-enhanced a {
+    color: #1a2e2a;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-.place-title a:hover {
-    color: var(--primary-color);
+.place-title-enhanced a:hover {
+    color: #5DD3BE;
+    text-decoration: none;
 }
 
-.place-rating {
+.place-price-badge {
+    background: #f8f9fa;
+    color: #5DD3BE;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+.place-rating-enhanced {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: 0.75rem;
 }
 
 .star-rating {
     display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    font-size: 0.85rem;
+    gap: 0.15rem;
 }
 
 .star-rating i {
     color: #ffc107;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
 }
 
-.rating-score {
-    font-weight: 600;
-    color: var(--dark-text);
-    margin-left: 0.25rem;
+.rating-value {
+    font-weight: 700;
+    color: #1a2e2a;
+    font-size: 1rem;
 }
 
 .rating-count {
-    color: var(--gray-text);
-    font-size: 0.8rem;
+    color: #6c757d;
+    font-size: 0.85rem;
 }
 
-.place-description {
-    color: var(--gray-text);
-    font-size: 0.9rem;
-    line-height: 1.4;
-    margin-bottom: 1rem;
+.place-description-enhanced {
+    color: #6c757d;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
     flex: 1;
 }
 
-.place-footer {
+.place-features {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.feature-item {
+    display: flex;
     align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.feature-item i {
+    color: #5DD3BE;
+}
+
+.review-preview {
+    background: #f8f9fa;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    border-left: 3px solid #5DD3BE;
+}
+
+.review-excerpt {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.review-author {
+    font-size: 0.8rem;
+    color: #1a2e2a;
+    font-weight: 600;
+}
+
+.place-footer-enhanced {
+    display: flex;
     gap: 0.5rem;
     margin-top: auto;
 }
 
-.place-location {
-    color: var(--gray-text);
-    font-size: 0.8rem;
-    display: flex;
-    align-items: center;
-    flex: 1;
-    min-width: 0;
+@media (max-width: 1200px) {
+    #related-places-grid .place-item {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+    }
 }
 
-.place-location i {
-    color: var(--primary-color);
-    margin-right: 0.25rem;
+@media (max-width: 991px) {
+    #related-places-grid .place-item {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
 }
 
-.place-view-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border-radius: 8px;
-    white-space: nowrap;
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
-    .place-hero-title {
-        font-size: 2rem;
+    #related-places-grid .place-item {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .detail-sidebar {
+        position: static;
+        margin-top: 2rem;
     }
     
-    .place-hero-meta {
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .hero-title {
+        font-size: 2.25rem;
+    }
+    
+    .hero-meta-info {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
     }
     
-    .place-hero-description {
-        font-size: 1rem;
-    }
-    
-    .place-section {
-        padding: 1.5rem;
-    }
-    
-    .place-sidebar {
-        position: static;
-        margin-top: 2rem;
+    .meta-divider {
+        display: none;
     }
 }
 
-@media (max-width: 576px) {
-    .place-hero-overlay {
-        padding: 2rem 0 1.5rem;
+@media (max-width: 768px) {
+    .hero-image-container {
+        height: 400px;
     }
     
-    .place-hero-title {
+    .hero-title {
         font-size: 1.75rem;
     }
     
-    .place-section {
-        padding: 1rem;
+    .hero-description {
+        font-size: 1rem;
     }
     
-    .sidebar-section {
-        padding: 1rem;
+    .content-section {
+        padding: 1.5rem;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-heading {
+        font-size: 1.25rem;
+    }
+    
+    .reviews-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 </style>
 {% endblock %}
 
+{% block extra_js %}
+<script>
+function toggleFavorite(placeId) {
+    fetch(`/places/${placeId}/toggle-favorite/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update heart icon
+            const heartButtons = document.querySelectorAll(`[onclick*="toggleFavorite(${placeId})"]`);
+            heartButtons.forEach(btn => {
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    if (data.is_favorited) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        btn.classList.add('favorited');
+                        if (btn.textContent) {
+                            btn.innerHTML = '<i class="fas fa-heart me-2"></i>Bəyənməklərdən çıxar';
+                        }
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        btn.classList.remove('favorited');
+                        if (btn.textContent) {
+                            btn.innerHTML = '<i class="far fa-heart me-2"></i>Bəyənməklərə əlavə et';
+                        }
+                    }
+                }
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function sharePlace(placeId) {
+    const url = window.location.origin + '/places/' + placeId + '/';
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ place.name }}',
+            text: '{{ place.short_description }}',
+            url: url
+        });
+    } else {
+        navigator.clipboard.writeText(url);
+        alert('Link kopyalandı!');
+    }
+}
+
+function openGallery(index) {
+    // TODO: Implement lightbox gallery
+    console.log('Open gallery image:', index);
+}
+
+function showAllPhotos() {
+    // TODO: Implement show all photos modal
+    console.log('Show all photos');
+}
+
+function setRating(rating) {
+    document.getElementById('ratingValue').value = rating;
+    const stars = document.querySelectorAll('.rating-star');
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.classList.add('active');
+            star.classList.remove('far');
+            star.classList.add('fas');
+        } else {
+            star.classList.remove('active');
+            star.classList.remove('fas');
+            star.classList.add('far');
+        }
+    });
+    
+    const ratingTexts = ['', 'Çox pis', 'Pis', 'Orta', 'Yaxşı', 'Əla'];
+    document.querySelector('.rating-text').textContent = ratingTexts[rating] || 'Reytinq seçin';
+}
+
+// Initialize rating display
+document.addEventListener('DOMContentLoaded', function() {
+    setRating(5); // Default to 5 stars
+});
+</script>
+{% endblock %}

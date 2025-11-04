@@ -36,7 +36,7 @@ SECRET_KEY = 'django-insecure-u7sp=nd-m-9^xe-95bc3-#sm35c7t*&*@23^d_+dsqbi5#9uk5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -167,17 +167,6 @@ AUTHENTICATION_BACKENDS = [
     'accounts.backends.SuperuserEmailBackend',  # Custom backend for superuser email auth
     'django.contrib.auth.backends.ModelBackend',  # Default backend
 ]
-
-# Session and CSRF settings for better form handling
-SESSION_COOKIE_AGE = 3600  # 1 hour
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-CSRF_COOKIE_AGE = 3600
-CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'
-
-# File upload settings
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

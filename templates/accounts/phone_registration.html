@@ -5,110 +5,212 @@
 
 {% block extra_css %}
 <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #f0fdf9 0%, #f7fefb 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
 .auth-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem 0;
-}
-
-.auth-card {
-    max-width: 700px;
-    width: 100%;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    margin: 0 1rem;
-}
-
-.auth-header {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    padding: 2rem 2rem 1.5rem;
-    text-align: center;
+    padding: 2rem 1rem;
     position: relative;
-}
-
-.auth-logo {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    backdrop-filter: blur(10px);
-}
-
-.step-progress {
-    padding: 1.5rem 2rem;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.step-indicator {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    position: relative;
-}
-
-.step-indicator::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: #e9ecef;
     z-index: 1;
 }
 
-.step {
-    width: 35px;
-    height: 35px;
+.auth-card {
+    max-width: 520px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 32px;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    overflow: hidden;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #5DD3BE, #4BC5AA, #5DD3BE);
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.step-progress {
+    padding: 2rem 2rem 1.75rem;
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.05) 0%, rgba(75, 197, 170, 0.05) 100%);
+}
+
+.progress-container {
+    position: relative;
+}
+
+.progress-track {
+    width: 100%;
+    height: 6px;
+    background: #e8f0f5;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #5DD3BE 0%, #4BC5AA 100%);
+    border-radius: 10px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    width: 11%;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4));
+    border-radius: 0 10px 10px 0;
+}
+
+.progress-indicator {
+    position: absolute;
+    top: 50%;
+    left: 11%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: white;
+    border: 3px solid #4BC5AA;
     border-radius: 50%;
-    background: #e9ecef;
-    color: #6c757d;
+    box-shadow: 0 2px 8px rgba(75, 197, 170, 0.3);
+    z-index: 10;
+    transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.progress-indicator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: #4BC5AA;
+    border-radius: 50%;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    font-size: 0.8125rem;
+}
+
+.progress-step {
+    color: #4BC5AA;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.progress-percentage {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.auth-header {
+    padding: 2.5rem 2.5rem 2rem;
+    text-align: center;
+}
+
+.auth-logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    border-radius: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    font-size: 0.9rem;
-    position: relative;
-    z-index: 2;
-    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(93, 211, 190, 0.4);
+    animation: pulse 2s ease-in-out infinite;
 }
 
-.step.active {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    transform: scale(1.1);
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
 }
 
-.step.completed {
-    background: #28a745;
+.auth-logo i {
+    font-size: 2.5rem;
     color: white;
 }
 
-.progress {
-    height: 8px;
-    border-radius: 4px;
-    overflow: hidden;
-    background: #e9ecef;
+.auth-header h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
 }
 
-.progress-bar {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    transition: width 0.6s ease;
+.auth-header p {
+    color: #718096;
+    font-size: 1rem;
 }
 
 .auth-body {
-    padding: 2.5rem 2rem;
+    padding: 2rem 2.5rem 3rem;
 }
 
 .step-title {
@@ -119,135 +221,246 @@
 .step-icon {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    border-radius: 50%;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.1) 0%, rgba(75, 197, 170, 0.1) 100%);
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    margin: 0 auto 1rem;
+    color: #4BC5AA;
     font-size: 2rem;
 }
 
-.form-floating {
+.step-title h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+}
+
+.step-title p {
+    color: #718096;
+    font-size: 1rem;
+}
+
+.form-group {
     margin-bottom: 1.5rem;
 }
 
-.form-floating > .form-control {
-    height: 60px;
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-label i {
+    color: #4BC5AA;
+    font-size: 1.1rem;
+}
+
+.form-control {
+    width: 100%;
+    height: 56px;
+    padding: 0 1.25rem;
     font-size: 1rem;
-    transition: all 0.3s ease;
+    font-weight: 500;
+    color: #1a202c;
+    background: #f7fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
 }
 
-.form-floating > .form-control:focus {
-    border-color: #28a745;
-    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+.form-control:focus {
+    outline: none;
+    border-color: #4BC5AA;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(75, 197, 170, 0.1);
+    transform: translateY(-1px);
 }
 
-.form-floating > label {
-    color: #6c757d;
+.form-control::placeholder {
+    color: #a0aec0;
+    font-weight: 400;
+}
+
+.info-box {
+    background: rgba(93, 211, 190, 0.1);
+    border-left: 4px solid #4BC5AA;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #4BC5AA;
+    font-size: 0.9rem;
     font-weight: 500;
 }
 
-.auth-btn {
-    height: 60px;
-    border-radius: 12px;
+.info-box i {
     font-size: 1.1rem;
-    font-weight: 600;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.auth-btn {
+    width: 100%;
+    height: 56px;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    color: white;
     border: none;
-    transition: all 0.3s ease;
+    border-radius: 16px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 10px 25px rgba(93, 211, 190, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.auth-btn:hover::before {
+    left: 100%;
 }
 
 .auth-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+    box-shadow: 0 15px 35px rgba(93, 211, 190, 0.5);
+}
+
+.auth-btn:active {
+    transform: translateY(0);
+}
+
+.auth-footer {
+    margin-top: 2rem;
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
 }
 
 .auth-link {
-    color: #28a745;
+    color: #4BC5AA;
     text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .auth-link:hover {
-    color: #20c997;
-}
-
-.info-text {
-    background: #d4edda;
-    border-left: 4px solid #28a745;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #155724;
+    color: #5DD3BE;
+    transform: translateX(2px);
 }
 
 .benefits-grid {
-    background: #f8f9fa;
-    margin: 0 -2rem -2.5rem;
-    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
 }
 
 .benefit-item {
     text-align: center;
     padding: 1rem;
-    background: white;
+    background: #f7fafc;
     border-radius: 12px;
-    margin-bottom: 1rem;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .benefit-item:hover {
-    transform: translateY(-5px);
+    background: rgba(93, 211, 190, 0.05);
+    transform: translateY(-2px);
 }
 
 .benefit-icon {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 0.75rem;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    margin: 0 auto 1rem;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
 }
 
 .benefit-title {
     font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #333;
+    color: #2d3748;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
 }
 
 .benefit-text {
-    color: #6c757d;
-    font-size: 0.9rem;
-    margin: 0;
+    color: #718096;
+    font-size: 0.8rem;
 }
 
-@media (max-width: 576px) {
-    .auth-container {
-        padding: 1rem 0;
-    }
-    
+@media (max-width: 640px) {
     .auth-card {
+        border-radius: 24px;
         margin: 0 0.5rem;
     }
     
-    .auth-body {
-        padding: 2rem 1.5rem;
+    .auth-header {
+        padding: 2rem 1.5rem 1.5rem;
     }
     
-    .step {
-        width: 30px;
-        height: 30px;
-        font-size: 0.8rem;
+    .auth-body {
+        padding: 1.5rem 1.5rem 2rem;
+    }
+    
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .step-progress {
+        padding: 1.5rem 1.5rem 1.25rem;
+    }
+    
+    .progress-track {
+        height: 5px;
+    }
+    
+    .progress-indicator {
+        width: 18px;
+        height: 18px;
+        border-width: 2.5px;
+    }
+    
+    .progress-indicator::before {
+        width: 7px;
+        height: 7px;
+    }
+    
+    .progress-info {
+        font-size: 0.75rem;
+        margin-top: 0.875rem;
     }
 }
 </style>
@@ -256,30 +469,25 @@
 {% block content %}
 <div class="auth-container">
     <div class="auth-card">
+        <div class="step-progress">
+            <div class="progress-container">
+                <div class="progress-track">
+                    <div class="progress-fill" style="width: 11%"></div>
+                </div>
+                <div class="progress-indicator" style="left: 11%"></div>
+            </div>
+            <div class="progress-info">
+                <span class="progress-step">Addım 1 / 9</span>
+                <span class="progress-percentage">11%</span>
+            </div>
+        </div>
+        
         <div class="auth-header">
             <div class="auth-logo">
-                <i class="fas fa-mobile-alt fa-2x"></i>
+                <i class="fas fa-mobile-alt"></i>
             </div>
-            <h2 class="mb-2">Acteezer-ə Xoş Gəlmisiniz!</h2>
-            <p class="mb-0 opacity-90">Səyahətinizi başlayaq</p>
-                </div>
-                
-        <div class="step-progress">
-                    <div class="step-indicator">
-                        <div class="step active">1</div>
-                        <div class="step">2</div>
-                        <div class="step">3</div>
-                        <div class="step">4</div>
-                        <div class="step">5</div>
-                        <div class="step">6</div>
-                        <div class="step">7</div>
-                        <div class="step">8</div>
-                        <div class="step">9</div>
-                    </div>
-                    
-            <div class="progress">
-                        <div class="progress-bar" role="progressbar" style="width: 11%" aria-valuenow="11" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
+            <h2>Acteezer-ə Xoş Gəlmisiniz!</h2>
+            <p>Səyahətinizi başlayaq</p>
         </div>
         
         <div class="auth-body">
@@ -287,78 +495,72 @@
                 <div class="step-icon">
                     <i class="fas fa-phone"></i>
                 </div>
-                <h4 class="fw-bold">Telefon Nömrənizi Daxil Edin</h4>
-                <p class="text-muted">Nömrənizi təsdiqləmək üçün SMS göndərəcəyik</p>
+                <h4>Telefon Nömrənizi Daxil Edin</h4>
+                <p>Nömrənizi təsdiqləmək üçün SMS göndərəcəyik</p>
             </div>
-                    
-                    <form method="post" id="phone-form">
-                        {% csrf_token %}
-                        
-                <div class="form-floating">
-                            <input 
-                                type="tel" 
-                        class="form-control" 
-                                id="phone" 
-                                name="phone" 
-                        placeholder="Telefon nömrəsi"
-                                required
-                                oninput="formatPhoneNumber(this)"
-                            >
-                    <label for="phone">
-                        <i class="fas fa-phone me-2"></i>
+            
+            <form method="post" id="phone-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="phone" class="form-label">
+                        <i class="fas fa-phone"></i>
                         Telefon Nömrəsi
                     </label>
+                    <input 
+                        type="tel" 
+                        class="form-control" 
+                        id="phone" 
+                        name="phone" 
+                        placeholder="+994 XX XXX XX XX"
+                        required
+                        autocomplete="tel"
+                        autofocus
+                    >
                 </div>
                 
-                <div class="info-text">
-                    <i class="fas fa-info-circle me-2"></i>
-                                Ölkə kodunu daxil etməyi unutmayın (məs., +994 Azərbaycan üçün)
-                        </div>
-                        
-                <button type="submit" class="btn auth-btn w-100 text-white mt-4">
-                                <i class="fas fa-paper-plane me-2"></i>
-                                Doğrulama Kodu Göndər
-                            </button>
-                        
-                <div class="text-center mt-3">
-                    <p class="text-muted mb-0">
-                                Artıq hesabınız var? 
-                        <a href="{% url 'accounts:login' %}" class="auth-link fw-semibold">
-                                    Daxil olun
-                                </a>
-                            </p>
-                        </div>
-                    </form>
-        </div>
-        
-        <div class="benefits-grid">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h6 class="benefit-title">Təhlükəsiz</h6>
-                        <p class="benefit-text">Məlumatlarınız tam təhlükəsizlik altındadır</p>
-                    </div>
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Ölkə kodunu daxil etməyi unutmayın (məs., +994 Azərbaycan üçün)</span>
                 </div>
-                <div class="col-md-4">
-                    <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <h6 class="benefit-title">Sürətli</h6>
-                        <p class="benefit-text">1 dəqiqədə qeydiyyatı tamamlayın</p>
-                    </div>
+                
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Doğrulama Kodu Göndər
+                </button>
+                
+                <div class="auth-footer">
+                    <p style="color: #718096; margin-bottom: 0.5rem;">
+                        Artıq hesabınız var?
+                    </p>
+                    <a href="{% url 'accounts:login' %}" class="auth-link">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Daxil olun
+                    </a>
                 </div>
-                <div class="col-md-4">
-                    <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h6 class="benefit-title">Sosial</h6>
-                        <p class="benefit-text">15,000+ insanla tanış olun</p>
+            </form>
+            
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-shield-alt"></i>
                     </div>
+                    <div class="benefit-title">Təhlükəsiz</div>
+                    <div class="benefit-text">Məlumatlarınız qorunur</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="benefit-title">Sürətli</div>
+                    <div class="benefit-text">1 dəqiqədə hazır</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="benefit-title">Sosial</div>
+                    <div class="benefit-text">Yeni dostlar tapın</div>
                 </div>
             </div>
         </div>
@@ -368,12 +570,40 @@
 
 {% block extra_js %}
 <script>
-document.getElementById('phone-form').addEventListener('submit', function(e) {
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    const hideLoading = showLoading(submitBtn);
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.getElementById('phone');
     
-    // Simulate loading for better UX
-    setTimeout(hideLoading, 1000);
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        if (value.startsWith('994')) {
+            value = '+' + value;
+        } else if (!value.startsWith('+994') && value.length > 0) {
+            value = '+994' + value;
+        }
+        
+        // Format: +994 XX XXX XX XX
+        if (value.length > 4) {
+            value = value.slice(0, 4) + ' ' + value.slice(4);
+        }
+        if (value.length > 7) {
+            value = value.slice(0, 7) + ' ' + value.slice(7);
+        }
+        if (value.length > 11) {
+            value = value.slice(0, 11) + ' ' + value.slice(11);
+        }
+        if (value.length > 14) {
+            value = value.slice(0, 14) + ' ' + value.slice(14);
+        }
+        
+        e.target.value = value;
+    });
+    
+    document.getElementById('phone-form').addEventListener('submit', function(e) {
+        const btn = this.querySelector('button[type="submit"]');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Göndərilir...';
+        btn.disabled = true;
+    });
 });
 </script>
 {% endblock %}

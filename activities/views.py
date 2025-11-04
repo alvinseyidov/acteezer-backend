@@ -66,17 +66,6 @@ def activities_list(request):
     if difficulty_filter:
         activities = activities.filter(difficulty_level=difficulty_filter)
     
-    # Participants filter
-    participants_filter = request.GET.get('participants', '')
-    if participants_filter == 'small':
-        activities = activities.filter(max_participants__gte=2, max_participants__lte=10)
-    elif participants_filter == 'medium':
-        activities = activities.filter(max_participants__gte=11, max_participants__lte=25)
-    elif participants_filter == 'large':
-        activities = activities.filter(max_participants__gte=26, max_participants__lte=50)
-    elif participants_filter == 'xlarge':
-        activities = activities.filter(max_participants__gt=50)
-    
     # Sorting
     sort_by = request.GET.get('sort', 'featured')
     if sort_by == 'date':
@@ -106,10 +95,14 @@ def activities_list(request):
     district_choices = Activity.DISTRICT_CHOICES
     difficulty_choices = Activity.DIFFICULTY_CHOICES
     
+    # Get unique category types for filter
+    category_types = ActivityCategory.CATEGORY_CHOICES
+    
     context = {
         'page_obj': page_obj,
         'activities': page_obj.object_list,
         'categories': categories,
+        'category_types': category_types,
         'featured_activities': featured_activities,
         'district_choices': district_choices,
         'difficulty_choices': difficulty_choices,
@@ -385,7 +378,7 @@ def create_activity(request):
             pass
         except Exception as e:
             logger.error(f"Unexpected error in activity creation: {e}", exc_info=True)
-            messages.error(request, 'Aktivitə yaradılarkən xəta baş verdi. Zəhmət olmasa bütün sahələri düzgün doldurun və yenidən cəhd edin.')
+            messages.error(request, f'Aktivitə yaradılarkən xəta baş verdi: {str(e)}')
     
     # GET request or error - show form
     logger.info("Showing activity creation form")
@@ -402,3 +395,20 @@ def create_activity(request):
     }
     
     return render(request, 'activities/create_activity.html', context)
+
+
+@login_required
+@require_POST
+def delete_activity(request, pk):
+    """Delete an activity (only organizer can delete)"""
+    activity = get_object_or_404(Activity, pk=pk)
+    
+    # Check if user is the organizer
+    if activity.organizer != request.user:
+        messages.error(request, 'Siz bu aktivitəni silə bilməzsiniz.')
+        return redirect('accounts:my_activities')
+    
+    activity_title = activity.title
+    activity.delete()
+    messages.success(request, f'Aktivitə "{activity_title}" uğurla silindi.')
+    return redirect('accounts:my_activities')

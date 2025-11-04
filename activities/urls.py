@@ -11,6 +11,7 @@ urlpatterns = [
     path('<int:pk>/join/', views.join_activity, name='join_activity'),
     path('<int:pk>/cancel-join/', views.cancel_join_request, name='cancel_join_request'),
     path('<int:pk>/manage/<int:participant_id>/', views.manage_participant, name='manage_participant'),
+    path('<int:pk>/delete/', views.delete_activity, name='delete_activity'),
     
     # Chat URLs
     path('<int:activity_id>/chat/messages/', chat_views.get_messages, name='get_messages'),
