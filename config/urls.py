@@ -30,6 +30,10 @@ urlpatterns = [
     path('blog/<slug:slug>/', blog_detail, name='blog_detail'),
     path('places/', include('places.urls')),
     path('accounts/', include('accounts.urls')),
+    # API endpoints
+    path('api/accounts/', include('accounts.api_urls')),
+    path('api/activities/', include('activities.api_urls')),
+    path('api/places/', include('places.api_urls')),
 ]
 
 # Serve media files during development
