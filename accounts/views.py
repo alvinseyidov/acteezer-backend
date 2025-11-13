@@ -287,14 +287,14 @@ def birthday_registration(request):
 
 @login_required
 def images_registration(request):
-    """Step 6: Image upload (minimum 2)"""
+    """Step 6: Image upload (minimum 1)"""
     if request.user.registration_step < 4:
         return redirect('accounts:birthday_registration')
     
     if request.method == 'POST':
         images = request.FILES.getlist('images')
         
-        if len(images) >= 2:
+        if len(images) >= 1:
             # Delete existing images
             request.user.images.all().delete()
             
@@ -312,7 +312,7 @@ def images_registration(request):
             
             return redirect('accounts:bio_registration')
         else:
-            messages.error(request, 'Please upload at least 2 images.')
+            messages.error(request, 'Zəhmət olmasa ən azı 1 şəkil əlavə edin.')
     
     user_images = request.user.images.all()
     return render(request, 'accounts/images_registration.html', {

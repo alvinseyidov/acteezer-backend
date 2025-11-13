@@ -120,20 +120,20 @@ body {
 }
 
 .auth-header {
-    padding: 2.5rem 2.5rem 2rem;
+    padding: 2rem 2.5rem 1.5rem;
     text-align: center;
 }
 
 .auth-logo {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 1.5rem;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 0.75rem;
     background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    border-radius: 24px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 30px rgba(93, 211, 190, 0.4);
+    box-shadow: 0 6px 15px rgba(93, 211, 190, 0.3);
     animation: pulse 2s ease-in-out infinite;
 }
 
@@ -143,21 +143,21 @@ body {
 }
 
 .auth-logo i {
-    font-size: 2.5rem;
+    font-size: 1.3rem;
     color: white;
 }
 
 .auth-header h2 {
-    font-size: 1.875rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #1a202c;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.35rem;
     letter-spacing: -0.5px;
 }
 
 .auth-header p {
     color: #718096;
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
 .auth-body {
@@ -520,7 +520,7 @@ body {
                 
                 <div class="requirement-badge" id="requirement-badge">
                     <i class="fas fa-info-circle"></i>
-                    <span>Ən azı 2 şəkil tələb olunur</span>
+                    <span>Ən azı 1 şəkil tələb olunur</span>
                 </div>
                 
                 <div class="image-count-badge" id="image-count-badge" style="display: none;">
@@ -712,11 +712,11 @@ function updateSubmitButton() {
         countBadge.style.display = 'none';
     }
     
-    if (totalImages >= 2) {
+    if (totalImages >= 1) {
         submitText.textContent = 'Davam Et';
         submitBtn.disabled = false;
     } else {
-        const needed = 2 - totalImages;
+        const needed = 1 - totalImages;
         submitText.textContent = `${needed} şəkil daha əlavə edin`;
         submitBtn.disabled = true;
     }
@@ -738,7 +738,7 @@ document.getElementById('image-upload-input').addEventListener('change', functio
 document.getElementById('images-form').addEventListener('submit', function(e) {
     const totalImages = document.querySelectorAll('.image-preview-item').length;
     
-    if (totalImages < 2) {
+    if (totalImages < 1) {
         e.preventDefault();
         return;
     }
