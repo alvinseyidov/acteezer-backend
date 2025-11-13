@@ -264,6 +264,32 @@ body {
     box-shadow: 0 2px 8px rgba(75, 197, 170, 0.15);
 }
 
+.gender-error {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    animation: shake 0.5s ease;
+}
+
+.gender-error i {
+    color: #dc2626;
+    font-size: 1rem;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
 .name-preview {
     background: rgba(93, 211, 190, 0.1);
     border-left: 4px solid #4BC5AA;
@@ -377,14 +403,6 @@ body {
             </div>
         </div>
         
-        <div class="auth-header">
-            <div class="auth-logo">
-                <i class="fas fa-user"></i>
-            </div>
-            <h2 style="font-size: 1.875rem; font-weight: 700; color: #1a202c; margin-bottom: 0.5rem;">Ad və Soyadınız</h2>
-            <p style="color: #718096;">Digər istifadəçilər sizi necə görsün?</p>
-        </div>
-        
         <div class="auth-body">
             <div class="step-title">
                 <div class="step-icon">
@@ -451,8 +469,7 @@ body {
                             <input 
                                 type="radio" 
                                 name="gender" 
-                                value="male" 
-                                required
+                                value="male"
                                 {% if user.gender == 'male' %}checked{% endif %}
                             >
                             <span class="gender-label">
@@ -496,6 +513,10 @@ body {
                                 Deməyi üstün tutmuram
                             </span>
                         </label>
+                    </div>
+                    <div class="gender-error" id="gender-error" style="display: none;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Zəhmət olmasa cinsiyyətinizi seçin
                     </div>
                 </div>
                 
@@ -545,7 +566,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Gender validation
+    const genderError = document.getElementById('gender-error');
+    const genderInputs = document.querySelectorAll('input[name="gender"]');
+    
+    // Hide error when gender is selected
+    genderInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            genderError.style.display = 'none';
+        });
+    });
+    
     document.getElementById('name-form').addEventListener('submit', function(e) {
+        // Check if gender is selected
+        const genderSelected = document.querySelector('input[name="gender"]:checked');
+        
+        if (!genderSelected) {
+            e.preventDefault();
+            genderError.style.display = 'flex';
+            genderError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return false;
+        }
+        
         const btn = this.querySelector('button[type="submit"]');
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yadda saxlanılır...';
         btn.disabled = true;
