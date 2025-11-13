@@ -171,8 +171,8 @@ function validateForm(form) {
     // Custom validations
     if (form.id === 'images-form') {
         const fileInput = form.querySelector('input[type="file"]');
-        if (fileInput && fileInput.files.length < 2) {
-            showFieldError(fileInput, 'Please upload at least 2 images');
+        if (fileInput && fileInput.files.length < 1) {
+            showFieldError(fileInput, 'Şəkil əlavə edin.');
             isValid = false;
         }
     }
