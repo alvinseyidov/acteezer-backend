@@ -1550,6 +1550,7 @@
     </nav>
 
     <!-- Messages -->
+    {% block messages %}
     {% if messages %}
         <div class="container mt-3">
             {% for message in messages %}
@@ -1561,6 +1562,7 @@
             {% endfor %}
         </div>
     {% endif %}
+    {% endblock messages %}
 
     <!-- Main Content -->
     <main>
