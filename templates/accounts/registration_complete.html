@@ -355,11 +355,11 @@ body {
 .cta-button {
     background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
     color: white;
-    padding: 1rem 2.5rem;
-    font-size: 1.125rem;
+    padding: 0.75rem 1.75rem;
+    font-size: 1rem;
     font-weight: 600;
-    border-radius: 25px;
-    box-shadow: 0 10px 25px rgba(93, 211, 190, 0.4);
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(93, 211, 190, 0.4);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     display: inline-flex;
@@ -524,14 +524,14 @@ body {
                         <div class="summary-icon">
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <h6>Profil Tamamlığı</h6>
+                        <h6>PROFİL Tamamlığı</h6>
                         <p>100%</p>
                     </div>
                     <div class="summary-item">
                         <div class="summary-icon">
                             <i class="fas fa-language"></i>
                         </div>
-                        <h6>Dillər</h6>
+                        <h6>DİLLƏR</h6>
                         <div class="badge-container">
                             {% for language in user.languages.all %}
                                 <span class="badge">{{ language.name }}</span>
@@ -559,7 +559,7 @@ body {
                         <div class="summary-icon">
                             <i class="fas fa-heart"></i>
                         </div>
-                        <h6>Seçilmiş Maraqlar</h6>
+                        <h6>SEÇİLMİŞ Maraqlar</h6>
                         <div class="interests-list">
                             {% for interest in user_interests %}
                             <span class="interest-badge">
@@ -623,41 +623,6 @@ body {
                     <i class="fas fa-home"></i>
                     <span>Əsas Səhifəyə Get</span>
                 </a>
-            </div>
-            
-            <!-- Tips -->
-            <div class="tips-section">
-                <div class="tips-title">
-                    <i class="fas fa-lightbulb"></i>
-                    <span>Başlamaq üçün tövsiyələr</span>
-                </div>
-                
-                <div class="tips-grid">
-                    <div class="tip-item">
-                        <div class="tip-icon">
-                            <i class="fas fa-user-edit"></i>
-                        </div>
-                        <span>Profilinizi daha ətraflı doldurun</span>
-                    </div>
-                    <div class="tip-item">
-                        <div class="tip-icon">
-                            <i class="fas fa-camera"></i>
-                        </div>
-                        <span>Aydın şəkillər əlavə edin</span>
-                    </div>
-                    <div class="tip-item">
-                        <div class="tip-icon">
-                            <i class="fas fa-comments"></i>
-                        </div>
-                        <span>İcma ilə aktiv əlaqə qurun</span>
-                    </div>
-                    <div class="tip-item">
-                        <div class="tip-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <span>Təhlükəsizlik qaydalarına riayət edin</span>
-                    </div>
-                </div>
             </div>
             
         </div>
