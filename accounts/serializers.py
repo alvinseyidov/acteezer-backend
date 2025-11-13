@@ -12,6 +12,8 @@ class LanguageSerializer(serializers.ModelSerializer):
 
 
 class InterestSerializer(serializers.ModelSerializer):
+    is_general = serializers.BooleanField(read_only=True)
+    
     class Meta:
         model = Interest
         fields = ['id', 'name', 'icon', 'category', 'is_general']
@@ -19,6 +21,7 @@ class InterestSerializer(serializers.ModelSerializer):
 
 class UserImageSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
+    is_primary = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = UserImage
@@ -45,6 +48,8 @@ class UserSerializer(serializers.ModelSerializer):
     )
     age = serializers.ReadOnlyField()
     full_name = serializers.SerializerMethodField()
+    is_phone_verified = serializers.BooleanField(read_only=True)
+    is_registration_complete = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = User
@@ -133,6 +138,8 @@ class BlogPostSerializer(serializers.ModelSerializer):
     author = UserPublicSerializer(read_only=True)
     category = BlogCategorySerializer(read_only=True)
     featured_image_url = serializers.SerializerMethodField()
+    is_published = serializers.BooleanField(read_only=True)
+    is_featured = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = BlogPost

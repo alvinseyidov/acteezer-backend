@@ -11,6 +11,7 @@ class PlaceCategorySerializer(serializers.ModelSerializer):
 
 class PlaceImageSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
+    is_featured = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = PlaceImage
@@ -30,6 +31,8 @@ class PlaceListSerializer(serializers.ModelSerializer):
     category = PlaceCategorySerializer(read_only=True)
     main_image_url = serializers.SerializerMethodField()
     price_display = serializers.SerializerMethodField()
+    is_featured = serializers.BooleanField(read_only=True)
+    is_verified = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = Place
@@ -58,6 +61,9 @@ class PlaceDetailSerializer(serializers.ModelSerializer):
     images = PlaceImageSerializer(many=True, read_only=True)
     main_image_url = serializers.SerializerMethodField()
     price_display = serializers.SerializerMethodField()
+    is_active = serializers.BooleanField(read_only=True)
+    is_featured = serializers.BooleanField(read_only=True)
+    is_verified = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = Place
@@ -83,6 +89,8 @@ class PlaceDetailSerializer(serializers.ModelSerializer):
 
 
 class PlaceReviewSerializer(serializers.ModelSerializer):
+    is_approved = serializers.BooleanField(read_only=True)
+    
     class Meta:
         model = PlaceReview
         fields = [

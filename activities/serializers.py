@@ -14,6 +14,7 @@ class ActivityCategorySerializer(serializers.ModelSerializer):
 
 class ActivityImageSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
+    is_featured = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = ActivityImage
@@ -35,9 +36,11 @@ class ActivityListSerializer(serializers.ModelSerializer):
     main_image_url = serializers.SerializerMethodField()
     participants_count = serializers.ReadOnlyField()
     available_spots = serializers.ReadOnlyField()
-    is_upcoming = serializers.ReadOnlyField()
-    is_ongoing = serializers.ReadOnlyField()
-    is_past = serializers.ReadOnlyField()
+    is_free = serializers.BooleanField(read_only=True)
+    is_featured = serializers.BooleanField(read_only=True)
+    is_upcoming = serializers.BooleanField(read_only=True)
+    is_ongoing = serializers.BooleanField(read_only=True)
+    is_past = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = Activity
@@ -68,10 +71,12 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
     participants_count = serializers.ReadOnlyField()
     available_spots = serializers.ReadOnlyField()
     pending_requests_count = serializers.ReadOnlyField()
-    is_upcoming = serializers.ReadOnlyField()
-    is_ongoing = serializers.ReadOnlyField()
-    is_past = serializers.ReadOnlyField()
-    is_full = serializers.ReadOnlyField()
+    is_free = serializers.BooleanField(read_only=True)
+    is_featured = serializers.BooleanField(read_only=True)
+    is_upcoming = serializers.BooleanField(read_only=True)
+    is_ongoing = serializers.BooleanField(read_only=True)
+    is_past = serializers.BooleanField(read_only=True)
+    is_full = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = Activity
@@ -132,6 +137,7 @@ class ActivityCommentSerializer(serializers.ModelSerializer):
 
 class ActivityMessageSerializer(serializers.ModelSerializer):
     user = UserPublicSerializer(read_only=True)
+    is_edited = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = ActivityMessage
