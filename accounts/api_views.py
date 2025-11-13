@@ -196,20 +196,29 @@ class UserViewSet(viewsets.ModelViewSet):
                 'message': 'Phone and password are required'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        user = authenticate(request, phone=phone, password=password)
-        if user:
-            token, created = Token.objects.get_or_create(user=user)
+        try:
+            # Get user directly by phone (same as web version)
+            user = User.objects.get(phone=phone)
+            
+            # Check password
+            if user.check_password(password):
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({
+                    'success': True,
+                    'message': 'Login successful',
+                    'token': token.key,
+                    'user': UserSerializer(user, context={'request': request}).data
+                })
+            else:
+                return Response({
+                    'success': False,
+                    'message': 'Invalid phone or password'
+                }, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
             return Response({
-                'success': True,
-                'message': 'Login successful',
-                'token': token.key,
-                'user': UserSerializer(user, context={'request': request}).data
-            })
-        
-        return Response({
-            'success': False,
-            'message': 'Invalid phone or password'
-        }, status=status.HTTP_401_UNAUTHORIZED)
+                'success': False,
+                'message': 'Invalid phone or password'
+            }, status=status.HTTP_401_UNAUTHORIZED)
     
     @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def upload_image(self, request):
