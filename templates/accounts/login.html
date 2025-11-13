@@ -393,95 +393,61 @@ body::before {
         </div>
         
         <div class="auth-body">
-            {% if step == 'otp' %}
-                <!-- OTP Step -->
-                <div class="step-indicator">
-                    <div class="step-dot active"></div>
-                    <div class="step-dot active"></div>
+            <form method="post" id="login-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="phone" class="form-label">
+                        <i class="fas fa-phone"></i>
+                        Telefon Nömrəsi
+                    </label>
+                    <input 
+                        type="tel" 
+                        class="form-control" 
+                        id="phone" 
+                        name="phone" 
+                        placeholder="+994 XX XXX XX XX"
+                        required
+                        autocomplete="tel"
+                        autofocus
+                        oninvalid="this.setCustomValidity('Zəhmət olmasa telefon nömrəsini daxil edin')"
+                        oninput="this.setCustomValidity('')"
+                    >
                 </div>
                 
-                <div class="phone-display">
-                    <i class="fas fa-mobile-alt me-2"></i>
-                    {{ phone }}
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i>
+                        Şifrə
+                    </label>
+                    <input 
+                        type="password" 
+                        class="form-control" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Şifrənizi daxil edin"
+                        required
+                        autocomplete="current-password"
+                        oninvalid="this.setCustomValidity('Zəhmət olmasa şifrəni daxil edin')"
+                        oninput="this.setCustomValidity('')"
+                    >
                 </div>
                 
-                <form method="post" id="otp-form">
-                    {% csrf_token %}
-                    
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fas fa-key"></i>
-                            Təsdiq Kodu
-                        </label>
-                        <div class="otp-input-group">
-                            <input type="text" class="otp-input" id="otp1" maxlength="1" pattern="[0-9]" autocomplete="off">
-                            <input type="text" class="otp-input" id="otp2" maxlength="1" pattern="[0-9]" autocomplete="off">
-                            <input type="text" class="otp-input" id="otp3" maxlength="1" pattern="[0-9]" autocomplete="off">
-                            <input type="text" class="otp-input" id="otp4" maxlength="1" pattern="[0-9]" autocomplete="off">
-                        </div>
-                        <input type="hidden" name="otp" id="otp-value">
-                    </div>
-                    
-                    <div class="otp-hint">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Test üçün: <strong>1234</strong>
-                    </div>
-                    
-                    <button type="submit" class="auth-btn">
-                        <i class="fas fa-check"></i>
-                        Təsdiq Et
-                    </button>
-                    
-                    <div class="auth-footer">
-                        <a href="{% url 'accounts:login' %}?reset=phone" class="back-link">
-                            <i class="fas fa-arrow-left"></i>
-                            Telefon Nömrəsini Dəyiş
-                        </a>
-                    </div>
-                </form>
-            {% else %}
-                <!-- Phone Step -->
-                <div class="step-indicator">
-                    <div class="step-dot active"></div>
-                    <div class="step-dot"></div>
-                </div>
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Daxil ol
+                </button>
                 
-                <form method="post" id="phone-form">
-                    {% csrf_token %}
-                    
-                    <div class="form-group">
-                        <label for="phone" class="form-label">
-                            <i class="fas fa-phone"></i>
-                            Telefon Nömrəsi
-                        </label>
-                        <input 
-                            type="tel" 
-                            class="form-control" 
-                            id="phone" 
-                            name="phone" 
-                            placeholder="+994 XX XXX XX XX"
-                            required
-                            autocomplete="tel"
-                            autofocus
-                        >
-                    </div>
-                    
-                    <button type="submit" class="auth-btn">
-                        <i class="fas fa-paper-plane"></i>
-                        Kod Göndər
-                    </button>
-                    
-                    <div class="auth-footer">
-                        <p style="color: #718096; margin-bottom: 0.5rem;">
-                            Hesabınız yoxdur?
-                        </p>
-                        <a href="{% url 'accounts:phone_registration' %}" class="auth-link">
-                            <i class="fas fa-user-plus"></i>
-                            Qeydiyyatdan keçin
-                        </a>
-                    </div>
-                </form>
-            {% endif %}
+                <div class="auth-footer">
+                    <p style="color: #718096; margin-bottom: 0.5rem;">
+                        Hesabınız yoxdur?
+                    </p>
+                    <a href="{% url 'accounts:phone_registration' %}" class="auth-link">
+                        <i class="fas fa-user-plus"></i>
+                        Qeydiyyatdan keçin
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -490,112 +456,66 @@ body::before {
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    {% if step == 'otp' %}
-        // OTP Input handling
-        const otpInputs = document.querySelectorAll('.otp-input');
-        const otpValueInput = document.getElementById('otp-value');
-        
-        otpInputs.forEach((input, index) => {
-            input.addEventListener('input', function(e) {
-                const value = e.target.value.replace(/[^0-9]/g, '');
-                e.target.value = value;
-                
-                if (value && index < otpInputs.length - 1) {
-                    otpInputs[index + 1].focus();
-                }
-                
-                updateOTPValue();
-            });
-            
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                    otpInputs[index - 1].focus();
-                }
-            });
-            
-            input.addEventListener('paste', function(e) {
-                e.preventDefault();
-                const paste = (e.clipboardData || window.clipboardData).getData('text');
-                const digits = paste.replace(/[^0-9]/g, '').slice(0, 4);
-                
-                digits.split('').forEach((digit, i) => {
-                    if (otpInputs[i]) {
-                        otpInputs[i].value = digit;
-                    }
-                });
-                
-                if (digits.length === 4) {
-                    otpInputs[3].focus();
-                } else if (digits.length > 0) {
-                    otpInputs[digits.length - 1].focus();
-                }
-                
-                updateOTPValue();
-            });
-        });
-        
-        function updateOTPValue() {
-            const value = Array.from(otpInputs).map(input => input.value).join('');
-            otpValueInput.value = value;
-            
-            if (value.length === 4) {
-                document.getElementById('otp-form').submit();
-            }
-        }
-        
-        // Focus first input
-        otpInputs[0].focus();
-        
-        // Form submission
-        document.getElementById('otp-form').addEventListener('submit', function(e) {
-            const otp = otpValueInput.value;
-            if (otp.length !== 4) {
-                e.preventDefault();
-                alert('Zəhmət olmasa 4 rəqəmli kodu daxil edin.');
-                return;
-            }
-            
-            const btn = this.querySelector('button[type="submit"]');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yoxlanılır...';
-            btn.disabled = true;
-        });
-    {% else %}
-        // Phone input formatting
-        const phoneInput = document.getElementById('phone');
-        
+    // Phone input formatting
+    const phoneInput = document.getElementById('phone');
+    
+    if (phoneInput) {
         phoneInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
             
+            // Limit to 12 digits total (994 + 9 digits)
+            if (value.length > 12) {
+                value = value.slice(0, 12);
+            }
+            
             if (value.startsWith('994')) {
                 value = '+' + value;
-            } else if (!value.startsWith('+994') && value.length > 0) {
-                value = '+994' + value;
+            } else if (value.length > 0 && !value.startsWith('994')) {
+                value = '994' + value;
+            }
+            
+            if (value.length > 0) {
+                value = '+' + value.replace(/^\+/, '');
             }
             
             // Format: +994 XX XXX XX XX
+            let formatted = value;
             if (value.length > 4) {
-                value = value.slice(0, 4) + ' ' + value.slice(4);
+                formatted = value.slice(0, 4) + ' ' + value.slice(4);
             }
-            if (value.length > 7) {
-                value = value.slice(0, 7) + ' ' + value.slice(7);
+            if (formatted.length > 7) {
+                formatted = formatted.slice(0, 7) + ' ' + formatted.slice(7);
             }
-            if (value.length > 11) {
-                value = value.slice(0, 11) + ' ' + value.slice(11);
+            if (formatted.length > 11) {
+                formatted = formatted.slice(0, 11) + ' ' + formatted.slice(11);
             }
-            if (value.length > 14) {
-                value = value.slice(0, 14) + ' ' + value.slice(14);
+            if (formatted.length > 14) {
+                formatted = formatted.slice(0, 14) + ' ' + formatted.slice(14);
+            }
+            if (formatted.length > 17) {
+                formatted = formatted.slice(0, 17);
             }
             
-            e.target.value = value;
+            e.target.value = formatted;
         });
         
-        // Form submission
-        document.getElementById('phone-form').addEventListener('submit', function(e) {
+        // Initialize with +994 if empty on focus
+        phoneInput.addEventListener('focus', function(e) {
+            if (!e.target.value) {
+                e.target.value = '+994 ';
+            }
+        });
+    }
+    
+    // Form submission
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
             const btn = this.querySelector('button[type="submit"]');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Göndərilir...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Daxil olunur...';
             btn.disabled = true;
         });
-    {% endif %}
+    }
 });
 </script>
 {% endblock %}

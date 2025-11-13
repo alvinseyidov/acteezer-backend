@@ -6,7 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
     initSelectionItems();
     initFormValidation();
     initStepIndicator();
-    initMap();
+    // Only init map if Google Maps is loaded and map element exists
+    if (typeof google !== 'undefined' && document.getElementById('map')) {
+        initMap();
+    }
     initScrollToTop();
     initCategorySlider();
 });

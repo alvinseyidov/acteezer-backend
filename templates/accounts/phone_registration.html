@@ -495,8 +495,8 @@ body::before {
                 <div class="step-icon">
                     <i class="fas fa-phone"></i>
                 </div>
-                <h4>Telefon Nömrənizi Daxil Edin</h4>
-                <p>Nömrənizi təsdiqləmək üçün SMS göndərəcəyik</p>
+                <h4>Telefon Nömrənizi və Şifrənizi Daxil Edin</h4>
+                <p>Hesab yaratmaq üçün məlumatlarınızı daxil edin</p>
             </div>
             
             <form method="post" id="phone-form">
@@ -516,17 +516,57 @@ body::before {
                         required
                         autocomplete="tel"
                         autofocus
+                        oninvalid="this.setCustomValidity('Zəhmət olmasa telefon nömrəsini daxil edin')"
+                        oninput="this.setCustomValidity('')"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i>
+                        Şifrə
+                    </label>
+                    <input 
+                        type="password" 
+                        class="form-control" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Şifrənizi daxil edin"
+                        required
+                        autocomplete="new-password"
+                        minlength="6"
+                        oninvalid="this.setCustomValidity('Zəhmət olmasa şifrəni daxil edin (ən azı 6 simvol)')"
+                        oninput="this.setCustomValidity('')"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password_confirm" class="form-label">
+                        <i class="fas fa-lock"></i>
+                        Şifrəni Təsdiqlə
+                    </label>
+                    <input 
+                        type="password" 
+                        class="form-control" 
+                        id="password_confirm" 
+                        name="password_confirm" 
+                        placeholder="Şifrənizi yenidən daxil edin"
+                        required
+                        autocomplete="new-password"
+                        minlength="6"
+                        oninvalid="this.setCustomValidity('Zəhmət olmasa şifrəni təsdiq edin (ən azı 6 simvol)')"
+                        oninput="this.setCustomValidity('')"
                     >
                 </div>
                 
                 <div class="info-box">
                     <i class="fas fa-info-circle"></i>
-                    <span>Ölkə kodunu daxil etməyi unutmayın (məs., +994 Azərbaycan üçün)</span>
+                    <span>Şifrə ən azı 6 simvoldan ibarət olmalıdır</span>
                 </div>
                 
                 <button type="submit" class="auth-btn">
-                    <i class="fas fa-paper-plane"></i>
-                    Doğrulama Kodu Göndər
+                    <i class="fas fa-user-plus"></i>
+                    Qeydiyyatdan Keç
                 </button>
                 
                 <div class="auth-footer">
@@ -573,33 +613,71 @@ body::before {
 document.addEventListener('DOMContentLoaded', function() {
     const phoneInput = document.getElementById('phone');
     
-    phoneInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            // Limit to 12 digits total (994 + 9 digits)
+            if (value.length > 12) {
+                value = value.slice(0, 12);
+            }
+            
+            if (value.startsWith('994')) {
+                value = '+' + value;
+            } else if (value.length > 0 && !value.startsWith('994')) {
+                value = '994' + value;
+            }
+            
+            if (value.length > 0) {
+                value = '+' + value.replace(/^\+/, '');
+            }
+            
+            // Format: +994 XX XXX XX XX
+            let formatted = value;
+            if (value.length > 4) {
+                formatted = value.slice(0, 4) + ' ' + value.slice(4);
+            }
+            if (formatted.length > 7) {
+                formatted = formatted.slice(0, 7) + ' ' + formatted.slice(7);
+            }
+            if (formatted.length > 11) {
+                formatted = formatted.slice(0, 11) + ' ' + formatted.slice(11);
+            }
+            if (formatted.length > 14) {
+                formatted = formatted.slice(0, 14) + ' ' + formatted.slice(14);
+            }
+            if (formatted.length > 17) {
+                formatted = formatted.slice(0, 17);
+            }
+            
+            e.target.value = formatted;
+        });
         
-        if (value.startsWith('994')) {
-            value = '+' + value;
-        } else if (!value.startsWith('+994') && value.length > 0) {
-            value = '+994' + value;
-        }
-        
-        // Format: +994 XX XXX XX XX
-        if (value.length > 4) {
-            value = value.slice(0, 4) + ' ' + value.slice(4);
-        }
-        if (value.length > 7) {
-            value = value.slice(0, 7) + ' ' + value.slice(7);
-        }
-        if (value.length > 11) {
-            value = value.slice(0, 11) + ' ' + value.slice(11);
-        }
-        if (value.length > 14) {
-            value = value.slice(0, 14) + ' ' + value.slice(14);
-        }
-        
-        e.target.value = value;
-    });
+        // Initialize with +994 if empty on focus
+        phoneInput.addEventListener('focus', function(e) {
+            if (!e.target.value) {
+                e.target.value = '+994 ';
+            }
+        });
+    }
     
+    // Password confirmation validation
     document.getElementById('phone-form').addEventListener('submit', function(e) {
+        const password = document.getElementById('password').value;
+        const passwordConfirm = document.getElementById('password_confirm').value;
+        
+        if (password !== passwordConfirm) {
+            e.preventDefault();
+            alert('Şifrələr uyğun gəlmir!');
+            return false;
+        }
+        
+        if (password.length < 6) {
+            e.preventDefault();
+            alert('Şifrə ən azı 6 simvoldan ibarət olmalıdır!');
+            return false;
+        }
+        
         const btn = this.querySelector('button[type="submit"]');
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Göndərilir...';
         btn.disabled = true;

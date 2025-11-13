@@ -112,40 +112,50 @@ def blog_detail(request, slug):
 
 
 def phone_registration(request):
-    """Step 1: Phone number registration"""
+    """Step 1: Phone number and password registration"""
     if request.method == 'POST':
         phone = request.POST.get('phone')
+        password = request.POST.get('password')
+        password_confirm = request.POST.get('password_confirm')
         
         if not phone:
-            messages.error(request, 'Please enter a phone number.')
+            messages.error(request, 'Zəhmət olmasa telefon nömrəsini daxil edin.')
             return render(request, 'accounts/phone_registration.html')
         
-        # For development: always use OTP 1234
-        otp = '1234'
+        if not password or not password_confirm:
+            messages.error(request, 'Zəhmət olmasa şifrəni daxil edin.')
+            return render(request, 'accounts/phone_registration.html')
         
-        # Create or get user
-        user, created = User.objects.get_or_create(
+        if password != password_confirm:
+            messages.error(request, 'Şifrələr uyğun gəlmir.')
+            return render(request, 'accounts/phone_registration.html')
+        
+        if len(password) < 6:
+            messages.error(request, 'Şifrə ən azı 6 simvoldan ibarət olmalıdır.')
+            return render(request, 'accounts/phone_registration.html')
+        
+        # Check if user already exists
+        if User.objects.filter(phone=phone).exists():
+            messages.error(request, 'Bu telefon nömrəsi artıq qeydiyyatdan keçib.')
+            return render(request, 'accounts/phone_registration.html')
+        
+        # Create new user
+        user = User.objects.create(
             phone=phone,
-            defaults={'registration_step': 0}
+            registration_step=1,
+            is_phone_verified=True
         )
-        
-        # Save OTP
-        user.otp_code = otp
-        user.otp_created_at = timezone.now()
+        user.set_password(password)
         user.save()
         
-        # Create OTP verification record
-        OTPVerification.objects.create(
-            phone=phone,
-            otp_code=otp
-        )
-        
-        # In a real app, send SMS here
-        # For development, we'll just show the OTP
+        # Login user
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         
         # Store phone in session for next step
         request.session['phone'] = phone
-        return redirect('accounts:otp_verification')
+        
+        # Redirect to next step (full name registration)
+        return redirect('accounts:full_name_registration')
     
     return render(request, 'accounts/phone_registration.html')
 
@@ -319,14 +329,14 @@ def bio_registration(request):
     if request.method == 'POST':
         bio = request.POST.get('bio')
         
-        if bio:
-            request.user.bio = bio
+        if bio and len(bio.strip()) >= 20:
+            request.user.bio = bio.strip()
             request.user.registration_step = 6
             request.user.save()
             
             return redirect('accounts:interests_registration')
         else:
-            messages.error(request, 'Please enter your bio.')
+            messages.error(request, 'Zəhmət olmasa ən azı 20 simvol daxil edin.')
     
     return render(request, 'accounts/bio_registration.html')
 
@@ -431,8 +441,6 @@ def location_registration(request):
                 
                 print(f"✅ User saved successfully!")
                 print(f"🎉 Registration complete: {request.user.is_registration_complete}")
-                
-                messages.success(request, 'Registration completed successfully!')
                 
                 redirect_url = reverse('accounts:registration_complete')
                 print(f"🔄 Redirecting to: {redirect_url}")
@@ -657,100 +665,34 @@ def joined_activities(request):
     return render(request, 'accounts/joined_activities.html', context)
 
 def user_login(request):
-    """Login page with phone and OTP"""
+    """Login page with phone and password"""
     if request.user.is_authenticated:
         # If already logged in, redirect to home
         return redirect('home')
     
-    # Check if user wants to reset phone (go back to phone step)
-    if request.GET.get('reset') == 'phone':
-        request.session.pop('login_phone', None)
-        request.session.pop('login_step', None)
-        return redirect('accounts:login')
-    
-    phone = request.session.get('login_phone')
-    step = request.session.get('login_step', 'phone')  # 'phone' or 'otp'
-    
     if request.method == 'POST':
-        if step == 'phone':
-            phone = request.POST.get('phone')
-            if phone:
-                # For development: always use OTP 1234
-                otp_code = '1234'
-                
-                # Create or get user
-                user, created = User.objects.get_or_create(
-                    phone=phone,
-                    defaults={'registration_step': 0}
-                )
-                
-                # Save OTP
-                user.otp_code = otp_code
-                user.otp_created_at = timezone.now()
-                user.save()
-                
-                # Create OTP verification record
-                OTPVerification.objects.create(
-                    phone=phone,
-                    otp_code=otp_code,
-                    purpose='login'
-                )
-                
-                # Store phone in session for next step
-                request.session['login_phone'] = phone
-                request.session['login_step'] = 'otp'
-                return redirect('accounts:login')
-            else:
-                messages.error(request, 'Please enter a phone number.')
+        phone = request.POST.get('phone')
+        password = request.POST.get('password')
         
-        elif step == 'otp':
-            otp = request.POST.get('otp')
-            phone = request.session.get('login_phone')
-            
-            if phone and otp:
-                try:
-                    user = User.objects.get(phone=phone)
+        if phone and password:
+            try:
+                user = User.objects.get(phone=phone)
+                
+                # Check password
+                if user.check_password(password):
+                    # Login user
+                    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                     
-                    # Check if OTP is valid (1234 for everyone for now)
-                    if otp == '1234' or (user.otp_code == otp and 
-                        user.otp_created_at and 
-                        timezone.now() - user.otp_created_at < timedelta(minutes=5)):
-                        
-                        user.is_phone_verified = True
-                        user.otp_code = None
-                        user.save()
-                        
-                        # Update OTP verification record
-                        otp_verification = OTPVerification.objects.filter(
-                            phone=phone, otp_code=otp, purpose='login'
-                        ).first()
-                        if otp_verification:
-                            otp_verification.is_verified = True
-                            otp_verification.save()
-                        
-                        # Login user
-                        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-                        
-                        # Clear session
-                        request.session.pop('login_phone', None)
-                        request.session.pop('login_step', None)
-                        
-                        # Always redirect to home page after successful login
-                        return redirect('home')
-                    else:
-                        messages.error(request, 'Invalid or expired OTP.')
-                except User.DoesNotExist:
-                    messages.error(request, 'User not found.')
-                    request.session.pop('login_phone', None)
-                    request.session.pop('login_step', None)
-                    return redirect('accounts:login')
-            else:
-                messages.error(request, 'Please enter the OTP code.')
+                    # Always redirect to home page after successful login
+                    return redirect('home')
+                else:
+                    messages.error(request, 'Telefon və ya şifrə yanlışdır.')
+            except User.DoesNotExist:
+                messages.error(request, 'Telefon və ya şifrə yanlışdır.')
+        else:
+            messages.error(request, 'Zəhmət olmasa bütün xanaları doldurun.')
     
-    return render(request, 'accounts/login.html', {
-        'phone': phone,
-        'step': step
-    })
+    return render(request, 'accounts/login.html')
 
 
 def user_logout(request):

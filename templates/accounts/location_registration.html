@@ -3,6 +3,10 @@
 
 {% block title %}Yerinizi Seçin - Acteezer{% endblock %}
 
+{% block extra_head %}
+<!-- Google Maps will be initialized by our custom callback function -->
+{% endblock %}
+
 {% block extra_css %}
 <style>
 body {
@@ -299,16 +303,19 @@ body {
 }
 
 .map-container {
-    height: 300px;
+    height: 400px;
     border: 2px solid #e2e8f0;
     border-radius: 20px;
     background: linear-gradient(135deg, rgba(93, 211, 190, 0.02) 0%, rgba(75, 197, 170, 0.02) 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     margin: 1.5rem 0;
     position: relative;
     overflow: hidden;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
 }
 
 .map-placeholder {
@@ -474,7 +481,11 @@ body {
     }
     
     .map-container {
-        height: 250px;
+        height: 300px;
+    }
+    
+    #map {
+        border-radius: 16px;
     }
     
     .step-progress {
@@ -513,32 +524,25 @@ body {
                 {% csrf_token %}
                 
                 <div class="form-group">
-                    <label for="city" class="form-label">
-                        <i class="fas fa-city"></i>
-                        <span>Şəhər</span>
-                    </label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="city" 
-                        name="city" 
-                        placeholder="Şəhər adını daxil edin"
-                        required
-                    >
-                </div>
-                
-                <div class="form-group">
                     <label for="address" class="form-label">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Ünvan (ixtiyari)</span>
+                        <i class="fas fa-search-location"></i>
+                        <span>Ünvan Axtarın</span>
                     </label>
                     <input 
                         type="text" 
                         class="form-control" 
                         id="address" 
                         name="address" 
-                        placeholder="Ünvanı daxil edin"
+                        placeholder="Ünvan, şəhər və ya məkan adı daxil edin..."
+                        autocomplete="off"
                     >
+                    <small style="color: #64748b; margin-top: 0.5rem; display: block;">
+                        <i class="fas fa-info-circle"></i> Xəritədən marker-i sürüşdürərək dəqiq yeri seçə bilərsiniz
+                    </small>
+                </div>
+                
+                <div class="form-group" style="display: none;">
+                    <input type="text" class="form-control" id="city" name="city" placeholder="Şəhər" required>
                 </div>
                 
                 <div class="quick-locations-title">
@@ -574,11 +578,7 @@ body {
                 </div>
                 
                 <div class="map-container" id="map-container">
-                    <div class="map-placeholder">
-                        <i class="fas fa-map"></i>
-                        <h5>Xəritə</h5>
-                        <p>Yuxarıdakı tez seçim düymələrindən birini seçin<br>və ya məkan adı yazın</p>
-                    </div>
+                    <div id="map"></div>
                 </div>
                 
                 <div class="location-selected" id="location-selected">
@@ -617,9 +617,192 @@ body {
 {% endblock %}
 
 {% block extra_js %}
+<!-- Load Google Maps Script -->
 <script>
-let selectedLatitude = null;
-let selectedLongitude = null;
+(function() {
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAoWtRW8FvOvwdDOfdbHdzzcC989ZUM9zg&libraries=places&language=az';
+    script.async = true;
+    script.defer = true;
+    script.onload = function() {
+        // Wait a bit to ensure Google Maps is fully loaded
+        setTimeout(function() {
+            if (typeof google !== 'undefined' && google.maps && typeof initGoogleMap === 'function') {
+                initGoogleMap();
+            }
+        }, 100);
+    };
+    document.head.appendChild(script);
+})();
+</script>
+
+<script>
+let map;
+let marker;
+let geocoder;
+let autocomplete;
+let isMapInitialized = false;
+
+function initGoogleMap() {
+    if (isMapInitialized) return; // Prevent double initialization
+    
+    // Check if Google Maps is available
+    if (typeof google === 'undefined' || !google.maps || !google.maps.Map) {
+        console.error('Google Maps not loaded yet');
+        return;
+    }
+    
+    isMapInitialized = true;
+    
+    console.log('Initializing Google Map...');
+    
+    // Default location: Baku
+    const defaultLocation = { lat: 40.4093, lng: 49.8671 };
+    
+    // Initialize geocoder
+    geocoder = new google.maps.Geocoder();
+    
+    // Create map
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: defaultLocation,
+        zoom: 12,
+        styles: [
+            {
+                featureType: "poi",
+                elementType: "labels",
+                stylers: [{ visibility: "off" }]
+            }
+        ]
+    });
+    
+    // Create draggable marker
+    marker = new google.maps.Marker({
+        position: defaultLocation,
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        title: 'Yerinizi seçin və ya marker-i sürüşdürün'
+    });
+    
+    // Update form when marker is dragged
+    marker.addListener('dragend', function(event) {
+        const position = {
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng()
+        };
+        updateFormFromCoordinates(position);
+    });
+    
+    // Update form when map is clicked
+    map.addListener('click', function(event) {
+        const position = {
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng()
+        };
+        marker.setPosition(event.latLng);
+        updateFormFromCoordinates(position);
+    });
+    
+    // Initialize autocomplete on address input
+    const addressInput = document.getElementById('address');
+    autocomplete = new google.maps.places.Autocomplete(addressInput, {
+        types: ['geocode'],
+        componentRestrictions: { country: 'az' }
+    });
+    
+    // When user selects from autocomplete
+    autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+        
+        if (!place.geometry) {
+            return;
+        }
+        
+        const position = {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng()
+        };
+        
+        // Update map and marker
+        map.setCenter(place.geometry.location);
+        marker.setPosition(place.geometry.location);
+        
+        // Update form fields
+        updateFormFromPlace(place);
+    });
+}
+
+function updateFormFromCoordinates(position) {
+    // Update hidden fields
+    document.getElementById('latitude').value = position.lat;
+    document.getElementById('longitude').value = position.lng;
+    
+    // Reverse geocode to get address
+    geocoder.geocode({ location: position }, function(results, status) {
+        if (status === 'OK' && results[0]) {
+            const place = results[0];
+            
+            // Extract city
+            let city = 'Bakı'; // default
+            for (let component of place.address_components) {
+                if (component.types.includes('locality')) {
+                    city = component.long_name;
+                    break;
+                } else if (component.types.includes('administrative_area_level_1')) {
+                    city = component.long_name;
+                }
+            }
+            
+            // Update form
+            document.getElementById('city').value = city;
+            document.getElementById('address').value = place.formatted_address;
+            
+            // Show selected location
+            showSelectedLocation(city, place.formatted_address, position);
+        }
+    });
+}
+
+function updateFormFromPlace(place) {
+    // Extract city
+    let city = 'Bakı'; // default
+    for (let component of place.address_components) {
+        if (component.types.includes('locality')) {
+            city = component.long_name;
+            break;
+        } else if (component.types.includes('administrative_area_level_1')) {
+            city = component.long_name;
+        }
+    }
+    
+    const position = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng()
+    };
+    
+    // Update form fields
+    document.getElementById('city').value = city;
+    document.getElementById('latitude').value = position.lat;
+    document.getElementById('longitude').value = position.lng;
+    document.getElementById('address').value = place.formatted_address;
+    
+    // Show selected location
+    showSelectedLocation(city, place.formatted_address, position);
+}
+
+function showSelectedLocation(city, address, position) {
+    const selectedDiv = document.getElementById('location-selected');
+    const selectedText = document.getElementById('selected-location');
+    selectedText.innerHTML = `${city}<br><small style="font-weight: normal;">${address}</small>`;
+    selectedDiv.style.display = 'flex';
+    
+    // Enable submit button
+    const btn = document.getElementById('submit-btn');
+    if (btn) {
+        btn.disabled = false;
+        btn.removeAttribute('disabled');
+    }
+}
 
 function selectQuickLocation(cityName, lat, lng) {
     // Clear previous selections
@@ -630,221 +813,44 @@ function selectQuickLocation(cityName, lat, lng) {
     // Select current location
     event.target.closest('.quick-location').classList.add('selected');
     
-    // Update form fields
-    document.getElementById('city').value = cityName;
-    document.getElementById('latitude').value = lat;
-    document.getElementById('longitude').value = lng;
+    const position = { lat: lat, lng: lng };
     
-    selectedLatitude = lat;
-    selectedLongitude = lng;
+    // Update map and marker
+    map.setCenter(position);
+    marker.setPosition(position);
+    map.setZoom(13);
     
-    // Show selected location
-    const selectedDiv = document.getElementById('location-selected');
-    const selectedText = document.getElementById('selected-location');
-    selectedText.textContent = `${cityName} (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
-    selectedDiv.style.display = 'flex';
-    
-    // Enable submit button - ensure it's enabled
-    const btn = document.getElementById('submit-btn');
-    if (btn) {
-        btn.disabled = false;
-        btn.removeAttribute('disabled');
-    }
-    
-    // Update map placeholder
-    const mapContainer = document.getElementById('map-container');
-    mapContainer.innerHTML = `
-        <div class="map-placeholder" style="color: #4BC5AA;">
-            <i class="fas fa-map-marked-alt"></i>
-            <h5 style="color: #4BC5AA;">Məkan seçildi: ${cityName}</h5>
-            <p style="color: #64748b;">Koordinatlar: ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
-        </div>
-    `;
-}
-
-function validateForm() {
-    const city = document.getElementById('city').value.trim();
-    const lat = document.getElementById('latitude').value;
-    const lng = document.getElementById('longitude').value;
-    const submitBtn = document.getElementById('submit-btn');
-    
-    if (city && lat && lng) {
-        submitBtn.disabled = false;
-        submitBtn.removeAttribute('disabled');
-    } else {
-        submitBtn.disabled = true;
-        submitBtn.setAttribute('disabled', 'disabled');
-    }
-}
-
-function validateAndSubmit() {
-    const city = document.getElementById('city').value.trim();
-    const lat = document.getElementById('latitude').value;
-    const lng = document.getElementById('longitude').value;
-    
-    if (!city || !lat || !lng) {
-        alert('Zəhmət olmasa şəhər seçin və ya məkan koordinatlarını təyin edin.');
-        return false;
-    }
-    
-    // Update button
-    const submitBtn = document.getElementById('submit-btn');
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Yadda saxlanılır...</span>';
-    submitBtn.disabled = true;
-    
-    // Allow form to submit
-    return true;
+    // Update form from coordinates
+    updateFormFromCoordinates(position);
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    const cityInput = document.getElementById('city');
-    
-    // Validate form when city input changes
-    cityInput.addEventListener('input', function() {
-        const city = this.value.trim();
-        
-        if (city && !selectedLatitude) {
-            // If user types a city manually, use Baku coordinates as default
-            document.getElementById('latitude').value = 40.4093;
-            document.getElementById('longitude').value = 49.8671;
-            validateForm();
-        } else if (!city) {
-            // Clear coordinates and location selection
-            document.getElementById('latitude').value = '';
-            document.getElementById('longitude').value = '';
-            document.getElementById('location-selected').style.display = 'none';
-            validateForm();
-        }
-    });
-    
-    // Form submission handler with debugging
+    // Form submission handler
     const form = document.getElementById('location-form');
     const submitBtn = document.getElementById('submit-btn');
     
-    console.log('🔍 Form element:', form);
-    console.log('🔍 Submit button:', submitBtn);
-    
-    // Add submit handler - use capture phase to run FIRST
     form.addEventListener('submit', function(e) {
-        console.log('📋 Form submit event triggered');
-        console.log('📋 Event type:', e.type);
-        console.log('📋 Event target:', e.target);
-        console.log('📋 Event currentTarget:', e.currentTarget);
-        
         const city = document.getElementById('city').value.trim();
         const lat = document.getElementById('latitude').value;
         const lng = document.getElementById('longitude').value;
         
-        console.log('📊 Form values:', { city, lat, lng });
-        
         // Validate
         if (!city || !lat || !lng) {
-            console.log('❌ Validation failed - preventing submission');
             e.preventDefault();
-            e.stopPropagation();
-            alert('Zəhmət olmasa şəhər seçin və ya məkan koordinatlarını təyin edin.');
+            alert('Zəhmət olmasa xəritədən bir məkan seçin və ya ünvan daxil edin.');
             return false;
         }
         
-        console.log('✅ Validation passed - allowing form submission');
-        console.log('📋 Form action:', this.action);
-        console.log('📋 Form method:', this.method);
-        
-        // Show loading state
-        if (submitBtn) {
-            console.log('🔄 Updating button to loading state');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Yadda saxlanılır...</span>';
-            // Don't disable - form needs to submit
-        }
-        
-        console.log('📤 Form submitting... (not preventing default)');
-        console.log('📤 Default prevented BEFORE our handler?', e.defaultPrevented);
-        
-        // CRITICAL: Stop propagation to prevent global validation from running
-        e.stopImmediatePropagation();
-        console.log('🛑 Stopped immediate propagation to prevent global validation');
-        
         // Show loading state
         if (submitBtn) {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Yadda saxlanılır...</span>';
+            submitBtn.disabled = true;
         }
         
-        // Manually submit the form after a brief delay to ensure UI updates
-        setTimeout(() => {
-            console.log('🚀 Manually submitting form...');
-            console.log('📋 Form action:', this.action);
-            console.log('📋 Form method:', this.method);
-            
-            // Create a temporary form to submit
-            const formData = new FormData(this);
-            console.log('📦 FormData created');
-            for (let [key, value] of formData.entries()) {
-                console.log(`   ${key}: ${value}`);
-            }
-            
-            // Submit form using fetch to have better control
-            fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-            })
-            .then(response => {
-                console.log('📡 Response received:', response.status, response.statusText);
-                if (response.redirected) {
-                    console.log('🔄 Redirect detected, following:', response.url);
-                    window.location.href = response.url;
-                } else if (response.ok) {
-                    return response.text().then(html => {
-                        console.log('📄 HTML response received, checking for redirect...');
-                        // Check if response contains redirect
-                        if (html.includes('registration_complete') || html.includes('register/complete')) {
-                            console.log('✅ Redirecting to success page');
-                            window.location.href = '{% url "accounts:registration_complete" %}';
-                        } else {
-                            console.log('⚠️ No redirect found, reloading page');
-                            window.location.reload();
-                        }
-                    });
-                } else {
-                    console.error('❌ Response not OK:', response.status);
-                    throw new Error(`HTTP ${response.status}`);
-                }
-            })
-            .catch(error => {
-                console.error('❌ Fetch error:', error);
-                // Fallback: try native form submission
-                console.log('🔄 Falling back to native form submission');
-                this.submit();
-            });
-        }, 100);
-        
-        // Prevent default to stop normal submission (we're handling it manually)
-        e.preventDefault();
-    }, true); // Use capture phase = true to run BEFORE global validation
-    
-    // Button click handler - just for logging, don't interfere
-    if (submitBtn) {
-        submitBtn.addEventListener('click', function(e) {
-            console.log('🖱️ Submit button clicked');
-            console.log('🖱️ Button disabled?', this.disabled);
-            console.log('🖱️ Button type:', this.type);
-            
-            const city = document.getElementById('city').value.trim();
-            const lat = document.getElementById('latitude').value;
-            const lng = document.getElementById('longitude').value;
-            console.log('📊 Button click - values:', { city, lat, lng });
-            console.log('📊 Form valid?', form.checkValidity());
-            
-            // Don't prevent default - let form submit normally
-        }, false);
-    }
-    
-    // Debug: Check if form has any other event listeners
-    console.log('🔍 Form event listeners registered');
-    console.log('🔍 Attempting to manually check form submission...');
+        // Allow form to submit normally
+        return true;
+    });
 });
 </script>
 {% endblock %}

@@ -1431,7 +1431,7 @@
                 </ul>
             {% else %}
                 <div class="mobile-auth-buttons">
-                    <a href="{% url 'accounts:phone_registration' %}" class="mobile-join-btn">
+                    <a href="{% url 'accounts:login' %}" class="mobile-join-btn">
                         <i class="fas fa-user-plus"></i> Qoşulun
                     </a>
                     <a href="{% url 'accounts:login' %}" class="mobile-login-btn">
@@ -1539,7 +1539,7 @@
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="btn btn-primary" href="{% url 'accounts:phone_registration' %}">
+                            <a class="btn btn-primary" href="{% url 'accounts:login' %}">
                                 <i class="fas fa-user-plus me-2"></i>Qoşulun
                             </a>
                         </li>

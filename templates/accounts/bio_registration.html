@@ -538,7 +538,7 @@ body {
                 
                 <button type="submit" class="auth-btn" id="submit-btn" disabled>
                     <i class="fas fa-pen"></i>
-                    <span id="submit-text">Ən azı 50 hərf yazın</span>
+                    <span id="submit-text">Ən azı 20 hərf yazın</span>
                 </button>
                 
                 <div style="text-align: center; margin-top: 1.5rem;">
@@ -571,7 +571,7 @@ function updateCharCount() {
     
     counter.classList.remove('warning', 'success', 'danger');
     
-    if (length >= 50 && length < 100) {
+    if (length >= 20 && length < 100) {
         counter.classList.add('success');
     } else if (length >= 100) {
         counter.classList.add('success');
@@ -581,19 +581,19 @@ function updateCharCount() {
         counter.classList.add('danger');
     }
     
-    if (length >= 50) {
+    if (length >= 20) {
         submitText.textContent = 'Davam Et';
         submitBtn.disabled = false;
         progressBadge.classList.add('show');
         
-        if (length >= 100) {
+        if (length >= 50) {
             bioPreview.classList.add('show');
             previewText.textContent = text.substring(0, 150) + (text.length > 150 ? '...' : '');
         } else {
             bioPreview.classList.remove('show');
         }
     } else {
-        const needed = 50 - length;
+        const needed = 20 - length;
         submitText.textContent = `Ən azı ${needed} hərf daha yazın`;
         submitBtn.disabled = true;
         progressBadge.classList.remove('show');
@@ -614,14 +614,9 @@ document.getElementById('bio').addEventListener('input', function(e) {
 document.getElementById('bio-form').addEventListener('submit', function(e) {
     const bio = document.getElementById('bio').value.trim();
     
-    if (bio.length < 50) {
+    if (bio.length < 20) {
         e.preventDefault();
-        return;
-    }
-    
-    const words = bio.split(/\s+/).filter(word => word.length > 0);
-    if (words.length < 10) {
-        e.preventDefault();
+        alert('Zəhmət olmasa ən azı 20 hərf yazın.');
         return;
     }
     
@@ -637,7 +632,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('bio').addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.key === 'Enter') {
             const bio = this.value.trim();
-            if (bio.length >= 50) {
+            if (bio.length >= 20) {
                 document.getElementById('bio-form').submit();
             }
         }
