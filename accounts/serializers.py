@@ -99,6 +99,8 @@ class OTPVerifySerializer(serializers.Serializer):
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, min_length=6)
     password_confirm = serializers.CharField(write_only=True, required=True)
+    first_name = serializers.CharField(required=False, allow_blank=True)
+    last_name = serializers.CharField(required=False, allow_blank=True)
     
     class Meta:
         model = User
@@ -112,9 +114,19 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password_confirm')
         password = validated_data.pop('password')
-        user = User.objects.create_user(**validated_data)
-        user.set_password(password)
-        user.save()
+        
+        # Remove spaces from phone
+        phone = validated_data.get('phone', '').replace(' ', '')
+        first_name = validated_data.get('first_name', '')
+        last_name = validated_data.get('last_name', '')
+        
+        # Create user using the manager's create_user method
+        user = User.objects.create_user(
+            phone=phone,
+            first_name=first_name,
+            last_name=last_name,
+            password=password
+        )
         return user
 
 

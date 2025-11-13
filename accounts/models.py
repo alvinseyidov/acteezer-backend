@@ -7,7 +7,7 @@ import os
 class UserManager(BaseUserManager):
     """Custom user manager for phone-based authentication"""
     
-    def create_user(self, phone, first_name, last_name, password=None, **extra_fields):
+    def create_user(self, phone, first_name='', last_name='', password=None, **extra_fields):
         if not phone:
             raise ValueError('The Phone field must be set')
         

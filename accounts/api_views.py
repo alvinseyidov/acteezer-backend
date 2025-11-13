@@ -171,7 +171,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             user = serializer.save()
             user.is_phone_verified = True
-            user.registration_step = 2  # After phone verification
+            user.registration_step = 1  # After phone and password registration
             user.save()
             
             token, created = Token.objects.get_or_create(user=user)
@@ -182,7 +182,11 @@ class UserViewSet(viewsets.ModelViewSet):
                 'user': UserSerializer(user, context={'request': request}).data
             }, status=status.HTTP_201_CREATED)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            'success': False,
+            'message': 'Registration failed',
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny])
     def login(self, request):
