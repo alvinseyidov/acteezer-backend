@@ -190,14 +190,9 @@ class UserViewSet(viewsets.ModelViewSet):
         phone = request.data.get('phone')
         password = request.data.get('password')
         
-        # Debug logging
-        print('=== API LOGIN REQUEST ===')
-        print(f'Received phone: {phone}')
-        print(f'Phone type: {type(phone)}')
-        print(f'Phone length: {len(phone) if phone else 0}')
-        print(f'Password provided: {bool(password)}')
-        print(f'Password length: {len(password) if password else 0}')
-        print('=========================')
+        # Remove spaces from phone number
+        if phone:
+            phone = phone.replace(' ', '')
         
         if not phone or not password:
             return Response({
@@ -207,18 +202,11 @@ class UserViewSet(viewsets.ModelViewSet):
         
         try:
             # Get user directly by phone (same as web version)
-            print(f'Looking for user with phone: {phone}')
             user = User.objects.get(phone=phone)
-            print(f'User found: {user.phone}')
             
             # Check password
-            print(f'Checking password...')
-            password_valid = user.check_password(password)
-            print(f'Password valid: {password_valid}')
-            
-            if password_valid:
+            if user.check_password(password):
                 token, created = Token.objects.get_or_create(user=user)
-                print(f'Login successful, token: {token.key[:10]}...')
                 return Response({
                     'success': True,
                     'message': 'Login successful',
@@ -226,16 +214,11 @@ class UserViewSet(viewsets.ModelViewSet):
                     'user': UserSerializer(user, context={'request': request}).data
                 })
             else:
-                print('Password check failed!')
                 return Response({
                     'success': False,
                     'message': 'Invalid phone or password'
                 }, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
-            print(f'User not found with phone: {phone}')
-            # List all users for debugging
-            all_phones = User.objects.values_list('phone', flat=True)
-            print(f'Available phones in DB: {list(all_phones)[:5]}...')
             return Response({
                 'success': False,
                 'message': 'Invalid phone or password'

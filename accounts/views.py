@@ -122,6 +122,9 @@ def phone_registration(request):
             messages.error(request, 'Zəhmət olmasa telefon nömrəsini daxil edin.')
             return render(request, 'accounts/phone_registration.html')
         
+        # Remove spaces from phone number
+        phone = phone.replace(' ', '')
+        
         if not password or not password_confirm:
             messages.error(request, 'Zəhmət olmasa şifrəni daxil edin.')
             return render(request, 'accounts/phone_registration.html')
@@ -673,6 +676,10 @@ def user_login(request):
     if request.method == 'POST':
         phone = request.POST.get('phone')
         password = request.POST.get('password')
+        
+        # Remove spaces from phone number
+        if phone:
+            phone = phone.replace(' ', '')
         
         if phone and password:
             try:
