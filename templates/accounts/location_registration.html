@@ -124,20 +124,20 @@ body {
 }
 
 .auth-header {
-    padding: 2.5rem 2.5rem 2rem;
+    padding: 2rem 2.5rem 1.5rem;
     text-align: center;
 }
 
 .auth-logo {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 1.5rem;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 0.75rem;
     background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    border-radius: 24px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 30px rgba(93, 211, 190, 0.4);
+    box-shadow: 0 6px 15px rgba(93, 211, 190, 0.3);
     animation: pulse 2s ease-in-out infinite;
 }
 
@@ -147,21 +147,21 @@ body {
 }
 
 .auth-logo i {
-    font-size: 2.5rem;
+    font-size: 1.3rem;
     color: white;
 }
 
 .auth-header h2 {
-    font-size: 1.875rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #1a202c;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.35rem;
     letter-spacing: -0.5px;
 }
 
 .auth-header p {
     color: #718096;
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
 .auth-body {
@@ -545,38 +545,6 @@ body {
                     <input type="text" class="form-control" id="city" name="city" placeholder="Şəhər" required>
                 </div>
                 
-                <div class="quick-locations-title">
-                    <i class="fas fa-bolt"></i>
-                    <span>Tez Seçim</span>
-                </div>
-                
-                <div class="quick-locations">
-                    <div class="quick-location" onclick="selectQuickLocation('Bakı', 40.4093, 49.8671)">
-                        <div class="quick-location-icon">
-                            <i class="fas fa-city"></i>
-                        </div>
-                        <strong>Bakı</strong>
-                    </div>
-                    <div class="quick-location" onclick="selectQuickLocation('Gəncə', 40.6828, 46.3611)">
-                        <div class="quick-location-icon">
-                            <i class="fas fa-mountain"></i>
-                        </div>
-                        <strong>Gəncə</strong>
-                    </div>
-                    <div class="quick-location" onclick="selectQuickLocation('Sumqayıt', 40.5892, 49.6684)">
-                        <div class="quick-location-icon">
-                            <i class="fas fa-industry"></i>
-                        </div>
-                        <strong>Sumqayıt</strong>
-                    </div>
-                    <div class="quick-location" onclick="selectQuickLocation('Mingəçevir', 40.7696, 47.0587)">
-                        <div class="quick-location-icon">
-                            <i class="fas fa-water"></i>
-                        </div>
-                        <strong>Mingəçevir</strong>
-                    </div>
-                </div>
-                
                 <div class="map-container" id="map-container">
                     <div id="map"></div>
                 </div>
@@ -589,20 +557,10 @@ body {
                 <input type="hidden" id="latitude" name="latitude" required>
                 <input type="hidden" id="longitude" name="longitude" required>
                 
-                <div class="location-info">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Bu məlumat yalnız sizə uyğun aktivitələri göstərmək üçün istifadə olunur və heç kimə göstərilməz.</span>
-                </div>
-                
                 <button type="submit" class="auth-btn" id="submit-btn" disabled>
                     <i class="fas fa-check"></i>
                     <span>Qeydiyyatı Tamamla</span>
                 </button>
-                
-                <div class="completion-message">
-                    <i class="fas fa-heart"></i>
-                    <span>Təbriklər! Artıq Acteezer ailəsinə qoşuldunuz</span>
-                </div>
                 
                 <div style="text-align: center; margin-top: 1.5rem;">
                     <a href="{% url 'accounts:interests_registration' %}" class="back-link">
