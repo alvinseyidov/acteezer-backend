@@ -9,7 +9,7 @@ from .models import (
 )
 from .serializers import (
     ActivityCategorySerializer, ActivityListSerializer, ActivityDetailSerializer,
-    ActivityParticipantSerializer, ActivityReviewSerializer,
+    ActivityWriteSerializer, ActivityParticipantSerializer, ActivityReviewSerializer,
     ActivityCommentSerializer, ActivityMessageSerializer, LanguageSerializer
 )
 from accounts.models import Language
@@ -37,10 +37,18 @@ class ActivityViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return ActivityDetailSerializer
+        elif self.action in ['create', 'update', 'partial_update']:
+            return ActivityWriteSerializer
         return ActivityListSerializer
     
     def get_queryset(self):
-        queryset = Activity.objects.filter(status='published')
+        # For authenticated users, show their own activities regardless of status
+        if self.request.user.is_authenticated:
+            queryset = Activity.objects.filter(
+                Q(status='published') | Q(organizer=self.request.user)
+            )
+        else:
+            queryset = Activity.objects.filter(status='published')
         
         # Search
         search = self.request.query_params.get('search', None)

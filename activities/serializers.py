@@ -120,6 +120,44 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
         return None
 
 
+class ActivityWriteSerializer(serializers.ModelSerializer):
+    """Serializer for creating/updating activities"""
+    required_languages = serializers.PrimaryKeyRelatedField(
+        many=True, 
+        queryset=Language.objects.all(),
+        required=False
+    )
+    
+    class Meta:
+        model = Activity
+        fields = [
+            'id', 'title', 'short_description', 'description', 'category',
+            'start_date', 'end_date', 'location_name', 'address', 'city',
+            'district', 'latitude', 'longitude', 'max_participants', 'min_participants',
+            'is_unlimited_participants', 'price', 'difficulty_level', 
+            'requirements', 'what_included', 'min_age', 'max_age', 'allowed_genders',
+            'required_languages', 'dress_code', 'gender_balance_required',
+            'main_image', 'contact_phone', 'contact_email', 'created_at'
+        ]
+        read_only_fields = ['id', 'created_at']
+    
+    def create(self, validated_data):
+        required_languages = validated_data.pop('required_languages', [])
+        activity = Activity.objects.create(**validated_data)
+        if required_languages:
+            activity.required_languages.set(required_languages)
+        return activity
+    
+    def update(self, instance, validated_data):
+        required_languages = validated_data.pop('required_languages', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        if required_languages is not None:
+            instance.required_languages.set(required_languages)
+        return instance
+
+
 class ActivityParticipantSerializer(serializers.ModelSerializer):
     user = UserPublicSerializer(read_only=True)
     
