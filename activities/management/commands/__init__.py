@@ -1,2 +1,1 @@
-# Commands module for activities
-
+# Django management commands for activities app
