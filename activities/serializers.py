@@ -7,9 +7,19 @@ from accounts.serializers import UserPublicSerializer
 
 
 class ActivityCategorySerializer(serializers.ModelSerializer):
+    icon_image_url = serializers.SerializerMethodField()
+    
     class Meta:
         model = ActivityCategory
-        fields = ['id', 'name', 'category_type', 'icon', 'color', 'description', 'created_at']
+        fields = ['id', 'name', 'category_type', 'icon', 'icon_image_url', 'color', 'description', 'created_at']
+    
+    def get_icon_image_url(self, obj):
+        if obj.icon_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.icon_image.url)
+            return obj.icon_image.url
+        return None
 
 
 class ActivityImageSerializer(serializers.ModelSerializer):

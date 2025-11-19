@@ -29,7 +29,8 @@ class ActivityCategory(models.Model):
     
     name = models.CharField(max_length=100)
     category_type = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='other')
-    icon = models.CharField(max_length=50, default='fas fa-calendar-alt')  # FontAwesome icon class
+    icon = models.CharField(max_length=50, default='fas fa-calendar-alt')  # FontAwesome icon class for web
+    icon_image = models.ImageField(upload_to='category_icons/', null=True, blank=True)  # Icon image for mobile
     color = models.CharField(max_length=7, default='#5DD3BE')  # Hex color for category badge
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
