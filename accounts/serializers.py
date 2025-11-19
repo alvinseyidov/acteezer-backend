@@ -13,10 +13,19 @@ class LanguageSerializer(serializers.ModelSerializer):
 
 class InterestSerializer(serializers.ModelSerializer):
     is_general = serializers.BooleanField(read_only=True)
+    icon_image_url = serializers.SerializerMethodField()
     
     class Meta:
         model = Interest
-        fields = ['id', 'name', 'icon', 'category', 'is_general']
+        fields = ['id', 'name', 'icon', 'icon_image', 'icon_image_url', 'category', 'is_general']
+    
+    def get_icon_image_url(self, obj):
+        if obj.icon_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.icon_image.url)
+            return obj.icon_image.url
+        return None
 
 
 class UserImageSerializer(serializers.ModelSerializer):

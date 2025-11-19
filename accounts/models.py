@@ -74,7 +74,8 @@ class Interest(models.Model):
     ]
     
     name = models.CharField(max_length=100, unique=True)
-    icon = models.CharField(max_length=50, blank=True, null=True)  # Font awesome icon name
+    icon = models.CharField(max_length=50, blank=True, null=True)  # Font awesome icon name or emoji
+    icon_image = models.ImageField(upload_to='interest_icons/', null=True, blank=True, help_text="Icon image for interest")
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general')
     is_general = models.BooleanField(default=False, help_text="Show in general/popular section")
     

@@ -52,8 +52,8 @@ class UserViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         if self.action == 'me' or self.action == 'update' or self.action == 'partial_update':
-            return User.objects.filter(id=self.request.user.id)
-        return User.objects.all()
+            return User.objects.filter(id=self.request.user.id).prefetch_related('languages', 'interests', 'images')
+        return User.objects.all().prefetch_related('languages', 'interests', 'images')
     
     @action(detail=False, methods=['get', 'put', 'patch'], permission_classes=[permissions.IsAuthenticated])
     def me(self, request):
