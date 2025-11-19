@@ -87,7 +87,7 @@ class Activity(models.Model):
     # Date and Time
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    duration_hours = models.PositiveIntegerField(help_text="Duration in hours")
+    duration_hours = models.PositiveIntegerField(null=True, blank=True, help_text="Duration in hours (auto-calculated)")
     
     # Location Information
     location_name = models.CharField(max_length=200, help_text="Name of the venue/location")
@@ -99,6 +99,7 @@ class Activity(models.Model):
     # Capacity and Pricing
     max_participants = models.PositiveIntegerField()
     min_participants = models.PositiveIntegerField(default=1)
+    is_unlimited_participants = models.BooleanField(default=False, help_text="No limit on participants")
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0.00, help_text="Price in AZN")
     is_free = models.BooleanField(default=True)
     
@@ -112,6 +113,8 @@ class Activity(models.Model):
     allowed_genders = models.JSONField(default=list, blank=True, help_text="Allowed genders for participants")
     min_age = models.PositiveIntegerField(null=True, blank=True, help_text="Minimum age requirement")
     max_age = models.PositiveIntegerField(null=True, blank=True, help_text="Maximum age requirement")
+    dress_code = models.CharField(max_length=200, blank=True, help_text="Dress code for the activity")
+    gender_balance_required = models.BooleanField(default=False, help_text="Require balanced gender participation")
     
     # Media
     main_image = models.ImageField(upload_to='activities/images/', blank=True, null=True)
@@ -141,6 +144,13 @@ class Activity(models.Model):
     
     def get_absolute_url(self):
         return reverse('activities:activity_detail', kwargs={'pk': self.pk})
+    
+    def save(self, *args, **kwargs):
+        # Auto-calculate duration_hours if not set
+        if self.start_date and self.end_date and not self.duration_hours:
+            duration = self.end_date - self.start_date
+            self.duration_hours = max(1, int(duration.total_seconds() / 3600))
+        super().save(*args, **kwargs)
     
     @property
     def is_upcoming(self):

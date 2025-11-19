@@ -1,9 +1,16 @@
 from rest_framework import serializers
 from .models import (
-    ActivityCategory, Activity, ActivityParticipant, 
+    ActivityCategory, Activity, ActivityParticipant,
     ActivityImage, ActivityReview, ActivityComment, ActivityMessage
 )
 from accounts.serializers import UserPublicSerializer
+from accounts.models import Language
+
+
+class LanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = ['id', 'name', 'code']
 
 
 class ActivityCategorySerializer(serializers.ModelSerializer):
@@ -77,6 +84,7 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
     category = ActivityCategorySerializer(read_only=True)
     organizer = UserPublicSerializer(read_only=True)
     images = ActivityImageSerializer(many=True, read_only=True)
+    required_languages = LanguageSerializer(many=True, read_only=True)
     main_image_url = serializers.SerializerMethodField()
     participants_count = serializers.ReadOnlyField()
     available_spots = serializers.ReadOnlyField()
@@ -94,11 +102,13 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'id', 'title', 'short_description', 'description', 'category', 'organizer',
             'start_date', 'end_date', 'duration_hours', 'location_name', 'address',
             'district', 'latitude', 'longitude', 'max_participants', 'min_participants',
-            'price', 'is_free', 'difficulty_level', 'requirements', 'what_included',
-            'min_age', 'max_age', 'allowed_genders', 'main_image', 'main_image_url',
-            'images', 'status', 'is_featured', 'contact_phone', 'contact_email',
-            'participants_count', 'available_spots', 'pending_requests_count',
-            'is_upcoming', 'is_ongoing', 'is_past', 'is_full', 'created_at', 'updated_at'
+            'is_unlimited_participants', 'price', 'is_free', 'difficulty_level', 
+            'requirements', 'what_included', 'min_age', 'max_age', 'allowed_genders',
+            'required_languages', 'dress_code', 'gender_balance_required',
+            'main_image', 'main_image_url', 'images', 'status', 'is_featured', 
+            'contact_phone', 'contact_email', 'participants_count', 'available_spots', 
+            'pending_requests_count', 'is_upcoming', 'is_ongoing', 'is_past', 'is_full', 
+            'created_at', 'updated_at'
         ]
     
     def get_main_image_url(self, obj):

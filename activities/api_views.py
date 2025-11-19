@@ -10,8 +10,16 @@ from .models import (
 from .serializers import (
     ActivityCategorySerializer, ActivityListSerializer, ActivityDetailSerializer,
     ActivityParticipantSerializer, ActivityReviewSerializer,
-    ActivityCommentSerializer, ActivityMessageSerializer
+    ActivityCommentSerializer, ActivityMessageSerializer, LanguageSerializer
 )
+from accounts.models import Language
+
+
+class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for languages"""
+    queryset = Language.objects.all()
+    serializer_class = LanguageSerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class ActivityCategoryViewSet(viewsets.ReadOnlyModelViewSet):
