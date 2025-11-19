@@ -137,7 +137,7 @@ class ActivityWriteSerializer(serializers.ModelSerializer):
             'is_unlimited_participants', 'price', 'difficulty_level', 
             'requirements', 'what_included', 'min_age', 'max_age', 'allowed_genders',
             'required_languages', 'dress_code', 'gender_balance_required',
-            'main_image', 'contact_phone', 'contact_email', 'created_at'
+            'main_image', 'contact_phone', 'contact_email', 'status', 'created_at'
         ]
         read_only_fields = ['id', 'created_at']
     
