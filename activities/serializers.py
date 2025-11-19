@@ -132,7 +132,7 @@ class ActivityWriteSerializer(serializers.ModelSerializer):
         model = Activity
         fields = [
             'id', 'title', 'short_description', 'description', 'category',
-            'start_date', 'end_date', 'location_name', 'address', 'city',
+            'start_date', 'end_date', 'location_name', 'address',
             'district', 'latitude', 'longitude', 'max_participants', 'min_participants',
             'is_unlimited_participants', 'price', 'difficulty_level', 
             'requirements', 'what_included', 'min_age', 'max_age', 'allowed_genders',
