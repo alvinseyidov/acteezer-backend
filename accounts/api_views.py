@@ -357,6 +357,52 @@ class FriendshipViewSet(viewsets.ModelViewSet):
             'success': True,
             'friendship': serializer.data
         })
+    
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def status(self, request):
+        """Get friendship status with another user"""
+        user_id = request.query_params.get('user_id')
+        if not user_id:
+            return Response({
+                'success': False,
+                'message': 'user_id is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            other_user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'User not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        if other_user == request.user:
+            return Response({
+                'success': False,
+                'message': 'Cannot check friendship status with yourself'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if friendship exists in either direction
+        friendship = Friendship.objects.filter(
+            Q(from_user=request.user, to_user=other_user) |
+            Q(from_user=other_user, to_user=request.user)
+        ).first()
+        
+        if not friendship:
+            return Response({
+                'success': True,
+                'status': None,
+                'friendship': None
+            })
+        
+        serializer = FriendshipSerializer(friendship, context={'request': request})
+        return Response({
+            'success': True,
+            'status': friendship.status,
+            'is_sender': friendship.from_user == request.user,
+            'friendship_id': friendship.id,
+            'friendship': serializer.data
+        })
 
 
 class BlogCategoryViewSet(viewsets.ReadOnlyModelViewSet):
