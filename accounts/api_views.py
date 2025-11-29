@@ -19,6 +19,22 @@ class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Language.objects.all()
     serializer_class = LanguageSerializer
     permission_classes = [permissions.AllowAny]
+    
+    def get_queryset(self):
+        # Order languages: Azerbaijan, Turkish, Russian, English first, then others alphabetically
+        from django.db.models import Case, When, Value, IntegerField
+        priority_codes = ['az', 'tr', 'ru', 'en']
+        
+        return Language.objects.annotate(
+            priority=Case(
+                When(code='az', then=Value(0)),
+                When(code='tr', then=Value(1)),
+                When(code='ru', then=Value(2)),
+                When(code='en', then=Value(3)),
+                default=Value(100),
+                output_field=IntegerField(),
+            )
+        ).order_by('priority', 'name')
 
 
 class InterestViewSet(viewsets.ReadOnlyModelViewSet):

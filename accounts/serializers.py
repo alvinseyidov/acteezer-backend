@@ -12,9 +12,78 @@ class LanguageSerializer(serializers.ModelSerializer):
 
 
 class InterestCategorySerializer(serializers.ModelSerializer):
+    emoji_icon = serializers.SerializerMethodField()
+    
     class Meta:
         model = InterestCategory
-        fields = ['id', 'name', 'code', 'icon', 'order']
+        fields = ['id', 'name', 'code', 'icon', 'emoji_icon', 'order']
+    
+    def get_emoji_icon(self, obj):
+        """Map Font Awesome icons to emoji for mobile app"""
+        icon_mapping = {
+            'fas fa-running': '🏃',
+            'fas fa-futbol': '⚽',
+            'fas fa-basketball-ball': '🏀',
+            'fas fa-dumbbell': '💪',
+            'fas fa-swimming-pool': '🏊',
+            'fas fa-bicycle': '🚴',
+            'fas fa-hiking': '🥾',
+            'fas fa-music': '🎵',
+            'fas fa-guitar': '🎸',
+            'fas fa-headphones': '🎧',
+            'fas fa-paint-brush': '🎨',
+            'fas fa-palette': '🎨',
+            'fas fa-camera': '📷',
+            'fas fa-film': '🎬',
+            'fas fa-theater-masks': '🎭',
+            'fas fa-book': '📚',
+            'fas fa-graduation-cap': '🎓',
+            'fas fa-laptop': '💻',
+            'fas fa-code': '👨‍💻',
+            'fas fa-gamepad': '🎮',
+            'fas fa-utensils': '🍽️',
+            'fas fa-coffee': '☕',
+            'fas fa-wine-glass': '🍷',
+            'fas fa-cocktail': '🍸',
+            'fas fa-plane': '✈️',
+            'fas fa-mountain': '⛰️',
+            'fas fa-tree': '🌲',
+            'fas fa-leaf': '🍃',
+            'fas fa-sun': '☀️',
+            'fas fa-umbrella-beach': '🏖️',
+            'fas fa-car': '🚗',
+            'fas fa-motorcycle': '🏍️',
+            'fas fa-heart': '❤️',
+            'fas fa-users': '👥',
+            'fas fa-user-friends': '👫',
+            'fas fa-comments': '💬',
+            'fas fa-globe': '🌍',
+            'fas fa-language': '🗣️',
+            'fas fa-pray': '🙏',
+            'fas fa-om': '🕉️',
+            'fas fa-paw': '🐾',
+            'fas fa-dog': '🐕',
+            'fas fa-cat': '🐱',
+            'fas fa-horse': '🐴',
+            'fas fa-briefcase': '💼',
+            'fas fa-chart-line': '📈',
+            'fas fa-coins': '💰',
+            'fas fa-shopping-bag': '🛍️',
+            'fas fa-tshirt': '👕',
+            'fas fa-gem': '💎',
+            'fas fa-spa': '🧘',
+            'fas fa-heartbeat': '💓',
+            'fas fa-brain': '🧠',
+            'fas fa-chess': '♟️',
+            'fas fa-dice': '🎲',
+            'fas fa-puzzle-piece': '🧩',
+            'fas fa-star': '⭐',
+            'fas fa-fire': '🔥',
+            'fas fa-bolt': '⚡',
+            'fas fa-snowflake': '❄️',
+            'fas fa-water': '💧',
+        }
+        return icon_mapping.get(obj.icon, '📌')
 
 
 class InterestSerializer(serializers.ModelSerializer):
