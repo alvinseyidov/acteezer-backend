@@ -398,7 +398,16 @@ def create_activity(request):
     logger.info("Showing activity creation form")
     from accounts.models import Language
     categories = ActivityCategory.objects.all().order_by('name')
-    languages = Language.objects.all().order_by('name')
+    
+    # Order languages: Azerbaijan, Turkish, Russian, English first, then others alphabetically
+    priority_codes = ['az', 'tr', 'ru', 'en']
+    priority_languages = []
+    for code in priority_codes:
+        lang = Language.objects.filter(code=code).first()
+        if lang:
+            priority_languages.append(lang)
+    other_languages = Language.objects.exclude(code__in=priority_codes).order_by('name')
+    languages = list(priority_languages) + list(other_languages)
     
     logger.info(f"Form context: {len(categories)} categories, {len(languages)} languages")
     
