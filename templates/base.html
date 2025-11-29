@@ -1823,7 +1823,6 @@
             {% endif %}
             
             <ul class="mobile-nav-links">
-                <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Ana səhifə</a></li>
                 <li><a href="{% url 'activities:activities_list' %}"><i class="fas fa-calendar-alt"></i> Aktivitələr</a></li>
                 <li><a href="{% url 'accounts:people_list' %}"><i class="fas fa-users"></i> İnsanlar</a></li>
                 <li><a href="{% url 'places:places_list' %}"><i class="fas fa-map-marker-alt"></i> Məkanlar</a></li>
@@ -1887,9 +1886,6 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto ms-lg-4">
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Ana səhifə</a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">Haqqımızda</a>
                     </li>
@@ -2163,10 +2159,6 @@
     {% if user.is_authenticated %}
     <nav class="mobile-bottom-nav">
         <div class="mobile-bottom-nav-container">
-            <a href="{% url 'home' %}" class="mobile-bottom-nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-                <i class="fas fa-home"></i>
-                <span>Ana səhifə</span>
-            </a>
             <a href="{% url 'activities:activities_list' %}" class="mobile-bottom-nav-item {% if 'activities' in request.resolver_match.namespace and request.resolver_match.url_name == 'activities_list' %}active{% endif %}">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Aktivitələr</span>
@@ -2189,10 +2181,6 @@
     {% else %}
     <nav class="mobile-bottom-nav">
         <div class="mobile-bottom-nav-container">
-            <a href="{% url 'home' %}" class="mobile-bottom-nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-                <i class="fas fa-home"></i>
-                <span>Ana səhifə</span>
-            </a>
             <a href="{% url 'activities:activities_list' %}" class="mobile-bottom-nav-item {% if 'activities' in request.resolver_match.namespace and request.resolver_match.url_name == 'activities_list' %}active{% endif %}">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Aktivitələr</span>
