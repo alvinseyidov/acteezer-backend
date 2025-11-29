@@ -2159,6 +2159,10 @@
     {% if user.is_authenticated %}
     <nav class="mobile-bottom-nav">
         <div class="mobile-bottom-nav-container">
+            <a href="{% url 'home' %}" class="mobile-bottom-nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                <i class="fas fa-home"></i>
+                <span>Ana səhifə</span>
+            </a>
             <a href="{% url 'activities:activities_list' %}" class="mobile-bottom-nav-item {% if 'activities' in request.resolver_match.namespace and request.resolver_match.url_name == 'activities_list' %}active{% endif %}">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Aktivitələr</span>
@@ -2181,6 +2185,10 @@
     {% else %}
     <nav class="mobile-bottom-nav">
         <div class="mobile-bottom-nav-container">
+            <a href="{% url 'home' %}" class="mobile-bottom-nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                <i class="fas fa-home"></i>
+                <span>Ana səhifə</span>
+            </a>
             <a href="{% url 'activities:activities_list' %}" class="mobile-bottom-nav-item {% if 'activities' in request.resolver_match.namespace and request.resolver_match.url_name == 'activities_list' %}active{% endif %}">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Aktivitələr</span>
