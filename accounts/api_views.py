@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, get_user_model
 from django.db.models import Q
-from .models import Language, Interest, UserImage, OTPVerification, Friendship, BlogPost, BlogCategory
+from .models import Language, Interest, InterestCategory, UserImage, OTPVerification, Friendship, BlogPost, BlogCategory
 from .serializers import (
-    LanguageSerializer, InterestSerializer, UserSerializer, UserPublicSerializer,
+    LanguageSerializer, InterestSerializer, InterestCategorySerializer, UserSerializer, UserPublicSerializer,
     UserImageSerializer, OTPSendSerializer, OTPVerifySerializer,
     UserRegistrationSerializer, FriendshipSerializer, BlogPostSerializer, BlogCategorySerializer
 )
@@ -38,6 +38,22 @@ class InterestViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(is_general=True)
         
         return queryset
+    
+    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
+    def grouped(self, request):
+        """Get interests grouped by category"""
+        categories = InterestCategory.objects.filter(is_active=True).prefetch_related('interests').order_by('order', 'name')
+        
+        grouped_data = []
+        for category in categories:
+            interests = category.interests.all().order_by('name')
+            if interests.exists():
+                grouped_data.append({
+                    'category': InterestCategorySerializer(category).data,
+                    'interests': InterestSerializer(interests, many=True, context={'request': request}).data
+                })
+        
+        return Response(grouped_data)
 
 
 class UserViewSet(viewsets.ModelViewSet):

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Language, Interest, UserImage, OTPVerification, Friendship, BlogPost, BlogCategory
+from .models import Language, Interest, InterestCategory, UserImage, OTPVerification, Friendship, BlogPost, BlogCategory
 
 User = get_user_model()
 
@@ -9,6 +9,12 @@ class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
         fields = ['id', 'name', 'code']
+
+
+class InterestCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InterestCategory
+        fields = ['id', 'name', 'code', 'icon', 'order']
 
 
 class InterestSerializer(serializers.ModelSerializer):
