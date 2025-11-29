@@ -1109,7 +1109,7 @@ html {
                             <i class="fas fa-image"></i>
                         </div>
                         <div>
-                            <h3 class="section-title">Aktivitə Şəkli</h3>
+                            <h3 class="section-title">Aktivitə Şəkli <span class="required">*</span></h3>
                             <p class="section-description">Aktivitəni daha cəlbedici etmək üçün şəkil əlavə edin</p>
                         </div>
                     </div>
@@ -1466,6 +1466,12 @@ document.getElementById('create-activity-form').addEventListener('submit', funct
         if (!field || !field.value.trim()) {
             missingFields.push(fieldName);
         }
+    }
+    
+    // Check for required image
+    const imageInput = document.getElementById('main_image');
+    if (!imageInput.files || imageInput.files.length === 0) {
+        missingFields.push('şəkil');
     }
     
     if (missingFields.length > 0) {

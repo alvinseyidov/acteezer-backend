@@ -296,8 +296,11 @@ def create_activity(request):
             if not allowed_genders:
                 allowed_genders = ['male', 'female', 'other', 'prefer_not_to_say']
             
+            # Check for required image
+            has_image = 'main_image' in request.FILES and request.FILES['main_image']
+            
             # Validation - only truly required fields (removed short_description and description)
-            if not all([title, category_id, start_date, start_time, address, max_participants]):
+            if not all([title, category_id, start_date, start_time, address, max_participants]) or not has_image:
                 missing_fields = []
                 if not title: missing_fields.append('title')
                 if not category_id: missing_fields.append('category')
@@ -305,6 +308,7 @@ def create_activity(request):
                 if not start_time: missing_fields.append('start_time')
                 if not address: missing_fields.append('address')
                 if not max_participants: missing_fields.append('max_participants')
+                if not has_image: missing_fields.append('şəkil')
                 
                 logger.error(f"Missing required fields: {missing_fields}")
                 messages.error(request, f'Bütün məcburi sahələri doldurun. Missing: {", ".join(missing_fields)}')
