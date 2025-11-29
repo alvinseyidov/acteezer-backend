@@ -663,7 +663,11 @@ document.addEventListener('DOMContentLoaded', function() {
     updateSelectionCount();
     setupLanguageSearch();
     
-    document.getElementById('language-search').focus();
+    // Only focus search input on desktop (not on mobile/tablet to avoid keyboard popup)
+    const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (!isMobile) {
+        document.getElementById('language-search').focus();
+    }
 });
 </script>
 {% endblock %}

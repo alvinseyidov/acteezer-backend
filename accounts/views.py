@@ -250,7 +250,17 @@ def languages_registration(request):
         else:
             messages.error(request, 'Please select at least one language.')
     
-    languages = Language.objects.all()
+    # Order languages: Azerbaijan, Turkish, Russian, English first, then others alphabetically
+    priority_codes = ['az', 'tr', 'ru', 'en']
+    priority_languages = []
+    for code in priority_codes:
+        lang = Language.objects.filter(code=code).first()
+        if lang:
+            priority_languages.append(lang)
+    
+    other_languages = Language.objects.exclude(code__in=priority_codes).order_by('name')
+    languages = list(priority_languages) + list(other_languages)
+    
     user_languages = request.user.languages.all()
     
     # Auto-select Azerbaijan if no languages selected
