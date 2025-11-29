@@ -523,7 +523,7 @@ body {
                     <span id="count-text">0 şəkil yükləndi</span>
                 </div>
                 
-                <div class="upload-area" id="upload-area" onclick="document.getElementById('image-upload-input').click()">
+                <div class="upload-area" id="upload-area" onclick="triggerFileInput()">
                     <div class="upload-icon">
                         <i class="fas fa-cloud-upload-alt"></i>
                     </div>
@@ -570,7 +570,7 @@ body {
                 
                 <button type="submit" class="auth-btn" id="submit-btn" disabled>
                     <i class="fas fa-camera"></i>
-                    <span id="submit-text">2 şəkil daha əlavə edin</span>
+                    <span id="submit-text">1 şəkil daha əlavə edin</span>
                 </button>
                 
                 <div style="text-align: center; margin-top: 1.5rem;">
@@ -588,7 +588,8 @@ body {
 {% block extra_js %}
 <script>
 let selectedFiles = [];
-let imageCount = 0;
+let fileIdCounter = 0;
+let isProcessingFiles = false;
 
 function setupDragAndDrop() {
     const uploadArea = document.getElementById('upload-area');
@@ -617,8 +618,13 @@ function setupDragAndDrop() {
 }
 
 function handleFileSelection(files) {
+    if (isProcessingFiles) return;
+    isProcessingFiles = true;
+    
     const maxSize = 5 * 1024 * 1024;
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    
+    let filesToProcess = [];
     
     for (const file of files) {
         if (file.size > maxSize) {
@@ -631,49 +637,65 @@ function handleFileSelection(files) {
             continue;
         }
         
-        createImagePreview(file);
-        selectedFiles.push(file);
+        filesToProcess.push(file);
     }
     
-    updateSubmitButton();
-    updateFileInput();
+    let processedCount = 0;
+    const totalToProcess = filesToProcess.length;
+    
+    if (totalToProcess === 0) {
+        isProcessingFiles = false;
+        return;
+    }
+    
+    for (const file of filesToProcess) {
+        const fileId = fileIdCounter++;
+        selectedFiles.push({ id: fileId, file: file });
+        createImagePreview(file, fileId, function() {
+            processedCount++;
+            if (processedCount === totalToProcess) {
+                updateSubmitButton();
+                updateFileInput();
+                isProcessingFiles = false;
+            }
+        });
+    }
 }
 
-function createImagePreview(file) {
+function createImagePreview(file, fileId, callback) {
     const reader = new FileReader();
     
     reader.onload = function(e) {
         const previewGrid = document.getElementById('image-preview-grid');
         const previewItem = document.createElement('div');
         previewItem.className = 'image-preview-item';
+        previewItem.setAttribute('data-file-id', fileId);
         previewItem.innerHTML = `
             <img src="${e.target.result}" alt="Yeni Şəkil">
-            <button type="button" class="image-remove-btn" onclick="removeNewImage(this)">
+            <button type="button" class="image-remove-btn" onclick="removeNewImage(${fileId})">
                 <i class="fas fa-times"></i>
             </button>
         `;
         
         previewGrid.appendChild(previewItem);
-        imageCount++;
         updateSubmitButton();
+        if (callback) callback();
+    };
+    
+    reader.onerror = function() {
+        if (callback) callback();
     };
     
     reader.readAsDataURL(file);
 }
 
-function removeNewImage(button) {
-    const previewItem = button.closest('.image-preview-item');
-    const img = previewItem.querySelector('img');
-    const imgSrc = img.src;
+function removeNewImage(fileId) {
+    const previewItem = document.querySelector(`.image-preview-item[data-file-id="${fileId}"]`);
+    if (previewItem) {
+        previewItem.remove();
+    }
     
-    selectedFiles = selectedFiles.filter((file, index) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        return reader.result !== imgSrc;
-    });
-    
-    previewItem.remove();
-    imageCount--;
+    selectedFiles = selectedFiles.filter(item => item.id !== fileId);
     updateSubmitButton();
     updateFileInput();
 }
@@ -688,7 +710,6 @@ function removeExistingImage(imageId) {
     hiddenInput.value = imageId;
     document.getElementById('images-form').appendChild(hiddenInput);
     
-    imageCount--;
     updateSubmitButton();
 }
 
@@ -721,11 +742,19 @@ function updateFileInput() {
     const fileInput = document.getElementById('image-upload-input');
     const dt = new DataTransfer();
     
-    selectedFiles.forEach(file => dt.items.add(file));
+    selectedFiles.forEach(item => dt.items.add(item.file));
     fileInput.files = dt.files;
 }
 
+function triggerFileInput() {
+    const fileInput = document.getElementById('image-upload-input');
+    // Reset the input value to allow selecting the same file again
+    fileInput.value = '';
+    fileInput.click();
+}
+
 document.getElementById('image-upload-input').addEventListener('change', function(e) {
+    if (e.target.files.length === 0) return;
     const files = Array.from(e.target.files);
     handleFileSelection(files);
 });
@@ -744,7 +773,6 @@ document.getElementById('images-form').addEventListener('submit', function(e) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    imageCount = document.querySelectorAll('.image-preview-item').length;
     updateSubmitButton();
     setupDragAndDrop();
 });

@@ -285,7 +285,9 @@ def birthday_registration(request):
         else:
             messages.error(request, 'Please enter your birthday.')
     
-    return render(request, 'accounts/birthday_registration.html')
+    return render(request, 'accounts/birthday_registration.html', {
+        'user_birthday': request.user.birthday
+    })
 
 
 @login_required

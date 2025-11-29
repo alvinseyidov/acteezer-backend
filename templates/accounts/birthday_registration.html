@@ -465,7 +465,7 @@ body {
                             id="birthday" 
                             name="birthday" 
                             required
-                            value="{{ user.birthday|default:'' }}"
+                            value="{% if user_birthday %}{{ user_birthday|date:'Y-m-d' }}{% endif %}"
                             max="{% now 'Y-m-d' %}"
                         >
                     </div>
