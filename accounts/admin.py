@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
-from .models import User, UserImage, Language, Interest, OTPVerification, BlogCategory, BlogPost, BlogTag, BlogPostTag, Newsletter, Friendship
+from .models import User, UserImage, Language, Interest, InterestCategory, OTPVerification, BlogCategory, BlogPost, BlogTag, BlogPostTag, Newsletter, Friendship
 
 
 class UserImageInline(admin.TabularInline):
@@ -71,11 +71,25 @@ class LanguageAdmin(admin.ModelAdmin):
     ordering = ['name']
 
 
+@admin.register(InterestCategory)
+class InterestCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'code', 'icon', 'order', 'is_active', 'interest_count']
+    list_editable = ['order', 'is_active']
+    search_fields = ['name', 'code']
+    prepopulated_fields = {'code': ('name',)}
+    ordering = ['order', 'name']
+    
+    def interest_count(self, obj):
+        return obj.interests.count()
+    interest_count.short_description = 'Interests'
+
+
 @admin.register(Interest)
 class InterestAdmin(admin.ModelAdmin):
-    list_display = ['name', 'icon']
+    list_display = ['name', 'category', 'icon', 'is_general']
+    list_filter = ['category', 'is_general']
     search_fields = ['name']
-    ordering = ['name']
+    ordering = ['category__order', 'name']
 
 
 @admin.register(UserImage)

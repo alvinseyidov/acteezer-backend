@@ -10,7 +10,7 @@ from datetime import timedelta
 import random
 import json
 
-from .models import User, Language, Interest, UserImage, OTPVerification, Newsletter, Friendship
+from .models import User, Language, Interest, InterestCategory, UserImage, OTPVerification, Newsletter, Friendship
 
 
 def home(request):
@@ -375,34 +375,15 @@ def interests_registration(request):
         else:
             messages.error(request, 'Please select at least one interest.')
     
-    # Get all interests, categorized
-    all_interests = Interest.objects.all()
-    general_interests = Interest.objects.filter(is_general=True)
+    # Get all interests grouped by category from database
     user_interests = request.user.interests.all()
     
-    # Create a mapping of category to related categories for showing related interests
-    # When user selects an interest from a category, show interests from related categories
-    category_relations = {
-        'beauty': ['beauty', 'lifestyle'],  # Selecting beauty shows beauty + lifestyle
-        'lifestyle': ['lifestyle', 'beauty', 'nature'],  # Selecting lifestyle shows lifestyle + beauty + nature
-        'travel': ['travel', 'nature'],
-        'music': ['music', 'arts'],
-        'arts': ['arts', 'music'],
-        'food': ['food', 'lifestyle'],
-        'sports': ['sports', 'health', 'nature'],
-        'health': ['health', 'sports', 'nature'],
-        'nature': ['nature', 'health', 'lifestyle'],
-        'education': ['education', 'arts'],
-        'tech': ['tech', 'education'],
-        'social': ['social', 'lifestyle'],
-    }
+    # Get active categories with their interests
+    categories = InterestCategory.objects.filter(is_active=True).prefetch_related('interests').order_by('order', 'name')
     
-    import json
     return render(request, 'accounts/interests_registration.html', {
-        'interests': all_interests,
-        'general_interests': general_interests,
+        'categories': categories,
         'user_interests': user_interests,
-        'category_relations_json': json.dumps(category_relations),
     })
 
 

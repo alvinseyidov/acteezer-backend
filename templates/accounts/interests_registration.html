@@ -20,7 +20,7 @@ body {
 }
 
 .auth-card {
-    max-width: 800px;
+    max-width: 700px;
     width: 100%;
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(20px);
@@ -180,7 +180,7 @@ body {
 }
 
 .selected-badge {
-    display: inline-flex;
+    display: none;
     align-items: center;
     gap: 0.5rem;
     background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
@@ -192,7 +192,6 @@ body {
     margin-bottom: 1.5rem;
     box-shadow: 0 4px 15px rgba(93, 211, 190, 0.3);
     animation: slideDown 0.3s ease;
-    display: none;
 }
 
 .selected-badge.show {
@@ -210,7 +209,7 @@ body {
     }
 }
 
-.interests-container {
+.accordion-container {
     margin-bottom: 1.5rem;
     max-height: 400px;
     overflow-y: auto;
@@ -219,45 +218,140 @@ body {
     scrollbar-color: #5DD3BE #f0f0f0;
 }
 
-.interests-container::-webkit-scrollbar {
+.accordion-container::-webkit-scrollbar {
     width: 6px;
 }
 
-.interests-container::-webkit-scrollbar-track {
+.accordion-container::-webkit-scrollbar-track {
     background: #f0f0f0;
     border-radius: 10px;
 }
 
-.interests-container::-webkit-scrollbar-thumb {
+.accordion-container::-webkit-scrollbar-thumb {
     background: #5DD3BE;
     border-radius: 10px;
 }
 
-.interests-section {
-    margin-bottom: 2rem;
+.category-group {
+    margin-bottom: 0.75rem;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
 }
 
-.section-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #64748b;
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.category-group.has-selected {
+    border-color: #4BC5AA;
+}
+
+.category-header {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: #f7fafc;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
 }
 
-.section-title i {
-    color: #4BC5AA;
+.category-header:hover {
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.1) 0%, rgba(75, 197, 170, 0.1) 100%);
+}
+
+.category-group.active .category-header {
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.15) 0%, rgba(75, 197, 170, 0.15) 100%);
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.category-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.category-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.category-group.active .category-icon {
+    transform: scale(1.1);
+}
+
+.category-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #1a202c;
+}
+
+.category-count {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.category-selected-count {
+    background: #4BC5AA;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    margin-left: 0.5rem;
+    display: none;
+}
+
+.category-group.has-selected .category-selected-count {
+    display: inline-block;
+}
+
+.category-arrow {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    border: 2px solid #e2e8f0;
+}
+
+.category-group.active .category-arrow {
+    transform: rotate(180deg);
+    background: #4BC5AA;
+    border-color: #4BC5AA;
+    color: white;
+}
+
+.category-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    background: white;
+}
+
+.category-group.active .category-content {
+    max-height: 500px;
 }
 
 .interests-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
 }
 
 .interest-tag {
@@ -284,26 +378,13 @@ body {
 
 .interest-tag.selected {
     border-color: #4BC5AA;
-    background: white;
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.15) 0%, rgba(75, 197, 170, 0.15) 100%);
     color: #155724;
     box-shadow: 0 4px 12px rgba(93, 211, 190, 0.25);
 }
 
 .interest-tag.selected .tag-icon {
     color: #4BC5AA;
-}
-
-.interest-tag.hidden {
-    display: none;
-}
-
-#interest-search:focus {
-    border-color: #5DD3BE;
-    box-shadow: 0 0 0 3px rgba(93, 211, 190, 0.1);
-}
-
-#interest-search::placeholder {
-    color: #94a3b8;
 }
 
 .tag-icon {
@@ -416,12 +497,27 @@ body {
         padding: 1.5rem 1.5rem 2rem;
     }
     
-    .interests-container {
+    .accordion-container {
         max-height: 350px;
+    }
+    
+    .category-header {
+        padding: 0.85rem 1rem;
+    }
+    
+    .category-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+    
+    .category-name {
+        font-size: 0.875rem;
     }
     
     .interests-tags {
         gap: 0.4rem;
+        padding: 0.85rem 1rem;
     }
     
     .interest-tag {
@@ -481,65 +577,56 @@ body {
                     <span id="count-text">0 maraq seçildi</span>
                 </div>
                 
-                <div class="search-container" style="margin-bottom: 1.5rem;">
-                    <div style="position: relative;">
-                        <i class="fas fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8; z-index: 1;"></i>
-                        <input 
-                            type="text" 
-                            id="interest-search" 
-                            placeholder="Maraqları axtar..." 
-                            style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 0.9375rem; font-weight: 500; color: #1a202c; background: white; transition: all 0.3s ease; outline: none;"
-                            oninput="filterInterests(this.value)"
-                        >
-                    </div>
-                </div>
-                
-                <div class="interests-container">
-                    <div class="interests-section" id="related-section" style="display: none;">
-                        <div class="section-title">
-                            <i class="fas fa-lightbulb"></i>
-                            <span>Əlaqəli Maraqlar</span>
-                        </div>
-                        <div class="interests-tags" id="related-tags"></div>
-                    </div>
-                    
-                    <div class="interests-section" id="all-section">
-                        <div class="section-title">
-                            <i class="fas fa-th"></i>
-                            <span>Bütün Maraqlar</span>
-                        </div>
-                        <div class="interests-tags" id="all-tags">
-                            {% for interest in interests %}
-                            <div class="interest-tag {% if interest in user_interests %}selected{% endif %}" 
-                                 data-interest-id="{{ interest.id }}"
-                                 data-interest-name="{{ interest.name|lower }}"
-                                 data-category="{{ interest.category }}"
-                                 onclick="toggleInterest({{ interest.id }})">
-                                <input 
-                                    type="checkbox" 
-                                    name="interests" 
-                                    value="{{ interest.id }}" 
-                                    id="interest-{{ interest.id }}"
-                                    class="interest-checkbox"
-                                    {% if interest in user_interests %}checked{% endif %}
-                                >
-                                <span class="tag-icon plus">
-                                    <i class="fas fa-plus"></i>
-                                </span>
-                                <span class="tag-icon check">
-                                    <i class="fas fa-check"></i>
-                                </span>
-                                <span>{{ interest.name }}</span>
+                <div class="accordion-container">
+                    {% for category in categories %}
+                    {% if category.interests.exists %}
+                    <div class="category-group" data-category="{{ category.code }}">
+                        <div class="category-header" onclick="toggleCategory('{{ category.code }}')">
+                            <div class="category-info">
+                                <div class="category-icon">
+                                    <i class="{{ category.icon }}"></i>
+                                </div>
+                                <div>
+                                    <div class="category-name">
+                                        {{ category.name }}
+                                        <span class="category-selected-count" id="count-{{ category.code }}">0</span>
+                                    </div>
+                                    <div class="category-count">{{ category.interests.count }} maraq</div>
+                                </div>
                             </div>
-                            {% empty %}
-                            <div class="text-center text-muted py-4" style="width: 100%;">
-                                <i class="fas fa-heart fa-3x mb-3"></i>
-                                <h5>Hələ ki maraq sahələri yoxdur</h5>
-                                <p>Admin tərəfindən maraq sahələri əlavə ediləcək</p>
+                            <div class="category-arrow">
+                                <i class="fas fa-chevron-down"></i>
                             </div>
-                            {% endfor %}
+                        </div>
+                        <div class="category-content">
+                            <div class="interests-tags">
+                                {% for interest in category.interests.all %}
+                                <div class="interest-tag {% if interest in user_interests %}selected{% endif %}" 
+                                     data-interest-id="{{ interest.id }}"
+                                     data-category="{{ category.code }}"
+                                     onclick="toggleInterest({{ interest.id }}, '{{ category.code }}')">
+                                    <input 
+                                        type="checkbox" 
+                                        name="interests" 
+                                        value="{{ interest.id }}" 
+                                        id="interest-{{ interest.id }}"
+                                        class="interest-checkbox"
+                                        {% if interest in user_interests %}checked{% endif %}
+                                    >
+                                    <span class="tag-icon plus">
+                                        <i class="fas fa-plus"></i>
+                                    </span>
+                                    <span class="tag-icon check">
+                                        <i class="fas fa-check"></i>
+                                    </span>
+                                    <span>{{ interest.name }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
+                    {% endif %}
+                    {% endfor %}
                 </div>
                 
                 <button type="submit" class="auth-btn" id="submit-btn" disabled>
@@ -561,173 +648,75 @@ body {
 
 {% block extra_js %}
 <script>
-// Category relations from backend
-const categoryRelations = {{ category_relations_json|safe|default:"{}" }};
-
 let selectedCount = 0;
 let selectedInterests = new Set();
+let categorySelections = {};
 const minRequired = 3;
+let currentOpenCategory = null;
 
-function filterInterests(searchQuery) {
-    const query = searchQuery.toLowerCase().trim();
-    const allTags = document.querySelectorAll('.interest-tag');
-    const generalSection = document.getElementById('general-section');
-    const relatedSection = document.getElementById('related-section');
-    const allSection = document.getElementById('all-section');
+function toggleCategory(categoryCode) {
+    const group = document.querySelector(`.category-group[data-category="${categoryCode}"]`);
     
-    if (query === '') {
-        // Show all tags
-        allTags.forEach(tag => {
-            tag.style.display = '';
-        });
-        // Show sections based on their original state
-        generalSection.style.display = '';
-        // Keep related section visibility as it was (managed by showRelatedInterests)
-        if (relatedSection.children[1] && relatedSection.children[1].children.length > 0) {
-            relatedSection.style.display = '';
+    if (currentOpenCategory && currentOpenCategory !== categoryCode) {
+        // Close the previously open category
+        const prevGroup = document.querySelector(`.category-group[data-category="${currentOpenCategory}"]`);
+        if (prevGroup) {
+            prevGroup.classList.remove('active');
         }
-        allSection.style.display = '';
+    }
+    
+    if (group.classList.contains('active')) {
+        group.classList.remove('active');
+        currentOpenCategory = null;
     } else {
-        // Filter tags
-        let generalFound = false;
-        let relatedFound = false;
-        let allFound = false;
-        
-        allTags.forEach(tag => {
-            const name = tag.getAttribute('data-interest-name') || tag.textContent.toLowerCase();
-            const section = tag.closest('.interests-section');
-            
-            if (name.includes(query)) {
-                tag.style.display = '';
-                if (section && section.id === 'general-section') generalFound = true;
-                if (section && section.id === 'related-section') relatedFound = true;
-                if (section && section.id === 'all-section') allFound = true;
-            } else {
-                tag.style.display = 'none';
-            }
-        });
-        
-        // Show/hide sections based on results
-        generalSection.style.display = generalFound ? '' : 'none';
-        if (relatedFound) {
-            relatedSection.style.display = '';
-        } else if (query !== '') {
-            // Only hide if we're searching, otherwise let showRelatedInterests manage it
-            relatedSection.style.display = 'none';
-        }
-        allSection.style.display = allFound ? '' : 'none';
+        group.classList.add('active');
+        currentOpenCategory = categoryCode;
     }
 }
 
-function showRelatedInterests() {
-    if (selectedInterests.size === 0) {
-        document.getElementById('related-section').style.display = 'none';
-        return;
-    }
-    
-    const relatedSection = document.getElementById('related-section');
-    const relatedTagsContainer = document.getElementById('related-tags');
-    const allTags = document.querySelectorAll('#all-tags .interest-tag');
-    
-    // Get categories of selected interests
-    const selectedCategories = new Set();
-    selectedInterests.forEach(id => {
-        const tag = document.querySelector(`#all-tags .interest-tag[data-interest-id="${id}"], #general-tags .interest-tag[data-interest-id="${id}"]`);
-        if (tag) {
-            const category = tag.getAttribute('data-category');
-            if (category) {
-                selectedCategories.add(category);
-            }
-        }
-    });
-    
-    // Find related categories
-    const relatedCategories = new Set();
-    selectedCategories.forEach(cat => {
-        if (categoryRelations[cat]) {
-            categoryRelations[cat].forEach(relatedCat => relatedCategories.add(relatedCat));
-        }
-    });
-    
-    // Show interests from related categories that are not already selected
-    relatedTagsContainer.innerHTML = '';
-    const shownIds = new Set();
-    
-    allTags.forEach(tag => {
-        const id = tag.getAttribute('data-interest-id');
-        const category = tag.getAttribute('data-category');
-        const isGeneral = tag.closest('#general-tags') !== null;
-        
-        // Skip if already selected or already shown in general section
-        if (tag.classList.contains('selected') || shownIds.has(id) || isGeneral) {
-            return;
-        }
-        
-        // Show if category matches related categories
-        if (relatedCategories.has(category)) {
-            const clone = tag.cloneNode(true);
-            // Make sure the clone has proper event handler
-            clone.onclick = () => toggleInterest(parseInt(id));
-            // Ensure checkbox state is synced
-            const cloneCheckbox = clone.querySelector('.interest-checkbox');
-            const originalCheckbox = tag.querySelector('.interest-checkbox');
-            if (cloneCheckbox && originalCheckbox) {
-                cloneCheckbox.checked = originalCheckbox.checked;
-            }
-            relatedTagsContainer.appendChild(clone);
-            shownIds.add(id);
-        }
-    });
-    
-    if (relatedTagsContainer.children.length > 0) {
-        relatedSection.style.display = 'block';
-        // Reapply search filter if active
-        const searchInput = document.getElementById('interest-search');
-        if (searchInput && searchInput.value.trim() !== '') {
-            filterInterests(searchInput.value);
-        }
-    } else {
-        relatedSection.style.display = 'none';
-    }
-}
-
-function toggleInterest(interestId) {
+function toggleInterest(interestId, categoryCode) {
     const checkbox = document.getElementById(`interest-${interestId}`);
     if (!checkbox) return;
     
     // Toggle checkbox state
     checkbox.checked = !checkbox.checked;
     
-    // Update all instances of this interest tag (in general, related, and all sections)
-    const allTags = document.querySelectorAll(`.interest-tag[data-interest-id="${interestId}"]`);
+    // Update visual state
+    const tag = document.querySelector(`.interest-tag[data-interest-id="${interestId}"]`);
     
-    allTags.forEach(tag => {
-        // Update checkbox in cloned tags too
-        const tagCheckbox = tag.querySelector('.interest-checkbox');
-        if (tagCheckbox) {
-            tagCheckbox.checked = checkbox.checked;
+    if (checkbox.checked) {
+        tag.classList.add('selected');
+        selectedInterests.add(interestId);
+        if (!categorySelections[categoryCode]) {
+            categorySelections[categoryCode] = 0;
         }
-        
-        // Update visual state
-        if (checkbox.checked) {
-            tag.classList.add('selected');
-            selectedInterests.add(interestId);
-        } else {
-            tag.classList.remove('selected');
-            selectedInterests.delete(interestId);
+        categorySelections[categoryCode]++;
+    } else {
+        tag.classList.remove('selected');
+        selectedInterests.delete(interestId);
+        if (categorySelections[categoryCode]) {
+            categorySelections[categoryCode]--;
         }
-    });
+    }
     
     // Update count
     selectedCount = selectedInterests.size;
     
+    updateCategoryBadge(categoryCode);
     updateSubmitButton();
-    showRelatedInterests();
+}
+
+function updateCategoryBadge(categoryCode) {
+    const countBadge = document.getElementById(`count-${categoryCode}`);
+    const group = document.querySelector(`.category-group[data-category="${categoryCode}"]`);
+    const count = categorySelections[categoryCode] || 0;
     
-    // Reapply search filter if active
-    const searchInput = document.getElementById('interest-search');
-    if (searchInput && searchInput.value.trim() !== '') {
-        filterInterests(searchInput.value);
+    countBadge.textContent = count;
+    
+    if (count > 0) {
+        group.classList.add('has-selected');
+    } else {
+        group.classList.remove('has-selected');
     }
 }
 
@@ -767,18 +756,47 @@ document.getElementById('interests-form').addEventListener('submit', function(e)
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize from checked checkboxes
     const checkboxes = document.querySelectorAll('.interest-checkbox:checked');
-    selectedCount = checkboxes.length;
     
     checkboxes.forEach(checkbox => {
         const id = parseInt(checkbox.value);
         selectedInterests.add(id);
-        const tags = document.querySelectorAll(`.interest-tag[data-interest-id="${id}"]`);
-        tags.forEach(tag => tag.classList.add('selected'));
+        
+        const tag = checkbox.closest('.interest-tag');
+        if (tag) {
+            tag.classList.add('selected');
+            const categoryCode = tag.getAttribute('data-category');
+            if (!categorySelections[categoryCode]) {
+                categorySelections[categoryCode] = 0;
+            }
+            categorySelections[categoryCode]++;
+        }
+    });
+    
+    selectedCount = selectedInterests.size;
+    
+    // Update all category badges
+    Object.keys(categorySelections).forEach(categoryCode => {
+        updateCategoryBadge(categoryCode);
     });
     
     updateSubmitButton();
-    showRelatedInterests();
+    
+    // Open first category by default if no selections
+    if (selectedCount === 0) {
+        const firstGroup = document.querySelector('.category-group');
+        if (firstGroup) {
+            const categoryCode = firstGroup.getAttribute('data-category');
+            toggleCategory(categoryCode);
+        }
+    } else {
+        // Open the first category that has selections
+        const categoriesWithSelections = Object.keys(categorySelections).filter(c => categorySelections[c] > 0);
+        if (categoriesWithSelections.length > 0) {
+            toggleCategory(categoriesWithSelections[0]);
+        }
+    }
 });
 </script>
 {% endblock %}

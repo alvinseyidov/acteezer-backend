@@ -55,28 +55,36 @@ class Language(models.Model):
         ordering = ['name']
 
 
+class InterestCategory(models.Model):
+    """Model for interest categories - manageable from admin"""
+    name = models.CharField(max_length=100, unique=True, help_text="Display name (e.g., 'İdman & Fitnes')")
+    code = models.SlugField(max_length=50, unique=True, help_text="Unique code (e.g., 'sports')")
+    icon = models.CharField(max_length=100, default='fas fa-star', help_text="Font Awesome icon class (e.g., 'fas fa-running')")
+    order = models.PositiveIntegerField(default=0, help_text="Display order (lower = first)")
+    is_active = models.BooleanField(default=True, help_text="Show this category in registration")
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = "Interest Category"
+        verbose_name_plural = "Interest Categories"
+        ordering = ['order', 'name']
+
+
 class Interest(models.Model):
     """Model for user interests"""
-    CATEGORY_CHOICES = [
-        ('general', 'General/Popular'),
-        ('beauty', 'Beauty & Fashion'),
-        ('lifestyle', 'Lifestyle & Home'),
-        ('sports', 'Sports & Fitness'),
-        ('arts', 'Arts & Culture'),
-        ('food', 'Food & Dining'),
-        ('travel', 'Travel & Adventure'),
-        ('tech', 'Technology'),
-        ('music', 'Music'),
-        ('nature', 'Nature & Outdoors'),
-        ('education', 'Education & Learning'),
-        ('health', 'Health & Wellness'),
-        ('social', 'Social & Volunteering'),
-    ]
-    
     name = models.CharField(max_length=100, unique=True)
     icon = models.CharField(max_length=50, blank=True, null=True)  # Font awesome icon name or emoji
     icon_image = models.ImageField(upload_to='interest_icons/', null=True, blank=True, help_text="Icon image for interest")
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general')
+    category = models.ForeignKey(
+        InterestCategory, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='interests',
+        help_text="Category this interest belongs to"
+    )
     is_general = models.BooleanField(default=False, help_text="Show in general/popular section")
     
     def __str__(self):
