@@ -268,13 +268,23 @@ def create_activity(request):
             price = request.POST.get('price', 0)
             requirements = request.POST.get('requirements', '').strip()
             
+            # Get location coordinates
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude')
+            
             logger.info(f"Basic form data - title: {title}, category_id: {category_id}, start_date: {start_date}, start_time: {start_time}")
             
             # Get new requirement fields
             min_age = request.POST.get('min_age')
             max_age = request.POST.get('max_age')
             required_languages = request.POST.getlist('required_languages')
-            allowed_genders = request.POST.getlist('allowed_genders')
+            
+            # Handle gender selection - can come as comma-separated hidden field or list
+            allowed_genders_hidden = request.POST.get('allowed_genders', '')
+            if allowed_genders_hidden and ',' in allowed_genders_hidden:
+                allowed_genders = [g.strip() for g in allowed_genders_hidden.split(',') if g.strip()]
+            else:
+                allowed_genders = request.POST.getlist('allowed_genders')
             
             logger.info(f"Requirements - min_age: {min_age}, max_age: {max_age}, languages: {required_languages}, genders: {allowed_genders}")
             
@@ -282,13 +292,15 @@ def create_activity(request):
             required_languages = [lang for lang in required_languages if lang]
             allowed_genders = [gender for gender in allowed_genders if gender]
             
-            # Validation
-            if not all([title, category_id, short_description, description, start_date, start_time, address, max_participants]):
+            # Default genders if none selected
+            if not allowed_genders:
+                allowed_genders = ['male', 'female', 'other', 'prefer_not_to_say']
+            
+            # Validation - only truly required fields (removed short_description and description)
+            if not all([title, category_id, start_date, start_time, address, max_participants]):
                 missing_fields = []
                 if not title: missing_fields.append('title')
                 if not category_id: missing_fields.append('category')
-                if not short_description: missing_fields.append('short_description')
-                if not description: missing_fields.append('description')
                 if not start_date: missing_fields.append('start_date')
                 if not start_time: missing_fields.append('start_time')
                 if not address: missing_fields.append('address')
@@ -339,7 +351,7 @@ def create_activity(request):
             activity = Activity.objects.create(
                 title=title,
                 category=category,
-                short_description=short_description,
+                short_description=short_description if short_description else title[:100],  # Use title if empty
                 description=description,
                 organizer=request.user,
                 start_date=start_datetime,
@@ -347,6 +359,8 @@ def create_activity(request):
                 duration_hours=duration_hours,
                 location_name=address,  # Use address as location_name for now
                 address=address,
+                latitude=float(latitude) if latitude else None,
+                longitude=float(longitude) if longitude else None,
                 max_participants=int(max_participants),
                 price=float(price) if price else 0,
                 requirements=requirements,

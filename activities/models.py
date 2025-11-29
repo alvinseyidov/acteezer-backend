@@ -78,15 +78,15 @@ class Activity(models.Model):
     # Basic Information
     title = models.CharField(max_length=200)
     category = models.ForeignKey(ActivityCategory, on_delete=models.CASCADE, related_name='activities')
-    description = models.TextField()
-    short_description = models.CharField(max_length=300, help_text="Brief description for cards")
+    description = models.TextField(blank=True, help_text="Detailed description of the activity")
+    short_description = models.CharField(max_length=300, blank=True, help_text="Brief description for cards")
     
     # Organizer
     organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organized_activities')
     
     # Date and Time
     start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    end_date = models.DateTimeField(null=True, blank=True, help_text="Optional - defaults to 3 hours after start")
     duration_hours = models.PositiveIntegerField(null=True, blank=True, help_text="Duration in hours (auto-calculated)")
     
     # Location Information

@@ -406,101 +406,189 @@ textarea.form-control-modern {
     border: 3px solid var(--primary-light);
 }
 
-/* Multiple Select Styling */
-.select-multiple-modern {
-    background: var(--bg-white);
+/* Map Container */
+.map-container {
+    border-radius: var(--radius);
+    overflow: hidden;
+    height: 300px;
+    margin-top: 1rem;
+    border: 2px solid var(--border-color);
+}
+
+#activity-map {
+    width: 100%;
+    height: 100%;
+}
+
+.location-selected {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--gradient-soft);
+    border-radius: var(--radius);
+    border-left: 4px solid var(--primary);
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.location-selected.show {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.location-selected i {
+    color: var(--primary);
+    font-size: 1.25rem;
+}
+
+/* Language Dropdown */
+.language-dropdown-container {
+    position: relative;
+}
+
+.language-dropdown-trigger {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
     border: 2px solid var(--border-color);
     border-radius: var(--radius);
-    padding: 0.75rem;
-    min-height: 200px;
-    font-size: 0.95rem;
-    line-height: 1.8;
+    background: var(--bg-white);
+    color: var(--text-gray);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     transition: all 0.3s ease;
 }
 
-.select-multiple-modern:focus {
+.language-dropdown-trigger:hover,
+.language-dropdown-trigger.active {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(93, 211, 190, 0.1);
-    outline: none;
 }
 
-.select-multiple-modern option {
-    padding: 0.75rem;
-    border-radius: 8px;
-    margin: 0.25rem 0;
+.language-dropdown-trigger i {
+    transition: transform 0.3s ease;
+}
+
+.language-dropdown-trigger.active i {
+    transform: rotate(180deg);
+}
+
+.language-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-white);
+    border: 2px solid var(--primary);
+    border-radius: var(--radius);
+    margin-top: 0.5rem;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: var(--shadow-md);
+}
+
+.language-dropdown-menu.show {
+    display: block;
+}
+
+.language-option {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.select-multiple-modern option:checked {
-    background: var(--gradient-primary);
-    color: white;
+.language-option:hover {
+    background: var(--gradient-soft);
+}
+
+.language-option.selected {
+    background: var(--gradient-soft);
+    color: var(--primary-dark);
     font-weight: 600;
 }
 
-.select-multiple-modern option:hover {
-    background: rgba(93, 211, 190, 0.1);
-}
-
-/* Gender Selection */
-.gender-selection-modern {
-    background: var(--gradient-soft);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.gender-checkbox-modern {
-    display: none;
-}
-
-.gender-label-modern {
-    flex: 1;
-    min-width: 120px;
-    padding: 1rem 1.5rem;
-    background: var(--bg-white);
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius);
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-weight: 500;
-    color: var(--text-dark);
-    position: relative;
-    overflow: hidden;
-}
-
-.gender-label-modern::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--gradient-primary);
+.language-option i {
+    color: var(--primary);
     opacity: 0;
-    transition: opacity 0.3s ease;
 }
 
-.gender-label-modern span {
-    position: relative;
-    z-index: 1;
-}
-
-.gender-checkbox-modern:checked + .gender-label-modern {
-    border-color: var(--primary);
-    background: var(--primary);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-primary);
-}
-
-.gender-checkbox-modern:checked + .gender-label-modern::before {
+.language-option.selected i {
     opacity: 1;
 }
 
-.gender-label-modern:hover {
+.selected-languages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.language-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    background: var(--gradient-soft);
+    border: 2px solid var(--primary);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--primary-dark);
+}
+
+.language-tag .remove-tag {
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: #FF6B6B;
+    margin-left: 0.25rem;
+}
+
+.language-tag .remove-tag:hover {
+    color: #ff4444;
+}
+
+/* Gender Selection Compact */
+.gender-selection-compact {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.gender-option-compact {
+    display: none;
+}
+
+.gender-label-compact {
+    padding: 0.75rem 1.25rem;
+    background: var(--bg-white);
+    border: 2px solid var(--border-color);
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.gender-label-compact:hover {
     border-color: var(--primary-light);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
+}
+
+.gender-option-compact:checked + .gender-label-compact {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: var(--shadow-primary);
 }
 
 /* Form Footer */
@@ -648,6 +736,53 @@ textarea.form-control-modern {
         grid-template-columns: 1fr;
     }
     
+    /* Date/Time responsive - start in one row, end in another */
+    .datetime-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+    
+    .datetime-row .form-group-modern {
+        margin-bottom: 0;
+    }
+    
+    /* Participants and Price in same row */
+    .participants-price-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+    
+    .participants-price-row .form-group-modern {
+        margin-bottom: 0;
+    }
+    
+    /* Age fields in same row */
+    .age-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+    
+    .age-row .form-group-modern {
+        margin-bottom: 0;
+    }
+    
+    /* Gender compact in row */
+    .gender-selection-compact {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+    }
+    
+    .gender-label-compact {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+        flex: 1;
+        justify-content: center;
+    }
+    
     .form-footer-modern {
         flex-direction: column;
         align-items: stretch;
@@ -661,38 +796,6 @@ textarea.form-control-modern {
         width: 100%;
         justify-content: center;
     }
-    
-    .gender-selection-modern {
-        flex-direction: column;
-    }
-    
-    .gender-label-modern {
-        width: 100%;
-    }
-}
-
-/* Progress Indicator */
-.form-progress {
-    position: sticky;
-    top: 80px;
-    z-index: 10;
-    margin-bottom: 2rem;
-}
-
-.progress-bar-modern {
-    height: 6px;
-    background: var(--border-color);
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
-}
-
-.progress-fill {
-    height: 100%;
-    background: var(--gradient-primary);
-    border-radius: 10px;
-    transition: width 0.3s ease;
-    box-shadow: 0 0 10px rgba(93, 211, 190, 0.5);
 }
 
 /* Smooth Scroll */
@@ -782,28 +885,14 @@ html {
                     </div>
                     
                     <div class="form-group-modern">
-                        <label for="short_description" class="form-label-modern">
-                            Qısa Təsvir
-                            <span class="required">*</span>
-                        </label>
-                        <input type="text" class="form-control-modern" id="short_description" name="short_description" 
-                               placeholder="Aktivitə kartında göstəriləcək qısa təsvir" required maxlength="300">
-                        <div class="form-help-modern">
-                            <i class="fas fa-info-circle"></i>
-                            <span>Maksimum 300 simvol. Bu təsvir aktivitə siyahısında görünəcək.</span>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group-modern">
                         <label for="description" class="form-label-modern">
                             Ətraflı Təsvir
-                            <span class="required">*</span>
                         </label>
                         <textarea class="form-control-modern" id="description" name="description" 
-                                  placeholder="Aktivitə haqqında ətraflı məlumat verin..." required></textarea>
+                                  placeholder="Aktivitə haqqında ətraflı məlumat verin..."></textarea>
                         <div class="form-help-modern">
                             <i class="fas fa-lightbulb"></i>
-                            <span>Ətraflı təsvir iştirakçıların aktivitəni daha yaxşı başa düşməsinə kömək edir.</span>
+                            <span>İsteğe bağlı - Ətraflı təsvir iştirakçıların aktivitəni daha yaxşı başa düşməsinə kömək edir.</span>
                         </div>
                     </div>
                 </div>
@@ -820,7 +909,8 @@ html {
                         </div>
                     </div>
                     
-                    <div class="form-grid-2">
+                    <!-- Start Date & Time Row -->
+                    <div class="form-grid-2 datetime-row" style="margin-bottom: 1.5rem;">
                         <div class="form-group-modern">
                             <label for="start_date" class="form-label-modern">
                                 Başlama Tarixi
@@ -837,19 +927,20 @@ html {
                         </div>
                     </div>
                     
-                    <div class="form-grid-2">
+                    <!-- End Date & Time Row (Optional) -->
+                    <div class="form-grid-2 datetime-row">
                         <div class="form-group-modern">
                             <label for="end_date" class="form-label-modern">Bitmə Tarixi</label>
                             <input type="date" class="form-control-modern" id="end_date" name="end_date" autocomplete="off">
-                            <div class="form-help-modern">
-                                <i class="fas fa-clock"></i>
-                                <span>Boş buraxırsanız, başlama tarixindən 3 saat sonra avtomatik təyin ediləcək</span>
-                            </div>
                         </div>
                         <div class="form-group-modern">
                             <label for="end_time" class="form-label-modern">Bitmə Vaxtı</label>
                             <input type="time" class="form-control-modern" id="end_time" name="end_time" autocomplete="off">
                         </div>
+                    </div>
+                    <div class="form-help-modern" style="margin-top: 0.5rem;">
+                        <i class="fas fa-clock"></i>
+                        <span>İsteğe bağlı - Boş buraxırsanız, başlama tarixindən 3 saat sonra avtomatik təyin ediləcək</span>
                     </div>
                 </div>
 
@@ -871,17 +962,29 @@ html {
                             <span class="required">*</span>
                         </label>
                         <input type="text" class="form-control-modern" id="address" name="address" 
-                               placeholder="Məsələn: Üzeyir Hacıbəyov küçəsi, Bakı" required maxlength="300">
+                               placeholder="Ünvan, şəhər və ya məkan adı daxil edin..." required maxlength="300" autocomplete="off">
                         <div class="form-help-modern">
-                            <i class="fas fa-map-pin"></i>
-                            <span>Aktivitənin keçiriləcəyi tam ünvan</span>
+                            <i class="fas fa-info-circle"></i>
+                            <span>Xəritədən marker-i sürüşdürərək dəqiq yeri seçə bilərsiniz</span>
                         </div>
                     </div>
                     
-                    <div class="form-grid-2">
+                    <div class="map-container" id="map-container">
+                        <div id="activity-map"></div>
+                    </div>
+                    
+                    <div class="location-selected" id="location-selected">
+                        <i class="fas fa-check-circle"></i>
+                        <span><strong>Seçilmiş məkan:</strong> <span id="selected-location"></span></span>
+                    </div>
+                    
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                    
+                    <div class="form-grid-2 participants-price-row" style="margin-top: 1.5rem;">
                         <div class="form-group-modern">
                             <label for="max_participants" class="form-label-modern">
-                                Maksimum İştirakçı
+                                İştirakçı sayı
                                 <span class="required">*</span>
                             </label>
                             <input type="number" class="form-control-modern" id="max_participants" name="max_participants" 
@@ -893,7 +996,7 @@ html {
                                    placeholder="0.00" min="0" step="0.01">
                             <div class="form-help-modern">
                                 <i class="fas fa-money-bill-wave"></i>
-                                <span>Pulsuzsa boş buraxın və ya 0 yazın</span>
+                                <span>Pulsuzsa boş buraxın</span>
                             </div>
                         </div>
                     </div>
@@ -911,67 +1014,68 @@ html {
                         </div>
                     </div>
                     
-                    <div class="form-grid-2">
+                    <!-- Age Row -->
+                    <div class="form-grid-2 age-row" style="margin-bottom: 1.5rem;">
                         <div class="form-group-modern">
                             <label for="min_age" class="form-label-modern">Minimum Yaş</label>
                             <input type="number" class="form-control-modern" id="min_age" name="min_age" 
                                    placeholder="Məs: 18" min="1" max="100">
-                            <div class="form-help-modern">
-                                <i class="fas fa-user-clock"></i>
-                                <span>İsteğe bağlı - boş qoyub bütün yaşlara açığ ola bilər</span>
-                            </div>
                         </div>
                         <div class="form-group-modern">
                             <label for="max_age" class="form-label-modern">Maksimum Yaş</label>
                             <input type="number" class="form-control-modern" id="max_age" name="max_age" 
                                    placeholder="Məs: 65" min="1" max="100">
-                            <div class="form-help-modern">
-                                <i class="fas fa-user-clock"></i>
-                                <span>İsteğe bağlı - boş qoyub yaş məhdudiyyəti olmaya bilər</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Language Dropdown -->
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Tələb olunan Dillər</label>
+                        <div class="language-dropdown-container">
+                            <div class="language-dropdown-trigger" id="language-trigger" onclick="toggleLanguageDropdown()">
+                                <span>Dil seçin...</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="language-dropdown-menu" id="language-menu">
+                                {% for language in languages %}
+                                <div class="language-option" data-id="{{ language.id }}" data-name="{{ language.name }}" onclick="toggleLanguage({{ language.id }}, '{{ language.name }}')">
+                                    <i class="fas fa-check"></i>
+                                    <span>{{ language.name }}</span>
+                                </div>
+                                {% endfor %}
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="form-group-modern">
-                        <label for="required_languages" class="form-label-modern">Tələb olunan Dillər</label>
-                        <select class="select-multiple-modern" id="required_languages" name="required_languages" multiple size="8">
-                            {% for language in languages %}
-                                <option value="{{ language.id }}">{{ language.name }}</option>
-                            {% endfor %}
-                        </select>
+                        <div class="selected-languages" id="selected-languages"></div>
                         <div class="form-help-modern">
                             <i class="fas fa-language"></i>
-                            <span>Ctrl/Cmd basaraq bir neçə dil seçə bilərsiniz. İştirakçıların bilməli olduğu dillər</span>
+                            <span>İsteğe bağlı - İştirakçıların bilməli olduğu dillər</span>
                         </div>
                     </div>
                     
+                    <!-- Gender Selection Compact -->
                     <div class="form-group-modern">
                         <label class="form-label-modern">İcazə verilən Cinsiyyətlər</label>
-                        <div class="gender-selection-modern">
-                            <input type="checkbox" class="gender-checkbox-modern" name="allowed_genders" value="male" id="gender_male" checked>
-                            <label for="gender_male" class="gender-label-modern">
-                                <span><i class="fas fa-mars me-1"></i> Kişi</span>
+                        <div class="gender-selection-compact">
+                            <input type="radio" class="gender-option-compact" name="gender_choice" value="all" id="gender_all" checked>
+                            <label for="gender_all" class="gender-label-compact">
+                                <i class="fas fa-users"></i>
+                                <span>Fərqi yoxdur</span>
                             </label>
                             
-                            <input type="checkbox" class="gender-checkbox-modern" name="allowed_genders" value="female" id="gender_female" checked>
-                            <label for="gender_female" class="gender-label-modern">
-                                <span><i class="fas fa-venus me-1"></i> Qadın</span>
+                            <input type="radio" class="gender-option-compact" name="gender_choice" value="male" id="gender_male_only">
+                            <label for="gender_male_only" class="gender-label-compact">
+                                <i class="fas fa-mars"></i>
+                                <span>Kişi</span>
                             </label>
                             
-                            <input type="checkbox" class="gender-checkbox-modern" name="allowed_genders" value="other" id="gender_other" checked>
-                            <label for="gender_other" class="gender-label-modern">
-                                <span><i class="fas fa-transgender me-1"></i> Digər</span>
-                            </label>
-                            
-                            <input type="checkbox" class="gender-checkbox-modern" name="allowed_genders" value="prefer_not_to_say" id="gender_prefer_not_to_say" checked>
-                            <label for="gender_prefer_not_to_say" class="gender-label-modern">
-                                <span><i class="fas fa-question me-1"></i> Deməyi üstün tutmuram</span>
+                            <input type="radio" class="gender-option-compact" name="gender_choice" value="female" id="gender_female_only">
+                            <label for="gender_female_only" class="gender-label-compact">
+                                <i class="fas fa-venus"></i>
+                                <span>Qadın</span>
                             </label>
                         </div>
-                        <div class="form-help-modern">
-                            <i class="fas fa-info-circle"></i>
-                            <span>Ən az bir cinsiyyət seçilməlidir</span>
-                        </div>
+                        <!-- Hidden inputs to store actual gender values -->
+                        <input type="hidden" name="allowed_genders" id="allowed_genders_hidden" value="male,female,other,prefer_not_to_say">
                     </div>
                 </div>
 
@@ -1056,8 +1160,217 @@ html {
 {% endblock %}
 
 {% block extra_js %}
+<!-- Load Google Maps Script -->
+<script>
+(function() {
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAoWtRW8FvOvwdDOfdbHdzzcC989ZUM9zg&libraries=places&language=az';
+    script.async = true;
+    script.defer = true;
+    script.onload = function() {
+        setTimeout(function() {
+            if (typeof google !== 'undefined' && google.maps && typeof initActivityMap === 'function') {
+                initActivityMap();
+            }
+        }, 100);
+    };
+    document.head.appendChild(script);
+})();
+</script>
+
 <script>
 console.log('Create activity script loaded');
+
+let map;
+let marker;
+let geocoder;
+let autocomplete;
+let isMapInitialized = false;
+let selectedLanguages = new Set();
+
+// Initialize Google Map for Activity
+function initActivityMap() {
+    if (isMapInitialized) return;
+    
+    if (typeof google === 'undefined' || !google.maps || !google.maps.Map) {
+        console.error('Google Maps not loaded yet');
+        return;
+    }
+    
+    isMapInitialized = true;
+    console.log('Initializing Activity Map...');
+    
+    const defaultLocation = { lat: 40.4093, lng: 49.8671 };
+    
+    geocoder = new google.maps.Geocoder();
+    
+    map = new google.maps.Map(document.getElementById('activity-map'), {
+        center: defaultLocation,
+        zoom: 12,
+        styles: [
+            {
+                featureType: "poi",
+                elementType: "labels",
+                stylers: [{ visibility: "off" }]
+            }
+        ]
+    });
+    
+    marker = new google.maps.Marker({
+        position: defaultLocation,
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        title: 'Yerinizi seçin və ya marker-i sürüşdürün'
+    });
+    
+    marker.addListener('dragend', function(event) {
+        const position = {
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng()
+        };
+        updateLocationFromCoordinates(position);
+    });
+    
+    map.addListener('click', function(event) {
+        const position = {
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng()
+        };
+        marker.setPosition(event.latLng);
+        updateLocationFromCoordinates(position);
+    });
+    
+    const addressInput = document.getElementById('address');
+    autocomplete = new google.maps.places.Autocomplete(addressInput, {
+        types: ['geocode', 'establishment'],
+        componentRestrictions: { country: 'az' }
+    });
+    
+    autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+        
+        if (!place.geometry) return;
+        
+        const position = {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng()
+        };
+        
+        map.setCenter(place.geometry.location);
+        map.setZoom(15);
+        marker.setPosition(place.geometry.location);
+        
+        document.getElementById('latitude').value = position.lat;
+        document.getElementById('longitude').value = position.lng;
+        
+        showLocationSelected(place.formatted_address || addressInput.value);
+    });
+}
+
+function updateLocationFromCoordinates(position) {
+    document.getElementById('latitude').value = position.lat;
+    document.getElementById('longitude').value = position.lng;
+    
+    geocoder.geocode({ location: position }, function(results, status) {
+        if (status === 'OK' && results[0]) {
+            const address = results[0].formatted_address;
+            document.getElementById('address').value = address;
+            showLocationSelected(address);
+        }
+    });
+}
+
+function showLocationSelected(address) {
+    const locationDiv = document.getElementById('location-selected');
+    const locationText = document.getElementById('selected-location');
+    locationText.textContent = address;
+    locationDiv.classList.add('show');
+}
+
+// Language dropdown functions
+function toggleLanguageDropdown() {
+    const trigger = document.getElementById('language-trigger');
+    const menu = document.getElementById('language-menu');
+    trigger.classList.toggle('active');
+    menu.classList.toggle('show');
+}
+
+function toggleLanguage(id, name) {
+    const option = document.querySelector(`.language-option[data-id="${id}"]`);
+    
+    if (selectedLanguages.has(id)) {
+        selectedLanguages.delete(id);
+        option.classList.remove('selected');
+    } else {
+        selectedLanguages.add(id);
+        option.classList.add('selected');
+    }
+    
+    updateSelectedLanguagesDisplay();
+    updateLanguageTriggerText();
+}
+
+function removeLanguage(id) {
+    selectedLanguages.delete(id);
+    const option = document.querySelector(`.language-option[data-id="${id}"]`);
+    if (option) option.classList.remove('selected');
+    updateSelectedLanguagesDisplay();
+    updateLanguageTriggerText();
+}
+
+function updateSelectedLanguagesDisplay() {
+    const container = document.getElementById('selected-languages');
+    container.innerHTML = '';
+    
+    selectedLanguages.forEach(id => {
+        const option = document.querySelector(`.language-option[data-id="${id}"]`);
+        if (option) {
+            const name = option.getAttribute('data-name');
+            const tag = document.createElement('div');
+            tag.className = 'language-tag';
+            tag.innerHTML = `
+                <span>${name}</span>
+                <span class="remove-tag" onclick="removeLanguage(${id})"><i class="fas fa-times"></i></span>
+                <input type="hidden" name="required_languages" value="${id}">
+            `;
+            container.appendChild(tag);
+        }
+    });
+}
+
+function updateLanguageTriggerText() {
+    const trigger = document.getElementById('language-trigger');
+    const span = trigger.querySelector('span');
+    if (selectedLanguages.size > 0) {
+        span.textContent = `${selectedLanguages.size} dil seçildi`;
+    } else {
+        span.textContent = 'Dil seçin...';
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const container = document.querySelector('.language-dropdown-container');
+    if (container && !container.contains(e.target)) {
+        document.getElementById('language-trigger').classList.remove('active');
+        document.getElementById('language-menu').classList.remove('show');
+    }
+});
+
+// Gender selection handling
+document.querySelectorAll('input[name="gender_choice"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const hiddenInput = document.getElementById('allowed_genders_hidden');
+        if (this.value === 'all') {
+            hiddenInput.value = 'male,female,other,prefer_not_to_say';
+        } else if (this.value === 'male') {
+            hiddenInput.value = 'male';
+        } else if (this.value === 'female') {
+            hiddenInput.value = 'female';
+        }
+    });
+});
 
 // Disable HTML5 validation
 document.addEventListener('DOMContentLoaded', function() {
@@ -1134,24 +1447,6 @@ uploadArea.addEventListener('drop', function(e) {
     }
 });
 
-// Language select enhancement
-const languageSelect = document.getElementById('required_languages');
-if (languageSelect) {
-    languageSelect.addEventListener('change', function() {
-        const selectedCount = this.selectedOptions.length;
-        const helpText = this.parentNode.querySelector('.form-help-modern span');
-        if (selectedCount > 0) {
-            helpText.textContent = `${selectedCount} dil seçildi. İştirakçıların bilməli olduğu dillər`;
-            helpText.style.color = 'var(--primary-dark)';
-            this.classList.add('has-selections');
-        } else {
-            helpText.textContent = 'Ctrl/Cmd basaraq bir neçə dil seçə bilərsiniz. İştirakçıların bilməli olduğu dillər';
-            helpText.style.color = '';
-            this.classList.remove('has-selections');
-        }
-    });
-}
-
 // Form validation and submission
 document.getElementById('create-activity-form').addEventListener('submit', function(e) {
     console.log('Form submission started');
@@ -1163,7 +1458,7 @@ document.getElementById('create-activity-form').addEventListener('submit', funct
     }
     
     // Basic required field validation
-    const requiredFields = ['title', 'category', 'short_description', 'description', 'start_date', 'start_time', 'address', 'max_participants'];
+    const requiredFields = ['title', 'category', 'start_date', 'start_time', 'address', 'max_participants'];
     let missingFields = [];
     
     for (const fieldName of requiredFields) {
@@ -1214,14 +1509,6 @@ document.getElementById('create-activity-form').addEventListener('submit', funct
         return;
     }
     
-    // Gender validation
-    const genderCheckboxes = document.querySelectorAll('input[name="allowed_genders"]:checked');
-    if (genderCheckboxes.length === 0) {
-        e.preventDefault();
-        alert('Ən az bir cinsiyyət seçməlisiniz.');
-        return;
-    }
-    
     // Show loading state
     submitBtn.disabled = true;
     submitBtn.classList.add('loading');
@@ -1243,3 +1530,4 @@ document.querySelectorAll('input, select, textarea').forEach(element => {
 });
 </script>
 {% endblock %}
+
