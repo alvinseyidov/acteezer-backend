@@ -10,8 +10,14 @@ from .serializers import (
     UserImageSerializer, OTPSendSerializer, OTPVerifySerializer,
     UserRegistrationSerializer, FriendshipSerializer, BlogPostSerializer, BlogCategorySerializer
 )
+import requests
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 
 User = get_user_model()
+
+# Google OAuth Web Client ID
+GOOGLE_WEB_CLIENT_ID = '598424666672-g20f6lhncv67c3ej6bottbnb62osm18b.apps.googleusercontent.com'
 
 
 class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
@@ -264,6 +270,104 @@ class UserViewSet(viewsets.ModelViewSet):
                 'success': False,
                 'message': 'Invalid phone or password'
             }, status=status.HTTP_401_UNAUTHORIZED)
+    
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny])
+    def google_auth(self, request):
+        """
+        Google OAuth Authentication
+        - If user exists with completed registration -> login
+        - If user exists with incomplete registration -> return user for registration flow
+        - If new user -> create user and return for registration flow
+        """
+        id_token_str = request.data.get('id_token')
+        
+        if not id_token_str:
+            return Response({
+                'success': False,
+                'message': 'Google ID token is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Verify the Google ID token
+            idinfo = id_token.verify_oauth2_token(
+                id_token_str, 
+                google_requests.Request(), 
+                GOOGLE_WEB_CLIENT_ID
+            )
+            
+            # Get user info from token
+            google_user_id = idinfo['sub']
+            email = idinfo.get('email', '')
+            first_name = idinfo.get('given_name', '')
+            last_name = idinfo.get('family_name', '')
+            
+            if not email:
+                return Response({
+                    'success': False,
+                    'message': 'Email not provided by Google'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Check if user exists by email
+            try:
+                user = User.objects.get(email=email)
+                
+                # User exists - check if registration is complete
+                token, created = Token.objects.get_or_create(user=user)
+                
+                return Response({
+                    'success': True,
+                    'message': 'Login successful',
+                    'is_new_user': False,
+                    'is_registration_complete': user.is_registration_complete,
+                    'registration_step': user.registration_step,
+                    'token': token.key,
+                    'user': UserSerializer(user, context={'request': request}).data
+                })
+                
+            except User.DoesNotExist:
+                # New user - create account with Google info
+                import uuid
+                
+                # Generate a unique phone placeholder (since phone is required but user signed up with Google)
+                # Format: GOOGLE_{first 8 chars of uuid}
+                temp_phone = f"+0{uuid.uuid4().hex[:11]}"
+                
+                user = User.objects.create(
+                    email=email,
+                    phone=temp_phone,  # Temporary phone, user should update during registration
+                    first_name=first_name,
+                    last_name=last_name,
+                    registration_step=2 if first_name and last_name else 1,  # Skip name step if we have it
+                    is_phone_verified=False,  # Phone not verified since they used Google
+                )
+                
+                # Set unusable password since they're using Google auth
+                user.set_unusable_password()
+                user.save()
+                
+                token, created = Token.objects.get_or_create(user=user)
+                
+                return Response({
+                    'success': True,
+                    'message': 'Account created with Google',
+                    'is_new_user': True,
+                    'is_registration_complete': False,
+                    'registration_step': user.registration_step,
+                    'token': token.key,
+                    'user': UserSerializer(user, context={'request': request}).data
+                }, status=status.HTTP_201_CREATED)
+                
+        except ValueError as e:
+            # Invalid token
+            return Response({
+                'success': False,
+                'message': f'Invalid Google token: {str(e)}'
+            }, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            return Response({
+                'success': False,
+                'message': f'Google authentication failed: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def upload_image(self, request):

@@ -217,3 +217,8 @@ class Command(BaseCommand):
             f'Total interests: {Interest.objects.count()}'
         ))
 
+
+
+
+
+
