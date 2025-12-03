@@ -16,8 +16,8 @@ from google.auth.transport import requests as google_requests
 
 User = get_user_model()
 
-# Google OAuth Web Client ID
-GOOGLE_WEB_CLIENT_ID = '598424666672-g20f6lhncv67c3ej6bottbnb62osm18b.apps.googleusercontent.com'
+# Google OAuth Web Client ID (NOT the Android one!)
+GOOGLE_WEB_CLIENT_ID = '598424666672-gavtvj1jvq2v4iat6502qkdk75ofpbu5.apps.googleusercontent.com'
 
 
 class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
