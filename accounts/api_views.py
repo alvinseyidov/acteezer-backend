@@ -311,6 +311,11 @@ class UserViewSet(viewsets.ModelViewSet):
             try:
                 user = User.objects.get(email=email)
                 
+                # Sync is_registration_complete with registration_step
+                if user.registration_step >= 8 and not user.is_registration_complete:
+                    user.is_registration_complete = True
+                    user.save(update_fields=['is_registration_complete'])
+                
                 # User exists - check if registration is complete
                 token, created = Token.objects.get_or_create(user=user)
                 
