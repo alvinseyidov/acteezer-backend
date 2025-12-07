@@ -61,9 +61,10 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         # Get data from Google
         extra_data = sociallogin.account.extra_data
         
-        user.first_name = extra_data.get('given_name', data.get('first_name', ''))
-        user.last_name = extra_data.get('family_name', data.get('last_name', ''))
-        user.email = extra_data.get('email', data.get('email', ''))
+        user.first_name = extra_data.get('given_name', data.get('first_name', '')) or ''
+        # If no last_name from Google, use a dot as placeholder (required field)
+        user.last_name = extra_data.get('family_name', data.get('last_name', '')) or '.'
+        user.email = extra_data.get('email', data.get('email', '')) or ''
         
         # Set a flag that this is a Google signup (no phone required)
         user.is_google_signup = True
