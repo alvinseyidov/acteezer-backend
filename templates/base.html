@@ -280,6 +280,84 @@
             }
         }
         
+        /* Mobile Header Controls */
+        .mobile-header-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .mobile-header-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #6b7280;
+            font-size: 0.9rem;
+            position: relative;
+            padding: 0;
+        }
+        
+        .mobile-header-btn:hover {
+            border-color: #10b981;
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        .mobile-header-btn::after {
+            display: none !important;
+        }
+        
+        .mobile-header-btn .dark-icon,
+        .mobile-header-btn .light-icon {
+            position: absolute;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-header-btn .dark-icon {
+            opacity: 1;
+        }
+        
+        .mobile-header-btn .light-icon {
+            opacity: 0;
+        }
+        
+        body.dark-mode .mobile-header-btn .dark-icon {
+            opacity: 0;
+        }
+        
+        body.dark-mode .mobile-header-btn .light-icon {
+            opacity: 1;
+            color: #fbbf24;
+        }
+        
+        .mobile-lang-code {
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #374151;
+        }
+        
+        body.dark-mode .mobile-header-btn {
+            background: #334155;
+            border-color: #475569;
+            color: #94a3b8;
+        }
+        
+        body.dark-mode .mobile-header-btn:hover {
+            border-color: #10b981;
+            color: #10b981;
+        }
+        
+        body.dark-mode .mobile-lang-code {
+            color: #e2e8f0;
+        }
+        
         /* User Dropdown Menu */
         .custom-dropdown {
             border: 1px solid #e5e7eb;
@@ -1955,18 +2033,40 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg" id="mainNavbar">
         <div class="container">
-            <!-- Logo Only on Desktop, Logo + Text on Mobile -->
+            <!-- Logo Only (no text) -->
             <a class="navbar-brand" href="{% url 'home' %}">
                 <img src="{% static 'logo.png' %}" alt="Acteezer" class="navbar-logo">
-                <span class="navbar-brand-text d-lg-none">Acteezer</span>
             </a>
             
-            <!-- Mobile Menu Button -->
-            <button class="mobile-menu-btn d-lg-none" id="openSidebar" aria-label="Menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+            <!-- Mobile Header Controls (visible only on mobile) -->
+            <div class="mobile-header-controls d-lg-none">
+                <!-- Dark Mode Toggle -->
+                <button class="mobile-header-btn" id="darkModeToggleMobile" title="Mövzu dəyiş">
+                    <i class="fas fa-moon dark-icon"></i>
+                    <i class="fas fa-sun light-icon"></i>
+                </button>
+                
+                <!-- Language Selector -->
+                <div class="dropdown">
+                    <button class="mobile-header-btn dropdown-toggle" type="button" id="languageDropdownMobile" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="mobile-lang-code">AZ</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end lang-dropdown" aria-labelledby="languageDropdownMobile">
+                        <li><a class="dropdown-item active" href="#" data-lang="az"><span class="lang-flag">🇦🇿</span> Azərbaycan</a></li>
+                        <li><a class="dropdown-item" href="#" data-lang="tr"><span class="lang-flag">🇹🇷</span> Türkçe</a></li>
+                        <li><a class="dropdown-item" href="#" data-lang="ru"><span class="lang-flag">🇷🇺</span> Русский</a></li>
+                        <li><a class="dropdown-item" href="#" data-lang="en"><span class="lang-flag">🇬🇧</span> English</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button class="mobile-menu-btn" id="openSidebar" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <!-- Center Navigation -->
@@ -2512,17 +2612,28 @@
         
         initDarkMode();
         
+        // Handle both desktop and mobile dark mode toggles
+        const darkModeToggleMobile = document.getElementById('darkModeToggleMobile');
+        
+        function toggleDarkMode() {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+        }
+        
         if (darkModeToggle) {
-            darkModeToggle.addEventListener('click', function() {
-                body.classList.toggle('dark-mode');
-                const isDark = body.classList.contains('dark-mode');
-                localStorage.setItem('darkMode', isDark);
-            });
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+        }
+        
+        if (darkModeToggleMobile) {
+            darkModeToggleMobile.addEventListener('click', toggleDarkMode);
         }
         
         // Language Selection
-        const languageItems = document.querySelectorAll('.language-dropdown .dropdown-item');
-        const languageToggle = document.querySelector('.language-toggle');
+        const languageItems = document.querySelectorAll('.lang-dropdown .dropdown-item');
+        const languageToggle = document.querySelector('.header-icon-btn.dropdown-toggle');
+        const mobileLangCode = document.querySelector('.mobile-lang-code');
+        const desktopLangCode = document.querySelector('.current-lang');
         
         const languageData = {
             'az': { flag: '🇦🇿', code: 'AZ' },
@@ -2536,16 +2647,17 @@
         updateLanguageDisplay(savedLang);
         
         function updateLanguageDisplay(lang) {
-            if (languageToggle) {
-                const flagEl = languageToggle.querySelector('.language-flag');
-                const codeEl = languageToggle.querySelector('.language-code');
-                if (flagEl && codeEl && languageData[lang]) {
-                    flagEl.textContent = languageData[lang].flag;
-                    codeEl.textContent = languageData[lang].code;
-                }
+            // Update desktop language code
+            if (desktopLangCode && languageData[lang]) {
+                desktopLangCode.textContent = languageData[lang].code;
             }
             
-            // Update active state in dropdown
+            // Update mobile language code
+            if (mobileLangCode && languageData[lang]) {
+                mobileLangCode.textContent = languageData[lang].code;
+            }
+            
+            // Update active state in all dropdowns
             languageItems.forEach(item => {
                 if (item.dataset.lang === lang) {
                     item.classList.add('active');
