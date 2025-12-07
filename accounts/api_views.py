@@ -4,11 +4,15 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, get_user_model
 from django.db.models import Q
-from .models import Language, Interest, InterestCategory, UserImage, OTPVerification, Friendship, BlogPost, BlogCategory
+from .models import (
+    Language, Interest, InterestCategory, UserImage, OTPVerification, 
+    Friendship, BlogPost, BlogCategory, NotificationSettings, PushToken, Notification
+)
 from .serializers import (
     LanguageSerializer, InterestSerializer, InterestCategorySerializer, UserSerializer, UserPublicSerializer,
     UserImageSerializer, OTPSendSerializer, OTPVerifySerializer,
-    UserRegistrationSerializer, FriendshipSerializer, BlogPostSerializer, BlogCategorySerializer
+    UserRegistrationSerializer, FriendshipSerializer, BlogPostSerializer, BlogCategorySerializer,
+    NotificationSettingsSerializer, PushTokenSerializer, NotificationSerializer
 )
 
 User = get_user_model()
@@ -511,4 +515,185 @@ class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(is_featured=True)
         
         return queryset.select_related('author', 'category').order_by('-published_at', '-created_at')
+
+
+class NotificationSettingsViewSet(viewsets.ViewSet):
+    """ViewSet for user notification settings"""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def list(self, request):
+        """Get current user's notification settings"""
+        settings, created = NotificationSettings.objects.get_or_create(user=request.user)
+        serializer = NotificationSettingsSerializer(settings)
+        return Response(serializer.data)
+    
+    def partial_update(self, request, pk=None):
+        """Update notification settings"""
+        settings, created = NotificationSettings.objects.get_or_create(user=request.user)
+        serializer = NotificationSettingsSerializer(settings, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'success': True,
+                'message': 'Bildiriş ayarları yeniləndi',
+                'settings': serializer.data
+            })
+        
+        return Response({
+            'success': False,
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['post'])
+    def toggle_all(self, request):
+        """Toggle all notifications on/off"""
+        enabled = request.data.get('enabled', True)
+        settings, created = NotificationSettings.objects.get_or_create(user=request.user)
+        
+        # Update all notification settings
+        settings.friend_requests = enabled
+        settings.friend_request_accepted = enabled
+        settings.friend_new_activity = enabled
+        settings.activity_join_request = enabled
+        settings.activity_participant_left = enabled
+        settings.activity_comment = enabled
+        settings.activity_update = enabled
+        settings.activity_cancelled = enabled
+        settings.activity_reminder = enabled
+        settings.new_activities_nearby = enabled
+        settings.new_activities_interests = enabled
+        settings.new_message = enabled
+        settings.system_updates = enabled
+        settings.push_enabled = enabled
+        settings.save()
+        
+        serializer = NotificationSettingsSerializer(settings)
+        return Response({
+            'success': True,
+            'message': 'Bütün bildirişlər ' + ('aktivləşdirildi' if enabled else 'söndürüldü'),
+            'settings': serializer.data
+        })
+
+
+class PushTokenViewSet(viewsets.ViewSet):
+    """ViewSet for managing push notification tokens"""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def create(self, request):
+        """Register or update a push token"""
+        token = request.data.get('token')
+        platform = request.data.get('platform', 'android')
+        device_name = request.data.get('device_name', '')
+        
+        if not token:
+            return Response({
+                'success': False,
+                'message': 'Token is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Deactivate any existing tokens with this value for other users
+        PushToken.objects.filter(token=token).exclude(user=request.user).update(is_active=False)
+        
+        # Get or create the token for this user
+        push_token, created = PushToken.objects.update_or_create(
+            token=token,
+            defaults={
+                'user': request.user,
+                'platform': platform,
+                'device_name': device_name,
+                'is_active': True
+            }
+        )
+        
+        serializer = PushTokenSerializer(push_token)
+        return Response({
+            'success': True,
+            'message': 'Push token registered' if created else 'Push token updated',
+            'token': serializer.data
+        })
+    
+    def destroy(self, request, pk=None):
+        """Deactivate a push token (on logout)"""
+        token = request.data.get('token')
+        
+        if token:
+            PushToken.objects.filter(token=token, user=request.user).update(is_active=False)
+        else:
+            # Deactivate all tokens for this user
+            PushToken.objects.filter(user=request.user).update(is_active=False)
+        
+        return Response({
+            'success': True,
+            'message': 'Push token deactivated'
+        })
+    
+    @action(detail=False, methods=['post'])
+    def deactivate(self, request):
+        """Deactivate a push token by token value"""
+        token = request.data.get('token')
+        
+        if token:
+            PushToken.objects.filter(token=token, user=request.user).update(is_active=False)
+            return Response({
+                'success': True,
+                'message': 'Push token deactivated'
+            })
+        
+        return Response({
+            'success': False,
+            'message': 'Token is required'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for user notifications"""
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user).order_by('-created_at')
+    
+    @action(detail=False, methods=['get'])
+    def unread_count(self, request):
+        """Get count of unread notifications"""
+        count = Notification.objects.filter(user=request.user, is_read=False).count()
+        return Response({
+            'unread_count': count
+        })
+    
+    @action(detail=True, methods=['post'])
+    def mark_read(self, request, pk=None):
+        """Mark a notification as read"""
+        try:
+            notification = Notification.objects.get(pk=pk, user=request.user)
+            notification.is_read = True
+            notification.save(update_fields=['is_read'])
+            return Response({
+                'success': True,
+                'message': 'Bildiriş oxundu olaraq işarələndi'
+            })
+        except Notification.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'Bildiriş tapılmadı'
+            }, status=status.HTTP_404_NOT_FOUND)
+    
+    @action(detail=False, methods=['post'])
+    def mark_all_read(self, request):
+        """Mark all notifications as read"""
+        updated = Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        return Response({
+            'success': True,
+            'message': f'{updated} bildiriş oxundu olaraq işarələndi'
+        })
+    
+    @action(detail=False, methods=['delete'])
+    def clear_all(self, request):
+        """Delete all read notifications"""
+        deleted, _ = Notification.objects.filter(user=request.user, is_read=True).delete()
+        return Response({
+            'success': True,
+            'message': f'{deleted} bildiriş silindi'
+        })
 

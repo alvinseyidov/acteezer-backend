@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Language, Interest, InterestCategory, UserImage, OTPVerification, Friendship, BlogPost, BlogCategory
+from .models import (
+    Language, Interest, InterestCategory, UserImage, OTPVerification, 
+    Friendship, BlogPost, BlogCategory, NotificationSettings, PushToken, Notification
+)
 
 User = get_user_model()
 
@@ -253,4 +256,77 @@ class BlogPostSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.featured_image.url)
             return obj.featured_image.url
         return None
+
+
+class NotificationSettingsSerializer(serializers.ModelSerializer):
+    """Serializer for user notification settings"""
+    
+    class Meta:
+        model = NotificationSettings
+        fields = [
+            'id',
+            # Friend notifications
+            'friend_requests',
+            'friend_request_accepted',
+            'friend_new_activity',
+            # Activity notifications (Organizer)
+            'activity_join_request',
+            'activity_participant_left',
+            'activity_comment',
+            # Activity notifications (Participant)
+            'activity_update',
+            'activity_cancelled',
+            'activity_reminder',
+            # Discovery notifications
+            'new_activities_nearby',
+            'new_activities_interests',
+            # Message notifications
+            'new_message',
+            # System notifications
+            'system_updates',
+            'promotional',
+            # Delivery preferences
+            'push_enabled',
+            'email_enabled',
+            # Quiet hours
+            'quiet_hours_enabled',
+            'quiet_hours_start',
+            'quiet_hours_end',
+            # Timestamps
+            'updated_at',
+        ]
+        read_only_fields = ['id', 'updated_at']
+
+
+class PushTokenSerializer(serializers.ModelSerializer):
+    """Serializer for push notification tokens"""
+    
+    class Meta:
+        model = PushToken
+        fields = ['id', 'token', 'platform', 'device_name', 'is_active', 'created_at']
+        read_only_fields = ['id', 'created_at']
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    """Serializer for notifications"""
+    related_user = UserPublicSerializer(read_only=True)
+    notification_type_display = serializers.CharField(source='get_notification_type_display', read_only=True)
+    
+    class Meta:
+        model = Notification
+        fields = [
+            'id',
+            'notification_type',
+            'notification_type_display',
+            'title',
+            'message',
+            'related_user',
+            'related_activity_id',
+            'related_friendship_id',
+            'data',
+            'is_read',
+            'created_at',
+        ]
+        read_only_fields = ['id', 'notification_type', 'title', 'message', 'related_user', 
+                          'related_activity_id', 'related_friendship_id', 'data', 'created_at']
 
