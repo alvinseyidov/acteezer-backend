@@ -15,8 +15,24 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         user = request.user
         if user.is_authenticated:
             if not user.is_registration_complete:
-                # Redirect to continue registration
-                return reverse('accounts:full_name_registration')
+                # Redirect to continue registration based on current step
+                step = user.registration_step
+                if step <= 2:
+                    return reverse('accounts:full_name_registration')
+                elif step == 3:
+                    return reverse('accounts:languages_registration')
+                elif step == 4:
+                    return reverse('accounts:birthday_registration')
+                elif step == 5:
+                    return reverse('accounts:images_registration')
+                elif step == 6:
+                    return reverse('accounts:bio_registration')
+                elif step == 7:
+                    return reverse('accounts:interests_registration')
+                elif step == 8:
+                    return reverse('accounts:location_registration')
+                else:
+                    return reverse('accounts:full_name_registration')
             return '/'
         return '/'
     
@@ -84,10 +100,11 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             google_id = sociallogin.account.extra_data.get('sub', sociallogin.account.uid)
             user.phone = f'+000{google_id[:12]}'  # Placeholder phone
         
-        # Mark as Google signup
+        # Mark as Google signup - NEW USER needs to complete registration
         user.is_google_signup = True
         user.is_phone_verified = True  # Skip phone verification for Google users
-        user.registration_step = 1  # Start from name step
+        user.registration_step = 2  # Skip phone step, start from name (step 2)
+        user.is_registration_complete = False  # Must complete registration steps
         
         user.save()
         sociallogin.save(request)
