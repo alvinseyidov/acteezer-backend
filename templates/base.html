@@ -668,20 +668,25 @@
             justify-content: center;
         }
         
-        /* ===== PREMIUM MOBILE SIDEBAR ===== */
+        /* ===== MODERN MOBILE SIDEBAR - Glassmorphism Design ===== */
         .mobile-sidebar {
             position: fixed;
             top: 0;
-            left: -360px;
-            width: 360px;
-            max-width: 85vw;
+            left: -100%;
+            width: 320px;
+            max-width: 88vw;
             height: 100vh;
-            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
-            box-shadow: 4px 0 40px rgba(0, 0, 0, 0.15), 2px 0 20px rgba(0, 0, 0, 0.1);
+            height: 100dvh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 8px 0 40px rgba(0, 0, 0, 0.15);
             z-index: 9999;
-            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-y: auto;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         .mobile-sidebar.active {
@@ -692,11 +697,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.25rem 1.75rem;
-            border-bottom: 1px solid #e2e8f0;
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.25rem;
+            background: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
         
         .mobile-logo {
@@ -707,34 +713,15 @@
         }
         
         .mobile-logo img {
-            height: 42px;
-            filter: drop-shadow(0 2px 6px rgba(16, 185, 129, 0.3));
+            height: 36px;
             transition: transform 0.3s ease;
         }
         
         .mobile-logo-text {
-            font-size: 1.65rem;
+            font-size: 1.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.4px;
-            position: relative;
-            display: inline-block;
-            line-height: 42px;
-        }
-        
-        .mobile-logo-text::after {
-            content: '';
-            position: absolute;
-            bottom: 3px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #10b981 0%, #059669 50%, #047857 100%);
-            border-radius: 3px;
-            opacity: 0.4;
+            color: #5DD3BE;
+            letter-spacing: -0.5px;
         }
         
         .mobile-logo:hover img {
@@ -742,15 +729,14 @@
         }
         
         .mobile-sidebar-close {
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            background: #f1f5f9;
             border: none;
-            font-size: 1.4rem;
-            color: #dc2626;
+            font-size: 1.1rem;
+            color: #64748b;
             cursor: pointer;
-            padding: 0.6rem;
+            padding: 0;
             border-radius: 12px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -759,30 +745,29 @@
         }
         
         .mobile-sidebar-close:hover {
-            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
-            transform: scale(1.08) rotate(90deg);
-            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+            background: #fee2e2;
+            color: #ef4444;
+            transform: rotate(90deg);
         }
         
         .mobile-sidebar-close:active {
-            transform: scale(0.95);
+            transform: scale(0.9) rotate(90deg);
         }
         
         .mobile-sidebar-content {
-            padding: 1rem 0 2rem 0;
+            padding: 1rem 1rem 6rem 1rem;
+            flex: 1;
         }
         
         .mobile-user-profile {
             display: flex;
             align-items: center;
-            padding: 1.25rem 1.5rem;
-            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
-            margin: 1rem 1.25rem 1.25rem 1.25rem;
-            border-radius: 18px;
+            padding: 1rem 1.25rem;
+            background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+            margin-bottom: 1.25rem;
+            border-radius: 16px;
             color: white;
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35), 
-                        inset 0 1px 0 rgba(255, 255, 255, 0.2), 
-                        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 24px rgba(93, 211, 190, 0.35);
             position: relative;
             overflow: hidden;
         }
@@ -791,26 +776,26 @@
             content: '';
             position: absolute;
             top: -50%;
-            right: -20%;
-            width: 100%;
+            right: -30%;
+            width: 120%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
         }
         
         .mobile-user-avatar {
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
             background: rgba(255, 255, 255, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 1.15rem;
+            margin-right: 1rem;
             overflow: hidden;
-            border: 3px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             position: relative;
             z-index: 1;
+            flex-shrink: 0;
         }
         
         .mobile-user-avatar img {
@@ -820,96 +805,93 @@
         }
         
         .mobile-user-avatar i {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             color: white;
         }
         
         .mobile-user-info {
             position: relative;
             z-index: 1;
+            min-width: 0;
         }
         
         .mobile-user-info h5 {
             margin: 0;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            letter-spacing: 0.3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .mobile-user-info p {
-            margin: 0.25rem 0 0 0;
-            font-size: 0.875rem;
-            opacity: 0.95;
+            margin: 0.2rem 0 0 0;
+            font-size: 0.8rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Section Labels */
+        .mobile-section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+            margin-top: 0.5rem;
         }
         
         .mobile-nav-links {
             list-style: none;
             padding: 0;
-            margin: 0.5rem 1rem 1rem 1rem;
+            margin: 0 0 0.5rem 0;
         }
         
         .mobile-nav-links li {
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.25rem;
         }
         
         .mobile-nav-links a {
             display: flex;
             align-items: center;
-            padding: 0.75rem 1rem;
-            color: #475569;
+            padding: 0.85rem 1rem;
+            color: #334155;
             text-decoration: none;
             border-radius: 14px;
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             position: relative;
-            overflow: hidden;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 250, 252, 0.5) 100%);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-        
-        .mobile-nav-links a::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
-            transform: scaleY(0);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .mobile-nav-links a:hover {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.08) 100%);
-            color: #10b981;
-            transform: translateX(6px);
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
-        }
-        
-        .mobile-nav-links a:hover::before {
-            transform: scaleY(1);
+            background: rgba(93, 211, 190, 0.1);
+            color: #5DD3BE;
         }
         
         .mobile-nav-links a:active {
-            transform: translateX(3px) scale(0.98);
+            transform: scale(0.98);
+            background: rgba(93, 211, 190, 0.15);
         }
         
         .mobile-nav-links a i {
-            width: 22px;
-            margin-right: 0.75rem;
+            width: 24px;
+            margin-right: 0.85rem;
             text-align: center;
             font-size: 1.1rem;
-            transition: transform 0.35s ease;
+            color: #64748b;
+            transition: color 0.25s ease;
         }
         
         .mobile-nav-links a:hover i {
-            transform: scale(1.15) rotate(5deg);
+            color: #5DD3BE;
         }
         
         .mobile-action-buttons {
-            padding: 0 1rem 0.75rem 1rem;
+            padding: 0.5rem 0 1rem 0;
         }
         
         .mobile-create-btn {
@@ -917,90 +899,96 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            padding: 0.95rem 1.3rem;
-            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+            padding: 1rem;
+            background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
             color: white;
             text-decoration: none;
-            border-radius: 16px;
+            border-radius: 14px;
             font-weight: 700;
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35), 
-                        inset 0 1px 0 rgba(255, 255, 255, 0.2), 
-                        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .mobile-create-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.6s ease;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(93, 211, 190, 0.35);
         }
         
         .mobile-create-btn:hover {
-            background: linear-gradient(135deg, #059669 0%, #047857 50%, #065f46 100%);
+            background: linear-gradient(135deg, #4BC5AA 0%, #3db89e 100%);
             color: white;
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.45);
-        }
-        
-        .mobile-create-btn:hover::before {
-            left: 100%;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(93, 211, 190, 0.45);
         }
         
         .mobile-create-btn:active {
-            transform: translateY(-1px) scale(0.98);
+            transform: translateY(0) scale(0.98);
         }
         
         .mobile-create-btn i {
-            margin-right: 0.7rem;
-            font-size: 1.2rem;
+            margin-right: 0.6rem;
+            font-size: 1.1rem;
         }
         
         .mobile-user-links {
             list-style: none;
             padding: 0;
-            margin: 0.75rem 1rem;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 0.75rem;
+            margin: 0;
         }
         
         .mobile-user-links li {
-            margin-bottom: 0.35rem;
+            margin-bottom: 0.25rem;
         }
         
         .mobile-user-links a {
             display: flex;
             align-items: center;
-            padding: 0.65rem 0.85rem;
+            padding: 0.75rem 1rem;
             color: #475569;
             text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            border-radius: 12px;
+            transition: all 0.25s ease;
             font-weight: 500;
             font-size: 0.9rem;
         }
         
         .mobile-user-links a:hover {
-            background: #fef2f2;
-            color: #dc2626;
+            background: rgba(93, 211, 190, 0.1);
+            color: #5DD3BE;
         }
         
         .mobile-user-links a i {
-            width: 20px;
+            width: 22px;
             margin-right: 0.75rem;
             text-align: center;
+            font-size: 1rem;
+            color: #94a3b8;
+        }
+        
+        .mobile-user-links a:hover i {
+            color: #5DD3BE;
+        }
+        
+        /* Logout Link Styling */
+        .mobile-user-links a[href*="logout"] {
+            color: #64748b;
+            margin-top: 0.5rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1rem;
+            border-radius: 0;
+        }
+        
+        .mobile-user-links a[href*="logout"]:hover {
+            background: #fef2f2;
+            color: #ef4444;
+            border-radius: 12px;
+        }
+        
+        .mobile-user-links a[href*="logout"]:hover i {
+            color: #ef4444;
         }
         
         .mobile-auth-buttons {
-            padding: 0 1rem;
+            padding: 0.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
         
         .mobile-join-btn, .mobile-login-btn {
@@ -1008,38 +996,62 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            padding: 0.875rem;
+            padding: 1rem;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin-bottom: 0.75rem;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .mobile-join-btn {
-            background: linear-gradient(135deg, #5dd3be 0%, #4fd1c7 100%);
+            background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
             color: white;
+            box-shadow: 0 6px 20px rgba(93, 211, 190, 0.35);
         }
         
         .mobile-join-btn:hover {
-            background: linear-gradient(135deg, #4fd1c7 0%, #3b82f6 100%);
+            background: linear-gradient(135deg, #4BC5AA 0%, #3db89e 100%);
             color: white;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(93, 211, 190, 0.45);
         }
         
         .mobile-login-btn {
             background: white;
-            color: #5dd3be;
-            border: 2px solid #5dd3be;
+            color: #334155;
+            border: 2px solid #e2e8f0;
         }
         
         .mobile-login-btn:hover {
-            background: #5dd3be;
-            color: white;
+            border-color: #5DD3BE;
+            color: #5DD3BE;
+            background: rgba(93, 211, 190, 0.05);
         }
         
         .mobile-join-btn i, .mobile-login-btn i {
-            margin-right: 0.5rem;
+            margin-right: 0.6rem;
+        }
+        
+        /* Sidebar Footer */
+        .mobile-sidebar-footer {
+            padding: 1rem 1.25rem;
+            background: #f8fafc;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+        
+        .mobile-sidebar-footer a {
+            color: #94a3b8;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-sidebar-footer a:hover {
+            color: #5DD3BE;
+            transform: scale(1.15);
         }
         
         .mobile-sidebar-overlay {
@@ -1860,44 +1872,65 @@
                         <p>{{ user.email|default:"Hoş gəldiniz" }}</p>
                     </div>
                 </div>
-            {% endif %}
-            
-            <ul class="mobile-nav-links">
-                <li><a href="{% url 'activities:activities_list' %}"><i class="fas fa-calendar-alt"></i> Aktivitələr</a></li>
-                <li><a href="{% url 'accounts:people_list' %}"><i class="fas fa-users"></i> İnsanlar</a></li>
-                <li><a href="{% url 'places:places_list' %}"><i class="fas fa-map-marker-alt"></i> Məkanlar</a></li>
-                <li><a href="{% url 'blog' %}"><i class="fas fa-blog"></i> Bloq</a></li>
-                <li><a href="{% url 'about' %}"><i class="fas fa-info-circle"></i> Haqqımızda</a></li>
-                <li><a href="{% url 'contact' %}"><i class="fas fa-phone"></i> Əlaqə</a></li>
-            </ul>
-            
-            {% if user.is_authenticated %}
+                
                 <div class="mobile-action-buttons">
                     <a href="{% url 'activities:create_activity' %}" class="mobile-create-btn">
                         <i class="fas fa-plus"></i> Aktivitə Yarat
                     </a>
                 </div>
-                
-                <ul class="mobile-user-links">
-                    <li><a href="{% url 'accounts:profile' %}"><i class="fas fa-user-circle"></i> Profil</a></li>
-                    <li><a href="{% url 'accounts:my_activities' %}"><i class="fas fa-list"></i> Aktivitələrim</a></li>
-                    <li><a href="{% url 'accounts:joined_activities' %}"><i class="fas fa-calendar-check"></i> Qoşulduğum Aktivitələr</a></li>
-                    <li><a href="{% url 'accounts:friends_list' %}"><i class="fas fa-user-friends"></i> Dostlarım</a></li>
-                    <li><a href="{% url 'accounts:friend_requests' %}"><i class="fas fa-user-plus"></i> Dostluq Sorğuları</a></li>
-                    <li><a href="{% url 'places:liked_places' %}"><i class="fas fa-heart"></i> Bəyəndiyim Məkanlar</a></li>
-                    <li><a href="{% url 'accounts:settings' %}"><i class="fas fa-cog"></i> Tənzimləmələr</a></li>
-                    <li><a href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt"></i> Çıxış</a></li>
-                </ul>
             {% else %}
                 <div class="mobile-auth-buttons">
-                    <a href="{% url 'accounts:phone_registration' %}" class="mobile-join-btn">
-                        <i class="fas fa-user-plus"></i> Qoşulun
+                    <a href="{% url 'accounts:register' %}" class="mobile-join-btn">
+                        <i class="fas fa-user-plus"></i> Qeydiyyat
                     </a>
                     <a href="{% url 'accounts:login' %}" class="mobile-login-btn">
-                        <i class="fas fa-sign-in-alt"></i> Daxil olun
+                        <i class="fas fa-sign-in-alt"></i> Daxil ol
                     </a>
                 </div>
             {% endif %}
+            
+            <div class="mobile-section-label">Kəşf et</div>
+            <ul class="mobile-nav-links">
+                <li><a href="{% url 'activities:activities_list' %}"><i class="fas fa-compass"></i> Aktivitələr</a></li>
+                <li><a href="{% url 'accounts:people_list' %}"><i class="fas fa-users"></i> İnsanlar</a></li>
+                <li><a href="{% url 'places:places_list' %}"><i class="fas fa-map-marker-alt"></i> Məkanlar</a></li>
+                <li><a href="{% url 'blog' %}"><i class="fas fa-newspaper"></i> Bloq</a></li>
+            </ul>
+            
+            {% if user.is_authenticated %}
+                <div class="mobile-section-label">Hesabım</div>
+                <ul class="mobile-user-links">
+                    <li><a href="{% url 'accounts:profile' %}"><i class="fas fa-user-circle"></i> Profil</a></li>
+                    <li><a href="{% url 'accounts:my_activities' %}"><i class="fas fa-calendar-plus"></i> Aktivitələrim</a></li>
+                    <li><a href="{% url 'accounts:joined_activities' %}"><i class="fas fa-calendar-check"></i> Qoşulduqlarım</a></li>
+                    <li><a href="{% url 'accounts:friends_list' %}"><i class="fas fa-heart"></i> Dostlarım</a></li>
+                    <li><a href="{% url 'accounts:friend_requests' %}"><i class="fas fa-user-plus"></i> Dostluq Sorğuları</a></li>
+                    <li><a href="{% url 'places:liked_places' %}"><i class="fas fa-bookmark"></i> Saxlanılanlar</a></li>
+                </ul>
+                
+                <div class="mobile-section-label">Digər</div>
+                <ul class="mobile-user-links">
+                    <li><a href="{% url 'accounts:settings' %}"><i class="fas fa-cog"></i> Tənzimləmələr</a></li>
+                    <li><a href="{% url 'about' %}"><i class="fas fa-info-circle"></i> Haqqımızda</a></li>
+                    <li><a href="{% url 'contact' %}"><i class="fas fa-headset"></i> Dəstək</a></li>
+                    <li><a href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt"></i> Çıxış</a></li>
+                </ul>
+            {% else %}
+                <div class="mobile-section-label">Məlumat</div>
+                <ul class="mobile-nav-links">
+                    <li><a href="{% url 'about' %}"><i class="fas fa-info-circle"></i> Haqqımızda</a></li>
+                    <li><a href="{% url 'contact' %}"><i class="fas fa-headset"></i> Əlaqə</a></li>
+                    <li><a href="{% url 'terms' %}"><i class="fas fa-file-contract"></i> İstifadə Şərtləri</a></li>
+                    <li><a href="{% url 'privacy' %}"><i class="fas fa-shield-alt"></i> Məxfilik</a></li>
+                </ul>
+            {% endif %}
+        </div>
+        
+        <div class="mobile-sidebar-footer">
+            <a href="https://instagram.com/acteezer" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://facebook.com/acteezer" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="https://tiktok.com/@acteezer" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="https://youtube.com/@acteezer" target="_blank"><i class="fab fa-youtube"></i></a>
         </div>
     </div>
     
@@ -1997,7 +2030,7 @@
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="btn btn-primary" href="{% url 'accounts:phone_registration' %}">
+                            <a class="btn btn-primary" href="{% url 'accounts:register' %}">
                                 <i class="fas fa-user-plus me-2"></i>Qoşulun
                             </a>
                         </li>

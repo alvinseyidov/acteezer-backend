@@ -268,11 +268,6 @@ SOCIALACCOUNT_PROVIDERS = {
             'access_type': 'online',
         },
         'OAUTH_PKCE_ENABLED': True,
-        'APP': {
-            'client_id': '',  # Will be set from admin or environment
-            'secret': '',      # Will be set from admin or environment
-            'key': ''
-        }
     }
 }
 
