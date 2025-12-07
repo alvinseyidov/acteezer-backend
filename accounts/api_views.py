@@ -265,6 +265,56 @@ class UserViewSet(viewsets.ModelViewSet):
                 'message': 'Invalid phone or password'
             }, status=status.HTTP_401_UNAUTHORIZED)
     
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny])
+    def google_auth(self, request):
+        """
+        Authenticate or register with Google.
+        Accepts Google ID token and user info from mobile app.
+        """
+        google_id = request.data.get('google_id')
+        email = request.data.get('email')
+        first_name = request.data.get('first_name', '')
+        last_name = request.data.get('last_name', '') or '.'
+        
+        if not google_id or not email:
+            return Response({
+                'success': False,
+                'message': 'Google ID and email are required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Check if user exists with this email
+            user = User.objects.get(email=email)
+            is_new_user = False
+        except User.DoesNotExist:
+            # Create new user
+            user = User.objects.create(
+                phone=f'+000{google_id[:12]}',  # Placeholder phone
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                is_google_signup=True,
+                is_phone_verified=True,
+                registration_step=2,  # Skip phone step
+                is_registration_complete=False,
+            )
+            user.set_unusable_password()
+            user.save()
+            is_new_user = True
+        
+        # Create or get token
+        token, created = Token.objects.get_or_create(user=user)
+        
+        return Response({
+            'success': True,
+            'message': 'Google authentication successful',
+            'token': token.key,
+            'user': UserSerializer(user, context={'request': request}).data,
+            'is_new_user': is_new_user,
+            'needs_registration': not user.is_registration_complete,
+            'registration_step': user.registration_step,
+        })
+    
     @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def upload_image(self, request):
         """Upload user profile image"""

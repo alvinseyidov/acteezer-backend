@@ -1,13 +1,42 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
+{% load socialaccount %}
 
-{% block title %}Daxil ol - Acteezer{% endblock %}
+{% block title %}{% trans "Daxil ol" %} - Acteezer{% endblock %}
 
 {# Override messages block to prevent showing in header #}
 {% block messages %}{% endblock %}
 
 {% block extra_css %}
 <style>
+:root {
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #12121a;
+    --bg-card: #16161f;
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent: #5DD3BE;
+    --accent-hover: #4BC5AA;
+    --accent-glow: rgba(93, 211, 190, 0.3);
+    --border-color: #2a2a3a;
+    --input-bg: #1a1a24;
+    --error-color: #ef4444;
+    --success-color: #22c55e;
+}
+
+[data-theme="light"] {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
+    --input-bg: #f1f5f9;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -15,56 +44,189 @@
 }
 
 body {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #f0fdf9 0%, #f7fefb 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-primary);
     min-height: 100vh;
-    position: relative;
     overflow-x: hidden;
 }
 
-body::before {
+/* Hide default navbar and footer */
+.navbar, footer, .mobile-bottom-nav, .stats-section {
+    display: none !important;
+}
+
+main {
+    padding: 0 !important;
+}
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+    position: relative;
+}
+
+/* Animated background */
+.login-page::before {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    right: 0;
+    bottom: 0;
     background: 
-        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+        radial-gradient(circle at 20% 20%, rgba(93, 211, 190, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(93, 211, 190, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(93, 211, 190, 0.03) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
 }
 
-.auth-container {
-    min-height: 100vh;
+/* Header */
+.login-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+.login-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+}
+
+.login-logo img {
+    height: 36px;
+}
+
+.login-logo span {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Language Selector */
+.language-selector {
+    position: relative;
+}
+
+.language-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.language-btn:hover {
+    border-color: var(--accent);
+}
+
+.language-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.5rem;
+    min-width: 160px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.language-selector:hover .language-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.language-dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.language-dropdown a:hover {
+    background: var(--accent);
+    color: var(--bg-primary);
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    width: 42px;
+    height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Main Content */
+.login-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
     position: relative;
     z-index: 1;
 }
 
-.auth-card {
-    max-width: 480px;
+.login-card {
     width: 100%;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(20px);
-    border-radius: 32px;
-    box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-    overflow: hidden;
-    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
+    max-width: 440px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.5s ease;
 }
 
 @keyframes slideUp {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(20px);
     }
     to {
         opacity: 1;
@@ -72,478 +234,477 @@ body::before {
     }
 }
 
-.auth-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: linear-gradient(90deg, #5DD3BE, #4BC5AA, #5DD3BE);
-    background-size: 200% 100%;
-    animation: shimmer 3s linear infinite;
-}
-
-@keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-.auth-header {
-    padding: 2rem 2.5rem 1.5rem;
+.login-title {
     text-align: center;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-    position: relative;
+    margin-bottom: 0.5rem;
 }
 
-.auth-logo {
-    width: 50px;
-    height: 50px;
-    margin: 0 auto 0.75rem;
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    border-radius: 14px;
+.login-title h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.login-title p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+/* Alert Messages */
+.alert-container {
+    margin: 1.5rem 0;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 12px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    box-shadow: 0 6px 15px rgba(93, 211, 190, 0.3);
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-.auth-logo i {
-    font-size: 1.3rem;
-    color: white;
-}
-
-.auth-header h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1a202c;
-    margin-bottom: 0.35rem;
-    letter-spacing: -0.5px;
-}
-
-.auth-header p {
-    color: #718096;
+    gap: 0.75rem;
     font-size: 0.9rem;
-    font-weight: 400;
+    margin-bottom: 0.75rem;
 }
 
-.auth-body {
-    padding: 2rem 2.5rem 3rem;
+.alert-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
 }
 
-.step-indicator {
+.alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #86efac;
+}
+
+/* Google Button */
+.btn-google {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
-    margin-bottom: 2rem;
+    width: 100%;
     padding: 1rem;
-    background: #f7fafc;
-    border-radius: 16px;
-}
-
-.step-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #e2e8f0;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 14px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
     transition: all 0.3s ease;
+    margin-top: 1.5rem;
 }
 
-.step-dot.active {
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    width: 32px;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(93, 211, 190, 0.4);
+.btn-google:hover {
+    border-color: var(--accent);
+    background: var(--input-bg);
+    transform: translateY(-2px);
 }
 
+.btn-google img {
+    width: 22px;
+    height: 22px;
+}
+
+/* Divider */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.divider-text {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Form */
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
 }
 
 .form-label {
     display: block;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
     font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 0.75rem;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.form-label i {
-    color: #4BC5AA;
-    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
 }
 
 .form-control {
     width: 100%;
-    height: 56px;
-    padding: 0 1.25rem;
+    padding: 1rem 1.25rem;
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 14px;
+    color: var(--text-primary);
     font-size: 1rem;
-    font-weight: 500;
-    color: #1a202c;
-    background: #f7fafc;
-    border: 2px solid #e2e8f0;
-    border-radius: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: inherit;
+    transition: all 0.3s ease;
 }
 
 .form-control:focus {
     outline: none;
-    border-color: #4BC5AA;
-    background: white;
-    box-shadow: 0 0 0 4px rgba(75, 197, 170, 0.1);
-    transform: translateY(-1px);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-glow);
 }
 
 .form-control::placeholder {
-    color: #a0aec0;
-    font-weight: 400;
+    color: var(--text-muted);
 }
 
-.otp-input-group {
-    display: flex;
-    gap: 0.75rem;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-}
-
-.otp-input {
-    width: 56px;
-    height: 64px;
-    text-align: center;
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #1a202c;
-    background: #f7fafc;
-    border: 2px solid #e2e8f0;
-    border-radius: 16px;
-    transition: all 0.3s ease;
-    font-family: 'Courier New', monospace;
-}
-
-.otp-input:focus {
-    outline: none;
-    border-color: #4BC5AA;
-    background: white;
-    box-shadow: 0 0 0 4px rgba(75, 197, 170, 0.1);
-    transform: scale(1.05);
-}
-
-.otp-hint {
-    text-align: center;
-    color: #4BC5AA;
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    padding: 0.75rem;
-    background: rgba(93, 211, 190, 0.1);
-    border-radius: 12px;
-}
-
-.auth-btn {
-    width: 100%;
-    height: 56px;
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    color: white;
-    border: none;
-    border-radius: 16px;
-    font-size: 1.05rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Primary Button */
+.btn-primary {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    box-shadow: 0 10px 25px rgba(93, 211, 190, 0.4);
-    position: relative;
-    overflow: hidden;
-}
-
-.auth-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
     width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+    border: none;
+    border-radius: 14px;
+    color: #0a0a0f;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px var(--accent-glow);
+    margin-top: 0.5rem;
 }
 
-.auth-btn:hover::before {
-    left: 100%;
-}
-
-.auth-btn:hover {
+.btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 15px 35px rgba(93, 211, 190, 0.5);
+    box-shadow: 0 12px 35px var(--accent-glow);
 }
 
-.auth-btn:active {
-    transform: translateY(0);
-}
-
-.auth-btn:disabled {
+.btn-primary:disabled {
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
 }
 
-/* Alert Messages */
-.alert-container {
-    margin-bottom: 1.5rem;
+/* Links */
+.forgot-link {
+    display: block;
+    text-align: right;
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    margin-top: 0.5rem;
+    transition: color 0.3s ease;
 }
 
-.alert {
-    padding: 1rem 1.25rem;
-    border-radius: 12px;
+.forgot-link:hover {
+    color: var(--accent-hover);
+}
+
+/* Footer Links */
+.login-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.login-footer p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.login-footer a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.login-footer a:hover {
+    color: var(--accent-hover);
+}
+
+/* Features Section */
+.features-section {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.feature-item {
+    text-align: center;
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 0.75rem;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+    border-radius: 14px;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 1.25rem;
+}
+
+.feature-item h4 {
+    color: var(--text-primary);
     font-size: 0.95rem;
-    font-weight: 500;
-    animation: slideDown 0.3s ease;
-    margin-bottom: 0.75rem;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.alert-error {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-    color: #991b1b;
-    border: 1px solid #fca5a5;
-}
-
-.alert-error i {
-    color: #dc2626;
-    font-size: 1.1rem;
-}
-
-.alert-success {
-    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-    color: #065f46;
-    border: 1px solid #6ee7b7;
-}
-
-.alert-success i {
-    color: #059669;
-    font-size: 1.1rem;
-}
-
-.alert-warning {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    color: #92400e;
-    border: 1px solid #fcd34d;
-}
-
-.alert-warning i {
-    color: #f59e0b;
-    font-size: 1.1rem;
-}
-
-.alert span {
-    flex: 1;
-}
-
-.auth-footer {
-    margin-top: 2rem;
-    text-align: center;
-    padding-top: 2rem;
-    border-top: 1px solid #e2e8f0;
-}
-
-.auth-link {
-    color: #4BC5AA;
-    text-decoration: none;
     font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
-.auth-link:hover {
-    color: #5DD3BE;
-    transform: translateX(2px);
+.feature-item p {
+    color: var(--text-muted);
+    font-size: 0.8rem;
 }
 
-.back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #718096;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    margin-top: 1rem;
-}
-
-.back-link:hover {
-    color: #4BC5AA;
-    transform: translateX(-2px);
-}
-
-.phone-display {
-    text-align: center;
-    padding: 1rem;
-    background: rgba(93, 211, 190, 0.1);
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-    color: #4BC5AA;
-    font-weight: 600;
-}
-
+/* Responsive */
 @media (max-width: 640px) {
-    .auth-card {
-        border-radius: 24px;
-        margin: 0 0.5rem;
+    .login-header {
+        padding: 1rem;
     }
     
-    .auth-header {
-        padding: 2rem 1.5rem 1.5rem;
+    .login-content {
+        padding: 1rem;
     }
     
-    .auth-body {
-        padding: 1.5rem 1.5rem 2rem;
+    .login-card {
+        padding: 1.5rem;
+        border-radius: 20px;
     }
     
-    .auth-logo {
-        width: 45px;
-        height: 45px;
-    }
-    
-    .auth-logo i {
-        font-size: 1.2rem;
-    }
-    
-    .auth-header h1 {
-        font-size: 1.3rem;
-    }
-    
-    .otp-input {
-        width: 48px;
-        height: 56px;
+    .login-title h1 {
         font-size: 1.5rem;
+    }
+    
+    .features-section {
+        flex-direction: column;
+        gap: 1.5rem;
     }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <div class="auth-logo">
-                <i class="fas fa-sign-in-alt"></i>
-            </div>
-            <h1>Xoş Gəlmisiniz!</h1>
-            <p>Hesabınıza daxil olun</p>
-        </div>
+<div class="login-page" data-theme="dark">
+    <!-- Header -->
+    <header class="login-header">
+        <a href="{% url 'home' %}" class="login-logo">
+            <img src="{% static 'logo.png' %}" alt="Acteezer">
+            <span>Acteezer</span>
+        </a>
         
-        <div class="auth-body">
+        <div class="header-actions">
+            <!-- Language Selector -->
+            <div class="language-selector">
+                <button class="language-btn" type="button">
+                    <i class="fas fa-globe"></i>
+                    <span>{% if LANGUAGE_CODE == 'az' %}AZ{% elif LANGUAGE_CODE == 'tr' %}TR{% elif LANGUAGE_CODE == 'ru' %}RU{% else %}EN{% endif %}</span>
+                    <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
+                </button>
+                <div class="language-dropdown">
+                    <form action="{% url 'set_language' %}" method="post" id="language-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <a href="#" onclick="setLanguage('az')">🇦🇿 Azərbaycan</a>
+                        <a href="#" onclick="setLanguage('tr')">🇹🇷 Türkçe</a>
+                        <a href="#" onclick="setLanguage('ru')">🇷🇺 Русский</a>
+                        <a href="#" onclick="setLanguage('en')">🇬🇧 English</a>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Theme Toggle -->
+            <button class="theme-toggle" onclick="toggleTheme()" title="{% trans 'Tema dəyiş' %}">
+                <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="login-content">
+        <div class="login-card">
+            <div class="login-title">
+                <h1>{% trans "Xoş Gəlmisiniz!" %}</h1>
+                <p>{% trans "Hesabınıza daxil olun" %}</p>
+            </div>
+            
+            <!-- Google Sign In -->
+            {% get_providers as socialaccount_providers %}
+            {% if socialaccount_providers %}
+            <a href="{% provider_login_url 'google' %}" class="btn-google">
+                <img src="https://www.google.com/favicon.ico" alt="Google">
+                {% trans "Google ilə daxil ol" %}
+            </a>
+            {% else %}
+            <a href="/accounts/social/google/login/?process=login" class="btn-google">
+                <img src="https://www.google.com/favicon.ico" alt="Google">
+                {% trans "Google ilə daxil ol" %}
+            </a>
+            {% endif %}
+            
+            <!-- Divider -->
+            <div class="divider">
+                <div class="divider-line"></div>
+                <span class="divider-text">{% trans "və ya" %}</span>
+                <div class="divider-line"></div>
+            </div>
+            
+            <!-- Login Form -->
             <form method="post" id="login-form">
                 {% csrf_token %}
                 
                 <!-- Error Messages -->
                 {% if messages %}
-                    <div class="alert-container">
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags|default:'error' }}" role="alert">
-                                <i class="fas fa-exclamation-circle"></i>
-                                <span>{{ message }}</span>
-                            </div>
-                        {% endfor %}
+                <div class="alert-container">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'error' }}">
+                        <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %}"></i>
+                        <span>{{ message }}</span>
                     </div>
+                    {% endfor %}
+                </div>
                 {% endif %}
                 
                 <div class="form-group">
-                    <label for="phone" class="form-label">
-                        <i class="fas fa-phone"></i>
-                        Telefon Nömrəsi
-                    </label>
+                    <label class="form-label">{% trans "Telefon Nömrəsi" %}</label>
                     <input 
                         type="tel" 
                         class="form-control" 
-                        id="phone" 
                         name="phone" 
                         placeholder="+994 XX XXX XX XX"
                         required
                         autocomplete="tel"
-                        autofocus
-                        oninvalid="this.setCustomValidity('Zəhmət olmasa telefon nömrəsini daxil edin')"
-                        oninput="this.setCustomValidity('')"
                     >
                 </div>
                 
                 <div class="form-group">
-                    <label for="password" class="form-label">
-                        <i class="fas fa-lock"></i>
-                        Şifrə
-                    </label>
+                    <label class="form-label">{% trans "Şifrə" %}</label>
                     <input 
                         type="password" 
                         class="form-control" 
-                        id="password" 
                         name="password" 
-                        placeholder="Şifrənizi daxil edin"
+                        placeholder="{% trans 'Şifrənizi daxil edin' %}"
                         required
                         autocomplete="current-password"
-                        oninvalid="this.setCustomValidity('Zəhmət olmasa şifrəni daxil edin')"
-                        oninput="this.setCustomValidity('')"
                     >
+                    <a href="#" class="forgot-link">{% trans "Şifrəni unutmusunuz?" %}</a>
                 </div>
                 
-                <button type="submit" class="auth-btn">
+                <button type="submit" class="btn-primary">
                     <i class="fas fa-sign-in-alt"></i>
-                    Daxil ol
+                    {% trans "Daxil ol" %}
                 </button>
-                
-                <div class="auth-footer">
-                    <p style="color: #718096; margin-bottom: 0.5rem;">
-                        Hesabınız yoxdur?
-                    </p>
-                    <a href="{% url 'accounts:register' %}" class="auth-link">
-                        <i class="fas fa-user-plus"></i>
-                        Qeydiyyatdan keçin
-                    </a>
-                </div>
             </form>
+            
+            <!-- Footer -->
+            <div class="login-footer">
+                <p>{% trans "Hesabınız yoxdur?" %}</p>
+                <a href="{% url 'accounts:register' %}">{% trans "Qeydiyyatdan keçin" %}</a>
+            </div>
+            
+            <!-- Features -->
+            <div class="features-section">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>{% trans "Təhlükəsiz" %}</h4>
+                    <p>{% trans "Məlumatlarınız qorunur" %}</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4>{% trans "Sürətli" %}</h4>
+                    <p>{% trans "Ani giriş" %}</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>{% trans "Sosial" %}</h4>
+                    <p>{% trans "Dostlarınızla qoşulun" %}</p>
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+// Theme Toggle
+function toggleTheme() {
+    const page = document.querySelector('.login-page');
+    const icon = document.getElementById('theme-icon');
+    const currentTheme = page.getAttribute('data-theme');
+    
+    if (currentTheme === 'dark') {
+        page.setAttribute('data-theme', 'light');
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+        localStorage.setItem('theme', 'light');
+    } else {
+        page.setAttribute('data-theme', 'dark');
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+        localStorage.setItem('theme', 'dark');
+    }
+}
+
+// Load saved theme
 document.addEventListener('DOMContentLoaded', function() {
-    // Phone input formatting
-    const phoneInput = document.getElementById('phone');
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const page = document.querySelector('.login-page');
+    const icon = document.getElementById('theme-icon');
+    
+    page.setAttribute('data-theme', savedTheme);
+    if (savedTheme === 'light') {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+    }
+});
+
+// Language Selector
+function setLanguage(lang) {
+    const form = document.getElementById('language-form');
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'language';
+    input.value = lang;
+    form.appendChild(input);
+    form.submit();
+}
+
+// Phone input formatting
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.querySelector('input[name="phone"]');
     
     if (phoneInput) {
         phoneInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
             
-            // Limit to 12 digits total (994 + 9 digits)
             if (value.length > 12) {
                 value = value.slice(0, 12);
             }
@@ -551,7 +712,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (value.startsWith('994')) {
                 value = '+' + value;
             } else if (value.length > 0 && !value.startsWith('994')) {
-                value = '994' + value;
+                value = '+994' + value;
             }
             
             if (value.length > 0) {
@@ -579,7 +740,6 @@ document.addEventListener('DOMContentLoaded', function() {
             e.target.value = formatted;
         });
         
-        // Initialize with +994 if empty on focus
         phoneInput.addEventListener('focus', function(e) {
             if (!e.target.value) {
                 e.target.value = '+994 ';
@@ -592,7 +752,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             const btn = this.querySelector('button[type="submit"]');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Daxil olunur...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {% trans "Daxil olunur..." %}';
             btn.disabled = true;
         });
     }
