@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Twemoji for cross-platform emoji support -->
+    <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -191,6 +193,15 @@
         
         .lang-flag {
             font-size: 1.2rem;
+        }
+        
+        /* Twemoji flag images */
+        .lang-flag img.emoji,
+        .lang-dropdown img.emoji {
+            height: 1.2em;
+            width: 1.2em;
+            margin: 0;
+            vertical-align: -0.1em;
         }
         
         /* Create Activity Button */
@@ -2432,6 +2443,14 @@
     <!-- Mobile Sidebar & Newsletter Subscription Script -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Parse emojis with Twemoji for cross-platform flag support
+        if (typeof twemoji !== 'undefined') {
+            twemoji.parse(document.body, {
+                folder: 'svg',
+                ext: '.svg'
+            });
+        }
+        
         // Navbar Scroll Effect
         const navbar = document.getElementById('mainNavbar');
         let lastScroll = 0;
