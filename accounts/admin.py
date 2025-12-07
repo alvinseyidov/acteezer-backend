@@ -1,7 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
-from .models import User, UserImage, Language, Interest, InterestCategory, OTPVerification, BlogCategory, BlogPost, BlogTag, BlogPostTag, Newsletter, Friendship
+from .models import (
+    User, UserImage, Language, Interest, InterestCategory, OTPVerification, 
+    BlogCategory, BlogPost, BlogTag, BlogPostTag, Newsletter, Friendship,
+    NotificationSettings, PushToken, Notification
+)
 
 
 class UserImageInline(admin.TabularInline):
@@ -220,3 +224,103 @@ class FriendshipAdmin(admin.ModelAdmin):
         updated = queryset.filter(status='pending').update(status='rejected')
         self.message_user(request, f"{updated} friendship requests rejected.")
     reject_friendships.short_description = "Reject selected pending friendship requests"
+
+
+@admin.register(NotificationSettings)
+class NotificationSettingsAdmin(admin.ModelAdmin):
+    list_display = ['user', 'push_enabled', 'email_enabled', 'quiet_hours_enabled', 'updated_at']
+    list_filter = ['push_enabled', 'email_enabled', 'quiet_hours_enabled']
+    search_fields = ['user__phone', 'user__first_name', 'user__last_name']
+    ordering = ['-updated_at']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    fieldsets = (
+        ('User', {
+            'fields': ('user',)
+        }),
+        ('Friend Notifications', {
+            'fields': ('friend_requests', 'friend_request_accepted', 'friend_new_activity')
+        }),
+        ('Activity Notifications (Organizer)', {
+            'fields': ('activity_join_request', 'activity_participant_left', 'activity_comment')
+        }),
+        ('Activity Notifications (Participant)', {
+            'fields': ('activity_update', 'activity_cancelled', 'activity_reminder')
+        }),
+        ('Discovery Notifications', {
+            'fields': ('new_activities_nearby', 'new_activities_interests')
+        }),
+        ('Message Notifications', {
+            'fields': ('new_message',)
+        }),
+        ('System Notifications', {
+            'fields': ('system_updates', 'promotional')
+        }),
+        ('Delivery Preferences', {
+            'fields': ('push_enabled', 'email_enabled')
+        }),
+        ('Quiet Hours', {
+            'fields': ('quiet_hours_enabled', 'quiet_hours_start', 'quiet_hours_end')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ['collapse']
+        }),
+    )
+
+
+@admin.register(PushToken)
+class PushTokenAdmin(admin.ModelAdmin):
+    list_display = ['user', 'platform', 'device_name', 'is_active', 'created_at']
+    list_filter = ['platform', 'is_active', 'created_at']
+    search_fields = ['user__phone', 'user__first_name', 'user__last_name', 'token', 'device_name']
+    ordering = ['-created_at']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    fieldsets = (
+        ('Token Details', {
+            'fields': ('user', 'token', 'platform', 'device_name', 'is_active')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ['collapse']
+        }),
+    )
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ['user', 'notification_type', 'title', 'is_read', 'is_pushed', 'created_at']
+    list_filter = ['notification_type', 'is_read', 'is_pushed', 'created_at']
+    search_fields = ['user__phone', 'user__first_name', 'user__last_name', 'title', 'message']
+    ordering = ['-created_at']
+    readonly_fields = ['created_at', 'pushed_at']
+    
+    fieldsets = (
+        ('Notification Details', {
+            'fields': ('user', 'notification_type', 'title', 'message')
+        }),
+        ('Related Objects', {
+            'fields': ('related_user', 'related_activity_id', 'related_friendship_id', 'data'),
+            'classes': ['collapse']
+        }),
+        ('Status', {
+            'fields': ('is_read', 'is_pushed', 'pushed_at')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at',),
+            'classes': ['collapse']
+        }),
+    )
+    
+    actions = ['mark_as_read', 'mark_as_unread']
+    
+    def mark_as_read(self, request, queryset):
+        updated = queryset.update(is_read=True)
+        self.message_user(request, f"{updated} notifications marked as read.")
+    mark_as_read.short_description = "Mark selected notifications as read"
+    
+    def mark_as_unread(self, request, queryset):
+        updated = queryset.update(is_read=False)
+        self.message_user(request, f"{updated} notifications marked as unread.")
+    mark_as_unread.short_description = "Mark selected notifications as unread"

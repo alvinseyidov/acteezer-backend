@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import RegexValidator
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import os
 
 
@@ -373,3 +375,152 @@ class Newsletter(models.Model):
     
     def __str__(self):
         return f"{self.email} - {'Active' if self.is_active else 'Inactive'}"
+
+
+class NotificationSettings(models.Model):
+    """Model for user notification preferences"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='notification_settings')
+    
+    # Friend-related notifications
+    friend_requests = models.BooleanField(default=True, help_text="Yeni dostluq sorğuları")
+    friend_request_accepted = models.BooleanField(default=True, help_text="Dostluq sorğusu qəbul edildi")
+    friend_new_activity = models.BooleanField(default=True, help_text="Dostlarım yeni aktivitə yaratdı")
+    
+    # Activity-related notifications (for organizers)
+    activity_join_request = models.BooleanField(default=True, help_text="Aktivitə qoşulma sorğusu")
+    activity_participant_left = models.BooleanField(default=True, help_text="İştirakçı aktivitəni tərk etdi")
+    activity_comment = models.BooleanField(default=True, help_text="Aktivitəyə yeni şərh")
+    
+    # Activity-related notifications (for participants)
+    activity_update = models.BooleanField(default=True, help_text="Qatıldığım aktivitədə dəyişiklik")
+    activity_cancelled = models.BooleanField(default=True, help_text="Aktivitə ləğv edildi")
+    activity_reminder = models.BooleanField(default=True, help_text="Aktivitə xatırlatması (1 gün əvvəl)")
+    
+    # Discovery notifications
+    new_activities_nearby = models.BooleanField(default=True, help_text="Yaxınlıqda yeni aktivitələr")
+    new_activities_interests = models.BooleanField(default=True, help_text="Maraqlarıma uyğun yeni aktivitələr")
+    
+    # Message notifications
+    new_message = models.BooleanField(default=True, help_text="Yeni mesaj bildirişi")
+    
+    # System notifications
+    system_updates = models.BooleanField(default=True, help_text="Sistem yenilikləri")
+    promotional = models.BooleanField(default=False, help_text="Reklam və təkliflər")
+    
+    # Notification delivery preferences
+    push_enabled = models.BooleanField(default=True, help_text="Push bildirişlərini aktivləşdir")
+    email_enabled = models.BooleanField(default=False, help_text="Email bildirişlərini aktivləşdir")
+    
+    # Quiet hours
+    quiet_hours_enabled = models.BooleanField(default=False, help_text="Səssiz saatları aktivləşdir")
+    quiet_hours_start = models.TimeField(default='22:00', help_text="Səssiz saatların başlanğıcı")
+    quiet_hours_end = models.TimeField(default='08:00', help_text="Səssiz saatların sonu")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Notification Settings"
+        verbose_name_plural = "Notification Settings"
+    
+    def __str__(self):
+        return f"Notification Settings for {self.user.get_full_name()}"
+
+
+class PushToken(models.Model):
+    """Model to store user push notification tokens"""
+    PLATFORM_CHOICES = [
+        ('ios', 'iOS'),
+        ('android', 'Android'),
+        ('web', 'Web'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='push_tokens')
+    token = models.CharField(max_length=255, unique=True)
+    platform = models.CharField(max_length=10, choices=PLATFORM_CHOICES)
+    device_name = models.CharField(max_length=100, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Push Token"
+        verbose_name_plural = "Push Tokens"
+    
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.platform} ({self.token[:20]}...)"
+
+
+class Notification(models.Model):
+    """Model for storing user notifications"""
+    NOTIFICATION_TYPES = [
+        # Friend notifications
+        ('friend_request', 'Dostluq sorğusu'),
+        ('friend_accepted', 'Dostluq qəbul edildi'),
+        ('friend_rejected', 'Dostluq rədd edildi'),
+        ('friend_new_activity', 'Dost yeni aktivitə yaratdı'),
+        
+        # Activity notifications (for organizers)
+        ('activity_join_request', 'Aktivitəyə qoşulma sorğusu'),
+        ('activity_participant_joined', 'Yeni iştirakçı qoşuldu'),
+        ('activity_participant_left', 'İştirakçı ayrıldı'),
+        ('activity_comment', 'Aktivitəyə yeni şərh'),
+        
+        # Activity notifications (for participants)
+        ('activity_update', 'Aktivitə yeniləndi'),
+        ('activity_cancelled', 'Aktivitə ləğv edildi'),
+        ('activity_reminder', 'Aktivitə xatırlatması'),
+        ('activity_starting_soon', 'Aktivitə tezliklə başlayır'),
+        
+        # Discovery notifications
+        ('new_activity_nearby', 'Yaxınlıqda yeni aktivitə'),
+        ('new_activity_interest', 'Maraqlarınıza uyğun aktivitə'),
+        
+        # Message notifications
+        ('new_message', 'Yeni mesaj'),
+        
+        # System notifications
+        ('system', 'Sistem bildirişi'),
+        ('promotional', 'Reklam'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField(max_length=30, choices=NOTIFICATION_TYPES)
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    
+    # Related objects (optional)
+    related_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='triggered_notifications')
+    related_activity_id = models.IntegerField(null=True, blank=True)
+    related_friendship_id = models.IntegerField(null=True, blank=True)
+    
+    # Notification data (for deep linking)
+    data = models.JSONField(default=dict, blank=True, help_text="Additional data for the notification")
+    
+    # Status
+    is_read = models.BooleanField(default=False)
+    is_pushed = models.BooleanField(default=False, help_text="Was push notification sent")
+    pushed_at = models.DateTimeField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Notification"
+        verbose_name_plural = "Notifications"
+    
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.get_notification_type_display()}"
+    
+    def mark_as_read(self):
+        self.is_read = True
+        self.save(update_fields=['is_read'])
+
+
+# Signal to create NotificationSettings when a new User is created
+@receiver(post_save, sender=User)
+def create_notification_settings(sender, instance, created, **kwargs):
+    """Create NotificationSettings for new users"""
+    if created:
+        NotificationSettings.objects.get_or_create(user=instance)
