@@ -1157,13 +1157,9 @@
                         <h3>Tələblər</h3>
                     </div>
                     <div class="section-body">
-                        <ul class="checklist">
-                            {% for req in activity.requirements|linebreaksbr|striptags|split:',' %}
-                                <li><i class="fas fa-check-circle"></i> {{ req|trim }}</li>
-                            {% empty %}
-                                <li><i class="fas fa-check-circle"></i> {{ activity.requirements }}</li>
-                            {% endfor %}
-                        </ul>
+                        <div class="description-text">
+                            {{ activity.requirements|linebreaks }}
+                        </div>
                     </div>
                 </div>
                 {% endif %}
@@ -1176,13 +1172,9 @@
                         <h3>Nə Daxildir</h3>
                     </div>
                     <div class="section-body">
-                        <ul class="checklist">
-                            {% for item in activity.what_included|linebreaksbr|striptags|split:',' %}
-                                <li><i class="fas fa-check"></i> {{ item|trim }}</li>
-                            {% empty %}
-                                <li><i class="fas fa-check"></i> {{ activity.what_included }}</li>
-                            {% endfor %}
-                        </ul>
+                        <div class="description-text">
+                            {{ activity.what_included|linebreaks }}
+                        </div>
                     </div>
                 </div>
                 {% endif %}
