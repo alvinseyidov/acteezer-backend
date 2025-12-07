@@ -1198,19 +1198,27 @@
             }
         }
 
-        /* Mobile Bottom Navigation Bar */
+        /* Mobile Bottom Navigation Bar - Modern Glassmorphism Design */
         .mobile-bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: white;
-            border-top: 1px solid #e0f2ef;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
             z-index: 1000;
             display: none;
-            padding: 0.5rem 0;
-            padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+            padding: 0.5rem 0.75rem;
+            padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+        }
+        
+        .mobile-bottom-nav::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
         }
 
         @media (max-width: 991.98px) {
@@ -1218,20 +1226,26 @@
                 display: flex;
             }
 
-            /* Add padding to body to prevent content from being hidden behind bottom nav */
             body {
-                padding-bottom: 80px;
+                padding-bottom: 90px;
             }
         }
 
         .mobile-bottom-nav-container {
             display: flex;
             align-items: center;
-            justify-content: space-around;
-            max-width: 100%;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 500px;
             margin: 0 auto;
-            padding: 0 0.5rem;
+            padding: 0;
             position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            padding: 0.25rem;
         }
 
         .mobile-bottom-nav-item {
@@ -1240,33 +1254,54 @@
             align-items: center;
             justify-content: center;
             flex: 1;
-            padding: 0.5rem;
+            padding: 0.6rem 0.4rem;
             text-decoration: none;
-            color: #64748b;
-            transition: all 0.3s ease;
+            color: #94a3b8;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             min-width: 0;
+            border-radius: 16px;
+            margin: 0 2px;
         }
 
         .mobile-bottom-nav-item.active {
             color: #5DD3BE;
+            background: linear-gradient(135deg, rgba(93, 211, 190, 0.15) 0%, rgba(75, 197, 170, 0.1) 100%);
+        }
+        
+        .mobile-bottom-nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: linear-gradient(90deg, #5DD3BE 0%, #4BC5AA 100%);
+            border-radius: 2px;
         }
 
         .mobile-bottom-nav-item i {
-            font-size: 1.25rem;
-            margin-bottom: 0.25rem;
-            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .mobile-bottom-nav-item span {
-            font-size: 0.7rem;
-            font-weight: 500;
+            font-size: 0.65rem;
+            font-weight: 600;
             white-space: nowrap;
+            letter-spacing: -0.02em;
         }
 
         .mobile-bottom-nav-item:hover {
             color: #5DD3BE;
             text-decoration: none;
+            background: rgba(93, 211, 190, 0.08);
+        }
+        
+        .mobile-bottom-nav-item:active {
+            transform: scale(0.95);
         }
 
         .mobile-bottom-nav-item.active i {
@@ -1276,17 +1311,20 @@
         /* Prominent Create Activity Button in Middle */
         .mobile-bottom-nav-create {
             position: relative;
-            margin: 0 0.5rem;
+            margin: 0 0.25rem;
             z-index: 10;
+            flex-shrink: 0;
         }
 
         .mobile-bottom-nav-create-btn {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
             background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-            border: 4px solid white;
-            box-shadow: 0 4px 20px rgba(93, 211, 190, 0.4), 0 8px 30px rgba(93, 211, 190, 0.2);
+            border: none;
+            box-shadow: 0 8px 24px rgba(93, 211, 190, 0.4), 
+                        0 4px 12px rgba(93, 211, 190, 0.2),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1295,66 +1333,68 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             transform: translateY(-8px);
             position: relative;
+            overflow: hidden;
         }
-
+        
         .mobile-bottom-nav-create-btn::before {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-            opacity: 0;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 50%);
+            opacity: 1;
             transition: all 0.3s ease;
-            z-index: -1;
         }
 
         .mobile-bottom-nav-create-btn:hover {
             transform: translateY(-12px) scale(1.05);
-            box-shadow: 0 6px 30px rgba(93, 211, 190, 0.5), 0 12px 40px rgba(93, 211, 190, 0.3);
+            box-shadow: 0 12px 32px rgba(93, 211, 190, 0.5), 
+                        0 6px 16px rgba(93, 211, 190, 0.3);
             color: white;
             text-decoration: none;
         }
 
-        .mobile-bottom-nav-create-btn:hover::before {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1.2);
-        }
-
         .mobile-bottom-nav-create-btn:active {
-            transform: translateY(-6px) scale(0.95);
+            transform: translateY(-4px) scale(0.98);
         }
 
         .mobile-bottom-nav-create-btn i {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 600;
             margin: 0;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Hide create button on small screens if needed */
-        @media (max-width: 360px) {
+        /* Small screens adjustments */
+        @media (max-width: 380px) {
             .mobile-bottom-nav-item span {
-                font-size: 0.65rem;
+                font-size: 0.6rem;
+            }
+            
+            .mobile-bottom-nav-item i {
+                font-size: 1.1rem;
             }
             
             .mobile-bottom-nav-create-btn {
-                width: 50px;
-                height: 50px;
+                width: 48px;
+                height: 48px;
+                border-radius: 16px;
             }
             
             .mobile-bottom-nav-create-btn i {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
+            }
+            
+            .mobile-bottom-nav-container {
+                border-radius: 16px;
             }
         }
 
         /* Adjust scroll-to-top button on mobile to avoid bottom nav */
         @media (max-width: 991.98px) {
             .scroll-to-top {
-                bottom: 100px !important;
-                right: 20px !important;
+                bottom: 110px !important;
+                right: 16px !important;
             }
         }
 
