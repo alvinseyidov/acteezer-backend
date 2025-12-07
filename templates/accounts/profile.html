@@ -6,347 +6,416 @@
 {% block extra_css %}
 <style>
     :root {
-        --bg-primary: #f8fafc;
-        --bg-secondary: #ffffff;
-        --bg-tertiary: #f1f5f9;
-        --text-primary: #1e293b;
-        --text-secondary: #64748b;
-        --text-muted: #94a3b8;
-        --border-color: #e2e8f0;
-        --accent: #5DD3BE;
-        --accent-dark: #4BC5AA;
-        --success: #10b981;
-        --warning: #f59e0b;
-        --error: #ef4444;
-        --purple: #8b5cf6;
+        --bg-primary: #fafbfc;
+        --bg-card: #ffffff;
+        --bg-subtle: #f4f6f8;
+        --text-primary: #1a1d21;
+        --text-secondary: #5e6c84;
+        --text-muted: #97a0af;
+        --border-color: #e4e8eb;
+        --accent: #00b894;
+        --accent-hover: #00a384;
+        --accent-light: rgba(0, 184, 148, 0.1);
+        --purple: #6c5ce7;
+        --purple-light: rgba(108, 92, 231, 0.1);
+        --orange: #f39c12;
+        --orange-light: rgba(243, 156, 18, 0.1);
+        --blue: #0984e3;
+        --blue-light: rgba(9, 132, 227, 0.1);
+        --pink: #e84393;
+        --pink-light: rgba(232, 67, 147, 0.1);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+        --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
     }
     
     body.dark-mode {
-        --bg-primary: #0f172a;
-        --bg-secondary: #1e293b;
-        --bg-tertiary: #334155;
-        --text-primary: #f1f5f9;
-        --text-secondary: #94a3b8;
-        --text-muted: #64748b;
-        --border-color: #334155;
+        --bg-primary: #0d1117;
+        --bg-card: #161b22;
+        --bg-subtle: #21262d;
+        --text-primary: #f0f6fc;
+        --text-secondary: #8b949e;
+        --text-muted: #6e7681;
+        --border-color: #30363d;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+        --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
     }
     
     .profile-page {
         background: var(--bg-primary);
         min-height: 100vh;
-        padding-bottom: 4rem;
+        padding: 2rem 0 6rem;
     }
     
-    /* Profile Header */
-    .profile-header {
-        background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 50%, #3db89e 100%);
+    /* Cover Section */
+    .profile-cover {
+        height: 200px;
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 50%, #81ecec 100%);
+        border-radius: var(--radius-xl);
         position: relative;
         overflow: hidden;
-        padding: 3rem 0 6rem;
+        margin-bottom: -80px;
     }
     
-    .profile-header::before {
+    .profile-cover::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.5;
     }
     
-    .profile-header-content {
+    /* Profile Card */
+    .profile-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-color);
+        padding: 0 2rem 2rem;
         position: relative;
-        z-index: 1;
+        z-index: 10;
     }
     
-    .profile-avatar-container {
+    .profile-header {
+        display: flex;
+        align-items: flex-end;
+        gap: 1.5rem;
+        padding-top: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .avatar-wrapper {
         position: relative;
-        display: inline-block;
+        margin-top: -60px;
     }
     
     .profile-avatar {
         width: 140px;
         height: 140px;
-        border-radius: 28px;
-        border: 4px solid rgba(255, 255, 255, 0.4);
+        border-radius: var(--radius-xl);
         object-fit: cover;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        transition: all 0.4s ease;
+        border: 5px solid var(--bg-card);
+        box-shadow: var(--shadow-md);
+        background: var(--bg-subtle);
     }
     
-    .profile-avatar:hover {
-        transform: scale(1.05);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-    }
-    
-    .profile-default-avatar {
+    .avatar-placeholder {
         width: 140px;
         height: 140px;
-        border-radius: 28px;
-        border: 4px solid rgba(255, 255, 255, 0.4);
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
+        border-radius: var(--radius-xl);
+        background: linear-gradient(135deg, var(--accent) 0%, #00cec9 100%);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 3.5rem;
-        color: white;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        border: 5px solid var(--bg-card);
+        box-shadow: var(--shadow-md);
     }
     
-    .profile-verified-badge {
+    .avatar-placeholder i {
+        font-size: 3.5rem;
+        color: white;
+    }
+    
+    .verified-badge {
         position: absolute;
         bottom: 8px;
         right: 8px;
-        width: 36px;
-        height: 36px;
-        background: var(--success);
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
         border-radius: 50%;
-        border: 3px solid white;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 1rem;
+        font-size: 0.85rem;
+        border: 3px solid var(--bg-card);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .profile-info {
+        flex: 1;
+        min-width: 200px;
     }
     
     .profile-name {
-        font-size: 2rem;
-        font-weight: 800;
-        color: white;
-        margin-bottom: 0.5rem;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.25rem;
+        line-height: 1.2;
+    }
+    
+    .profile-username {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
     }
     
     .profile-meta {
         display: flex;
         flex-wrap: wrap;
         gap: 1rem;
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 0.95rem;
     }
     
-    .profile-meta-item {
+    .meta-item {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.4rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    
+    .meta-item i {
+        color: var(--accent);
+        font-size: 0.85rem;
     }
     
     .profile-actions {
         display: flex;
-        gap: 1rem;
-        margin-top: 1.5rem;
+        gap: 0.75rem;
+        margin-left: auto;
     }
     
-    .btn-profile-action {
-        padding: 0.75rem 1.5rem;
-        border-radius: 14px;
+    .btn-profile {
+        padding: 0.65rem 1.25rem;
+        border-radius: var(--radius-md);
         font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    
+    .btn-primary-custom {
+        background: var(--accent);
+        color: white;
+    }
+    
+    .btn-primary-custom:hover {
+        background: var(--accent-hover);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+    }
+    
+    .btn-secondary-custom {
+        background: var(--bg-subtle);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+    
+    .btn-secondary-custom:hover {
+        background: var(--border-color);
+        color: var(--text-primary);
+    }
+    
+    /* Bio Section */
+    .profile-bio {
+        background: var(--bg-subtle);
+        border-radius: var(--radius-md);
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        color: var(--text-secondary);
         font-size: 0.95rem;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
+        line-height: 1.6;
+        border-left: 3px solid var(--accent);
     }
     
-    .btn-edit-profile {
-        background: white;
-        color: var(--accent);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    }
-    
-    .btn-edit-profile:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-        color: var(--accent-dark);
-    }
-    
-    .btn-settings {
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        color: white;
-        border-color: rgba(255, 255, 255, 0.3);
-    }
-    
-    .btn-settings:hover {
-        background: rgba(255, 255, 255, 0.3);
-        color: white;
-        border-color: rgba(255, 255, 255, 0.5);
-    }
-    
-    /* Stats Cards */
-    .stats-container {
-        margin-top: -4rem;
-        position: relative;
-        z-index: 10;
-        margin-bottom: 2rem;
-    }
-    
-    .stats-grid {
+    /* Stats Row */
+    .stats-row {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 1rem;
+        margin-bottom: 2rem;
     }
     
-    @media (max-width: 991px) {
-        .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    
-    @media (max-width: 575px) {
-        .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
-        }
-    }
-    
-    .stat-card {
-        background: var(--bg-secondary);
-        border-radius: 20px;
-        padding: 1.5rem;
+    .stat-box {
+        background: var(--bg-subtle);
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        border: 1px solid var(--border-color);
         transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
     }
     
-    .stat-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 15px 40px rgba(93, 211, 190, 0.15);
+    .stat-box:hover {
+        background: var(--accent-light);
+        transform: translateY(-2px);
     }
     
-    .stat-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1rem;
-        font-size: 1.3rem;
-    }
-    
-    .stat-icon.primary { background: rgba(93, 211, 190, 0.15); color: var(--accent); }
-    .stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: var(--purple); }
-    .stat-icon.warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
-    .stat-icon.success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-    
-    .stat-value {
+    .stat-number {
         font-size: 1.75rem;
         font-weight: 800;
         color: var(--text-primary);
-        margin-bottom: 0.25rem;
+        display: block;
+        line-height: 1;
+        margin-bottom: 0.35rem;
     }
     
     .stat-label {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
+        font-size: 0.8rem;
+        color: var(--text-muted);
         font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     
-    /* Content Sections */
-    .profile-content {
+    /* Content Grid */
+    .content-grid {
         display: grid;
-        grid-template-columns: 1fr 380px;
+        grid-template-columns: 1fr 340px;
         gap: 1.5rem;
     }
     
-    @media (max-width: 1199px) {
-        .profile-content {
-            grid-template-columns: 1fr;
-        }
-    }
-    
-    .content-card {
-        background: var(--bg-secondary);
-        border-radius: 20px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    /* Cards */
+    .section-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
         border: 1px solid var(--border-color);
+        overflow: hidden;
         margin-bottom: 1.5rem;
     }
     
-    .card-header {
+    .section-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 1.5rem;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
     }
     
-    .card-title {
-        font-size: 1.15rem;
+    .section-title {
+        font-size: 1rem;
         font-weight: 700;
         color: var(--text-primary);
+        margin: 0;
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.6rem;
     }
     
-    .card-title i {
+    .section-title i {
         color: var(--accent);
+        font-size: 0.95rem;
     }
     
-    .card-action {
-        font-size: 0.9rem;
+    .section-link {
+        font-size: 0.85rem;
         color: var(--accent);
         font-weight: 600;
         text-decoration: none;
-        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
     }
     
-    .card-action:hover {
-        color: var(--accent-dark);
+    .section-link:hover {
+        color: var(--accent-hover);
     }
     
-    /* Activity Item */
-    .activity-item {
+    .section-body {
+        padding: 1.25rem 1.5rem;
+    }
+    
+    /* Activity List Item */
+    .activity-list-item {
         display: flex;
         gap: 1rem;
         padding: 1rem;
-        border-radius: 14px;
-        border: 1px solid var(--border-color);
-        margin-bottom: 0.75rem;
-        transition: all 0.3s ease;
+        border-radius: var(--radius-md);
+        transition: all 0.2s ease;
         text-decoration: none;
+        border: 1px solid transparent;
+        margin-bottom: 0.75rem;
     }
     
-    .activity-item:hover {
-        background: var(--bg-tertiary);
-        border-color: var(--accent);
-        transform: translateX(4px);
+    .activity-list-item:last-child {
+        margin-bottom: 0;
     }
     
-    .activity-image {
-        width: 80px;
-        height: 80px;
-        border-radius: 12px;
+    .activity-list-item:hover {
+        background: var(--bg-subtle);
+        border-color: var(--border-color);
+    }
+    
+    .activity-thumb {
+        width: 70px;
+        height: 70px;
+        border-radius: var(--radius-sm);
         object-fit: cover;
         flex-shrink: 0;
     }
     
-    .activity-image-placeholder {
-        width: 80px;
-        height: 80px;
-        border-radius: 12px;
-        background: var(--bg-tertiary);
+    .activity-thumb-placeholder {
+        width: 70px;
+        height: 70px;
+        border-radius: var(--radius-sm);
+        background: var(--bg-subtle);
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--text-muted);
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         flex-shrink: 0;
     }
     
-    .activity-content {
+    .activity-details {
         flex: 1;
         min-width: 0;
     }
     
-    .activity-title {
+    .activity-title-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.35rem;
+    }
+    
+    .activity-name {
         font-weight: 600;
         color: var(--text-primary);
-        margin-bottom: 0.25rem;
-        font-size: 1rem;
+        font-size: 0.95rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .role-badge {
+        padding: 0.15rem 0.5rem;
+        border-radius: 20px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        flex-shrink: 0;
+    }
+    
+    .role-badge.organizer {
+        background: var(--purple-light);
+        color: var(--purple);
+    }
+    
+    .role-badge.participant {
+        background: var(--accent-light);
+        color: var(--accent);
+    }
+    
+    .role-badge.completed {
+        background: var(--orange-light);
+        color: var(--orange);
     }
     
     .activity-desc {
@@ -359,193 +428,274 @@
         overflow: hidden;
     }
     
-    .activity-meta {
+    .activity-info {
         display: flex;
-        gap: 1rem;
+        gap: 0.75rem;
         font-size: 0.8rem;
         color: var(--text-muted);
     }
     
-    .activity-badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-    
-    .badge-organized { background: rgba(139, 92, 246, 0.15); color: var(--purple); }
-    .badge-joined { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-    .badge-completed { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
-    
-    /* Info Item */
-    .info-item {
+    .activity-info span {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        padding: 1rem 0;
+        gap: 0.3rem;
+    }
+    
+    /* Info List */
+    .info-list-item {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.85rem 0;
         border-bottom: 1px solid var(--border-color);
     }
     
-    .info-item:last-child {
+    .info-list-item:last-child {
         border-bottom: none;
     }
     
-    .info-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    .info-icon-box {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-size: 1rem;
+        font-size: 0.9rem;
         flex-shrink: 0;
     }
     
-    .info-content {
+    .info-icon-box.green { background: var(--accent-light); color: var(--accent); }
+    .info-icon-box.purple { background: var(--purple-light); color: var(--purple); }
+    .info-icon-box.orange { background: var(--orange-light); color: var(--orange); }
+    .info-icon-box.blue { background: var(--blue-light); color: var(--blue); }
+    .info-icon-box.pink { background: var(--pink-light); color: var(--pink); }
+    
+    .info-text {
         flex: 1;
+        min-width: 0;
     }
     
     .info-label {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: var(--text-muted);
-        margin-bottom: 0.15rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.1rem;
     }
     
     .info-value {
         font-weight: 600;
         color: var(--text-primary);
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
     
     /* Tags */
-    .tag {
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .tag-chip {
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        padding: 0.35rem 0.75rem;
-        background: var(--bg-tertiary);
+        padding: 0.4rem 0.75rem;
+        background: var(--bg-subtle);
         border-radius: 20px;
         font-size: 0.8rem;
         color: var(--text-secondary);
         font-weight: 500;
-        margin: 0.25rem;
+        border: 1px solid var(--border-color);
+        transition: all 0.2s ease;
     }
     
-    .tag.primary {
-        background: rgba(93, 211, 190, 0.15);
+    .tag-chip:hover {
+        background: var(--accent-light);
+        border-color: var(--accent);
         color: var(--accent);
+    }
+    
+    .tag-chip.interest {
+        background: var(--accent-light);
+        border-color: transparent;
+        color: var(--accent);
+    }
+    
+    /* Quick Links Grid */
+    .quick-links-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .quick-link-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: var(--bg-subtle);
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+    
+    .quick-link-btn:hover {
+        background: var(--bg-card);
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .quick-link-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+    
+    .quick-link-icon.create { background: var(--accent-light); color: var(--accent); }
+    .quick-link-icon.friends { background: var(--purple-light); color: var(--purple); }
+    .quick-link-icon.requests { background: var(--blue-light); color: var(--blue); }
+    .quick-link-icon.saved { background: var(--pink-light); color: var(--pink); }
+    
+    .quick-link-text {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.85rem;
     }
     
     /* Empty State */
     .empty-state {
         text-align: center;
-        padding: 3rem 2rem;
+        padding: 2.5rem 1.5rem;
     }
     
     .empty-icon {
-        width: 80px;
-        height: 80px;
+        width: 64px;
+        height: 64px;
+        background: var(--bg-subtle);
         border-radius: 50%;
-        background: var(--bg-tertiary);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 1.5rem;
-        font-size: 2rem;
+        margin: 0 auto 1rem;
         color: var(--text-muted);
+        font-size: 1.5rem;
     }
     
     .empty-title {
-        font-size: 1.2rem;
+        font-size: 1rem;
         font-weight: 600;
         color: var(--text-primary);
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.35rem;
     }
     
     .empty-desc {
-        color: var(--text-secondary);
-        margin-bottom: 1.5rem;
-    }
-    
-    /* Quick Actions */
-    .quick-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
-    }
-    
-    .quick-action-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 1.25rem;
-        border-radius: 14px;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-color);
-        text-decoration: none;
-        transition: all 0.3s ease;
-        text-align: center;
-    }
-    
-    .quick-action-btn:hover {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: white;
-        transform: translateY(-2px);
-    }
-    
-    .quick-action-btn:hover i,
-    .quick-action-btn:hover span {
-        color: white;
-    }
-    
-    .quick-action-btn i {
-        font-size: 1.5rem;
-        color: var(--accent);
-        margin-bottom: 0.5rem;
-        transition: color 0.3s ease;
-    }
-    
-    .quick-action-btn span {
         font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        transition: color 0.3s ease;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
     }
     
-    @media (max-width: 575px) {
-        .profile-header {
-            padding: 2rem 0 5rem;
+    .empty-text {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-style: italic;
+    }
+    
+    /* Responsive */
+    @media (max-width: 991px) {
+        .content-grid {
+            grid-template-columns: 1fr;
         }
         
-        .profile-avatar, .profile-default-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 20px;
-        }
-        
-        .profile-name {
-            font-size: 1.5rem;
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
         }
         
         .profile-actions {
+            margin-left: 0;
+            margin-top: 1rem;
+            width: 100%;
+            justify-content: flex-start;
+        }
+    }
+    
+    @media (max-width: 575px) {
+        .profile-page {
+            padding: 1rem 0 5rem;
+        }
+        
+        .profile-cover {
+            height: 140px;
+            border-radius: var(--radius-lg);
+            margin-bottom: -50px;
+        }
+        
+        .profile-card {
+            border-radius: var(--radius-lg);
+            padding: 0 1rem 1.5rem;
+        }
+        
+        .avatar-wrapper {
+            margin-top: -40px;
+        }
+        
+        .profile-avatar, .avatar-placeholder {
+            width: 100px;
+            height: 100px;
+            border-width: 4px;
+        }
+        
+        .avatar-placeholder i {
+            font-size: 2.5rem;
+        }
+        
+        .verified-badge {
+            width: 26px;
+            height: 26px;
+            font-size: 0.7rem;
+            bottom: 4px;
+            right: 4px;
+        }
+        
+        .profile-name {
+            font-size: 1.35rem;
+        }
+        
+        .profile-header {
             flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
         }
         
-        .stats-container {
-            margin-top: -3rem;
+        .profile-info {
+            width: 100%;
         }
         
-        .stat-card {
+        .stats-row {
+            gap: 0.75rem;
+        }
+        
+        .stat-box {
             padding: 1rem;
         }
         
-        .stat-value {
-            font-size: 1.25rem;
+        .stat-number {
+            font-size: 1.35rem;
+        }
+        
+        .quick-links-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .section-body {
+            padding: 1rem;
         }
     }
 </style>
@@ -553,294 +703,293 @@
 
 {% block content %}
 <div class="profile-page">
-    <!-- Profile Header -->
-    <div class="profile-header">
-        <div class="container">
-            <div class="profile-header-content">
-                <div class="row align-items-center">
-                    <div class="col-lg-8">
-                        <div class="d-flex align-items-center flex-wrap">
-                            <div class="profile-avatar-container me-4 mb-3 mb-lg-0">
-                                {% if primary_image %}
-                                    <img src="{{ primary_image.image.url }}" alt="{{ user.get_full_name }}" class="profile-avatar">
-                                {% else %}
-                                    <div class="profile-default-avatar">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                {% endif %}
-                                {% if user.is_phone_verified %}
-                                    <div class="profile-verified-badge">
-                                        <i class="fas fa-check"></i>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div>
-                                <h1 class="profile-name">{{ user.get_full_name|default:"İstifadəçi" }}</h1>
-                                <div class="profile-meta">
-                                    <div class="profile-meta-item">
-                                        <i class="fas fa-phone"></i>
-                                        <span>{{ user.phone }}</span>
-                                    </div>
-                                    {% if user.city %}
-                                        <div class="profile-meta-item">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                            <span>{{ user.city }}</span>
-                                        </div>
-                                    {% endif %}
-                                    <div class="profile-meta-item">
-                                        <i class="fas fa-calendar"></i>
-                                        <span>{{ user.date_joined|date:"M Y" }}-dən bəri</span>
-                                    </div>
-                                </div>
-                                <div class="profile-actions">
-                                    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-profile-action btn-edit-profile">
-                                        <i class="fas fa-edit me-2"></i>Profili Redaktə Et
-                                    </a>
-                                    <a href="{% url 'accounts:settings' %}" class="btn btn-profile-action btn-settings">
-                                        <i class="fas fa-cog me-2"></i>Tənzimləmələr
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <div class="container">
-        <!-- Stats Cards -->
-        <div class="stats-container">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon primary">
-                        <i class="fas fa-calendar-plus"></i>
-                    </div>
-                    <div class="stat-value">{{ organized_activities_count|default:0 }}</div>
-                    <div class="stat-label">Təşkil Etdiyim</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon purple">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="stat-value">{{ joined_activities_count|default:0 }}</div>
-                    <div class="stat-label">Qoşulduğum</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon success">
-                        <i class="fas fa-user-friends"></i>
-                    </div>
-                    <div class="stat-value">{{ friends_count|default:0 }}</div>
-                    <div class="stat-label">Dostlarım</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon warning">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <div class="stat-value">{{ liked_places_count|default:0 }}</div>
-                    <div class="stat-label">Saxlanılanlar</div>
-                </div>
-            </div>
-        </div>
+        <!-- Cover Image -->
+        <div class="profile-cover"></div>
         
-        <!-- Main Content -->
-        <div class="profile-content">
-            <!-- Left Column -->
-            <div class="profile-main">
-                <!-- Recent Activities -->
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-history"></i>
-                            Son Aktivitələr
-                        </h3>
-                        <a href="{% url 'accounts:my_activities' %}" class="card-action">Hamısını Gör →</a>
-                    </div>
-                    
-                    {% if recent_activities %}
-                        {% for item in recent_activities %}
-                            {% if item.activity %}
-                                {% with activity=item.activity %}
-                                    <a href="{{ activity.get_absolute_url }}" class="activity-item">
-                                        {% if activity.main_image %}
-                                            <img src="{{ activity.main_image.url }}" alt="{{ activity.title }}" class="activity-image">
-                                        {% else %}
-                                            <div class="activity-image-placeholder">
-                                                <i class="fas fa-calendar"></i>
-                                            </div>
-                                        {% endif %}
-                                        <div class="activity-content">
-                                            <div class="d-flex align-items-center gap-2 mb-1">
-                                                <span class="activity-title">{{ activity.title }}</span>
-                                                <span class="activity-badge {% if activity.organizer == user %}badge-organized{% elif activity.is_past %}badge-completed{% else %}badge-joined{% endif %}">
-                                                    {% if activity.organizer == user %}Təşkilatçı{% elif activity.is_past %}Tamamlandı{% else %}Qoşuldu{% endif %}
-                                                </span>
-                                            </div>
-                                            <div class="activity-desc">{{ activity.short_description }}</div>
-                                            <div class="activity-meta">
-                                                <span><i class="fas fa-calendar me-1"></i>{{ activity.start_date|date:"d M Y" }}</span>
-                                                <span><i class="fas fa-map-marker-alt me-1"></i>{{ activity.get_district_display }}</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                {% endwith %}
-                            {% else %}
-                                {% with activity=item %}
-                                    <a href="{{ activity.get_absolute_url }}" class="activity-item">
-                                        {% if activity.main_image %}
-                                            <img src="{{ activity.main_image.url }}" alt="{{ activity.title }}" class="activity-image">
-                                        {% else %}
-                                            <div class="activity-image-placeholder">
-                                                <i class="fas fa-calendar"></i>
-                                            </div>
-                                        {% endif %}
-                                        <div class="activity-content">
-                                            <div class="d-flex align-items-center gap-2 mb-1">
-                                                <span class="activity-title">{{ activity.title }}</span>
-                                                <span class="activity-badge badge-organized">Təşkilatçı</span>
-                                            </div>
-                                            <div class="activity-desc">{{ activity.short_description }}</div>
-                                            <div class="activity-meta">
-                                                <span><i class="fas fa-calendar me-1"></i>{{ activity.start_date|date:"d M Y" }}</span>
-                                                <span><i class="fas fa-map-marker-alt me-1"></i>{{ activity.get_district_display }}</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                {% endwith %}
-                            {% endif %}
-                        {% endfor %}
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="avatar-wrapper">
+                    {% if primary_image %}
+                        <img src="{{ primary_image.image.url }}" alt="{{ user.get_full_name }}" class="profile-avatar">
                     {% else %}
-                        <div class="empty-state">
-                            <div class="empty-icon">
-                                <i class="fas fa-calendar-times"></i>
-                            </div>
-                            <h4 class="empty-title">Hələ aktivitə yoxdur</h4>
-                            <p class="empty-desc">Aktivitələrə qoşulun və ya yeni aktivitə yaradın!</p>
-                            <a href="{% url 'activities:activities_list' %}" class="btn btn-primary">
-                                <i class="fas fa-compass me-2"></i>Aktivitələri Kəşf Et
-                            </a>
+                        <div class="avatar-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                    {% if user.is_phone_verified %}
+                        <div class="verified-badge" title="Təsdiqlənmiş">
+                            <i class="fas fa-check"></i>
                         </div>
                     {% endif %}
                 </div>
                 
-                <!-- Quick Actions -->
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title">
+                <div class="profile-info">
+                    <h1 class="profile-name">{{ user.get_full_name|default:"İstifadəçi" }}</h1>
+                    <div class="profile-username">{{ user.phone }}</div>
+                    <div class="profile-meta">
+                        {% if user.city %}
+                            <span class="meta-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ user.city }}
+                            </span>
+                        {% endif %}
+                        <span class="meta-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            {{ user.date_joined|date:"M Y" }}-dən bəri
+                        </span>
+                        {% if user.email %}
+                            <span class="meta-item">
+                                <i class="fas fa-envelope"></i>
+                                {{ user.email }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    <a href="{% url 'accounts:edit_profile' %}" class="btn-profile btn-primary-custom">
+                        <i class="fas fa-edit"></i>
+                        Redaktə Et
+                    </a>
+                    <a href="{% url 'accounts:settings' %}" class="btn-profile btn-secondary-custom">
+                        <i class="fas fa-cog"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Bio -->
+            {% if user.bio %}
+                <div class="profile-bio">
+                    {{ user.bio }}
+                </div>
+            {% endif %}
+            
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <a href="{% url 'accounts:my_activities' %}" class="stat-box">
+                    <span class="stat-number">{{ organized_activities_count|default:0 }}</span>
+                    <span class="stat-label">Təşkil Etdiyim</span>
+                </a>
+                <a href="{% url 'accounts:joined_activities' %}" class="stat-box">
+                    <span class="stat-number">{{ joined_activities_count|default:0 }}</span>
+                    <span class="stat-label">Qoşulduğum</span>
+                </a>
+                <a href="{% url 'accounts:friends_list' %}" class="stat-box">
+                    <span class="stat-number">{{ friends_count|default:0 }}</span>
+                    <span class="stat-label">Dostlarım</span>
+                </a>
+                <a href="{% url 'places:liked_places' %}" class="stat-box">
+                    <span class="stat-number">{{ liked_places_count|default:0 }}</span>
+                    <span class="stat-label">Saxlanılanlar</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Content Grid -->
+        <div class="content-grid mt-4">
+            <!-- Left Column -->
+            <div class="main-column">
+                <!-- Recent Activities -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="fas fa-history"></i>
+                            Son Aktivitələr
+                        </h3>
+                        <a href="{% url 'accounts:my_activities' %}" class="section-link">
+                            Hamısı <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="section-body">
+                        {% if recent_activities %}
+                            {% for item in recent_activities %}
+                                {% if item.activity %}
+                                    {% with activity=item.activity %}
+                                        <a href="{{ activity.get_absolute_url }}" class="activity-list-item">
+                                            {% if activity.main_image %}
+                                                <img src="{{ activity.main_image.url }}" alt="{{ activity.title }}" class="activity-thumb">
+                                            {% else %}
+                                                <div class="activity-thumb-placeholder">
+                                                    <i class="fas fa-calendar"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div class="activity-details">
+                                                <div class="activity-title-row">
+                                                    <span class="activity-name">{{ activity.title }}</span>
+                                                    <span class="role-badge {% if activity.organizer == user %}organizer{% elif activity.is_past %}completed{% else %}participant{% endif %}">
+                                                        {% if activity.organizer == user %}Təşkilatçı{% elif activity.is_past %}Bitdi{% else %}Qoşuldu{% endif %}
+                                                    </span>
+                                                </div>
+                                                <div class="activity-desc">{{ activity.short_description }}</div>
+                                                <div class="activity-info">
+                                                    <span><i class="far fa-calendar"></i> {{ activity.start_date|date:"d M Y" }}</span>
+                                                    <span><i class="fas fa-map-pin"></i> {{ activity.get_district_display }}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    {% endwith %}
+                                {% else %}
+                                    {% with activity=item %}
+                                        <a href="{{ activity.get_absolute_url }}" class="activity-list-item">
+                                            {% if activity.main_image %}
+                                                <img src="{{ activity.main_image.url }}" alt="{{ activity.title }}" class="activity-thumb">
+                                            {% else %}
+                                                <div class="activity-thumb-placeholder">
+                                                    <i class="fas fa-calendar"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div class="activity-details">
+                                                <div class="activity-title-row">
+                                                    <span class="activity-name">{{ activity.title }}</span>
+                                                    <span class="role-badge organizer">Təşkilatçı</span>
+                                                </div>
+                                                <div class="activity-desc">{{ activity.short_description }}</div>
+                                                <div class="activity-info">
+                                                    <span><i class="far fa-calendar"></i> {{ activity.start_date|date:"d M Y" }}</span>
+                                                    <span><i class="fas fa-map-pin"></i> {{ activity.get_district_display }}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    {% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="fas fa-calendar-times"></i>
+                                </div>
+                                <h4 class="empty-title">Hələ aktivitə yoxdur</h4>
+                                <p class="empty-desc">Aktivitələrə qoşulun və ya yeni aktivitə yaradın!</p>
+                                <a href="{% url 'activities:activities_list' %}" class="btn-profile btn-primary-custom">
+                                    <i class="fas fa-compass"></i>
+                                    Aktivitələri Kəşf Et
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">
                             <i class="fas fa-bolt"></i>
-                            Sürətli Əməliyyatlar
+                            Sürətli Keçidlər
                         </h3>
                     </div>
-                    <div class="quick-actions">
-                        <a href="{% url 'activities:create_activity' %}" class="quick-action-btn">
-                            <i class="fas fa-plus-circle"></i>
-                            <span>Aktivitə Yarat</span>
-                        </a>
-                        <a href="{% url 'accounts:friends_list' %}" class="quick-action-btn">
-                            <i class="fas fa-user-friends"></i>
-                            <span>Dostlarım</span>
-                        </a>
-                        <a href="{% url 'accounts:friend_requests' %}" class="quick-action-btn">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Dostluq Sorğuları</span>
-                        </a>
-                        <a href="{% url 'places:liked_places' %}" class="quick-action-btn">
-                            <i class="fas fa-bookmark"></i>
-                            <span>Saxlanılanlar</span>
-                        </a>
+                    <div class="section-body">
+                        <div class="quick-links-grid">
+                            <a href="{% url 'activities:create_activity' %}" class="quick-link-btn">
+                                <div class="quick-link-icon create">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <span class="quick-link-text">Aktivitə Yarat</span>
+                            </a>
+                            <a href="{% url 'accounts:friends_list' %}" class="quick-link-btn">
+                                <div class="quick-link-icon friends">
+                                    <i class="fas fa-user-friends"></i>
+                                </div>
+                                <span class="quick-link-text">Dostlarım</span>
+                            </a>
+                            <a href="{% url 'accounts:friend_requests' %}" class="quick-link-btn">
+                                <div class="quick-link-icon requests">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <span class="quick-link-text">Dostluq Sorğuları</span>
+                            </a>
+                            <a href="{% url 'places:liked_places' %}" class="quick-link-btn">
+                                <div class="quick-link-icon saved">
+                                    <i class="fas fa-bookmark"></i>
+                                </div>
+                                <span class="quick-link-text">Saxlanılanlar</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Right Column -->
-            <div class="profile-sidebar">
-                <!-- Bio -->
-                {% if user.bio %}
-                    <div class="content-card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-quote-left"></i>
-                                Haqqımda
-                            </h3>
-                        </div>
-                        <p style="color: var(--text-secondary); line-height: 1.7;">{{ user.bio }}</p>
-                    </div>
-                {% endif %}
-                
+            <!-- Right Column (Sidebar) -->
+            <div class="sidebar-column">
                 <!-- Personal Info -->
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">
                             <i class="fas fa-user-circle"></i>
                             Şəxsi Məlumatlar
                         </h3>
                     </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-envelope"></i>
+                    <div class="section-body">
+                        <div class="info-list-item">
+                            <div class="info-icon-box green">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="info-text">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">{{ user.email|default:"Əlavə edilməyib" }}</div>
+                            </div>
                         </div>
-                        <div class="info-content">
-                            <div class="info-label">Email</div>
-                            <div class="info-value">{{ user.email|default:"Əlavə edilməyib" }}</div>
+                        <div class="info-list-item">
+                            <div class="info-icon-box purple">
+                                <i class="fas fa-venus-mars"></i>
+                            </div>
+                            <div class="info-text">
+                                <div class="info-label">Cins</div>
+                                <div class="info-value">{{ user.get_gender_display|default:"Əlavə edilməyib" }}</div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-venus-mars"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Cins</div>
-                            <div class="info-value">{{ user.get_gender_display|default:"Əlavə edilməyib" }}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-birthday-cake"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Doğum Tarixi</div>
-                            <div class="info-value">{{ user.birthday|date:"d M Y"|default:"Əlavə edilməyib" }}</div>
+                        <div class="info-list-item">
+                            <div class="info-icon-box orange">
+                                <i class="fas fa-birthday-cake"></i>
+                            </div>
+                            <div class="info-text">
+                                <div class="info-label">Doğum Tarixi</div>
+                                <div class="info-value">{{ user.birthday|date:"d M Y"|default:"Əlavə edilməyib" }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Languages -->
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">
                             <i class="fas fa-language"></i>
                             Dillər
                         </h3>
                     </div>
-                    <div class="d-flex flex-wrap">
+                    <div class="section-body">
                         {% if user.languages.all %}
-                            {% for language in user.languages.all %}
-                                <span class="tag">{{ language.name }}</span>
-                            {% endfor %}
+                            <div class="tags-container">
+                                {% for language in user.languages.all %}
+                                    <span class="tag-chip">{{ language.name }}</span>
+                                {% endfor %}
+                            </div>
                         {% else %}
-                            <p style="color: var(--text-muted); font-size: 0.9rem;">Əlavə edilməyib</p>
+                            <p class="empty-text">Əlavə edilməyib</p>
                         {% endif %}
                     </div>
                 </div>
                 
                 <!-- Interests -->
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">
                             <i class="fas fa-heart"></i>
                             Maraqlar
                         </h3>
                     </div>
-                    <div class="d-flex flex-wrap">
+                    <div class="section-body">
                         {% if user.interests.all %}
-                            {% for interest in user.interests.all %}
-                                <span class="tag primary">{{ interest.name }}</span>
-                            {% endfor %}
+                            <div class="tags-container">
+                                {% for interest in user.interests.all %}
+                                    <span class="tag-chip interest">{{ interest.name }}</span>
+                                {% endfor %}
+                            </div>
                         {% else %}
-                            <p style="color: var(--text-muted); font-size: 0.9rem;">Əlavə edilməyib</p>
+                            <p class="empty-text">Əlavə edilməyib</p>
                         {% endif %}
                     </div>
                 </div>
