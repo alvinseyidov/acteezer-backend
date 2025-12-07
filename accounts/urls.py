@@ -23,8 +23,11 @@ urlpatterns = [
     path('send-friend-request/', views.send_friend_request, name='send_friend_request'),
     path('respond-friend-request/', views.respond_friend_request, name='respond_friend_request'),
     
-    # Registration steps
-    path('register/', views.phone_registration, name='phone_registration'),
+    # Main registration page (with Google OAuth)
+    path('register/', views.register, name='register'),
+    
+    # Registration steps (phone-based)
+    path('register/phone/', views.phone_registration, name='phone_registration'),
     path('register/otp/', views.otp_verification, name='otp_verification'),
     path('register/name/', views.full_name_registration, name='full_name_registration'),
     path('register/languages/', views.languages_registration, name='languages_registration'),

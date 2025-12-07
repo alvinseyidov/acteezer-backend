@@ -13,6 +13,22 @@ import json
 from .models import User, Language, Interest, InterestCategory, UserImage, OTPVerification, Newsletter, Friendship
 
 
+def register(request):
+    """
+    Main registration/welcome page with Google OAuth and phone registration options.
+    Redirects to home if user is already logged in and registration is complete.
+    Redirects to continue registration if logged in but registration is incomplete.
+    """
+    if request.user.is_authenticated:
+        if request.user.is_registration_complete:
+            return redirect('home')
+        else:
+            # Redirect to appropriate registration step
+            return redirect('accounts:full_name_registration')
+    
+    return render(request, 'accounts/register.html')
+
+
 def home(request):
     """Home page view"""
     from activities.models import Activity, ActivityCategory
@@ -42,6 +58,16 @@ def activities(request):
 def about(request):
     """About us page view"""
     return render(request, 'core/about.html')
+
+
+def terms_of_use(request):
+    """Terms of Use page view"""
+    return render(request, 'core/terms.html')
+
+
+def privacy_policy(request):
+    """Privacy Policy page view"""
+    return render(request, 'core/privacy.html')
 
 
 def contact(request):

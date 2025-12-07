@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}İstifadə Şərtləri - Acteezer{% endblock %}
+
+{% block extra_css %}
+<style>
+.legal-page {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+    padding: 4rem 0;
+}
+
+.legal-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.legal-header {
+    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    padding: 3rem;
+    text-align: center;
+    color: white;
+}
+
+.legal-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.legal-header p {
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.legal-content {
+    padding: 3rem;
+}
+
+.legal-section {
+    margin-bottom: 2.5rem;
+}
+
+.legal-section h2 {
+    color: #1a202c;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #5DD3BE;
+    display: inline-block;
+}
+
+.legal-section h3 {
+    color: #2d3748;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem;
+}
+
+.legal-section p {
+    color: #4a5568;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+}
+
+.legal-section ul {
+    color: #4a5568;
+    line-height: 1.8;
+    padding-left: 1.5rem;
+}
+
+.legal-section li {
+    margin-bottom: 0.5rem;
+}
+
+.highlight-box {
+    background: linear-gradient(135deg, rgba(93, 211, 190, 0.1) 0%, rgba(75, 197, 170, 0.1) 100%);
+    border-left: 4px solid #5DD3BE;
+    padding: 1.25rem;
+    border-radius: 0 12px 12px 0;
+    margin: 1.5rem 0;
+}
+
+.highlight-box p {
+    margin: 0;
+    color: #2d3748;
+}
+
+.last-updated {
+    text-align: center;
+    color: #718096;
+    font-size: 0.9rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 2rem;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #5DD3BE;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    color: #4BC5AA;
+    transform: translateX(-5px);
+}
+
+@media (max-width: 768px) {
+    .legal-page {
+        padding: 1rem;
+    }
+    
+    .legal-header {
+        padding: 2rem 1.5rem;
+    }
+    
+    .legal-header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .legal-content {
+        padding: 1.5rem;
+    }
+    
+    .legal-section h2 {
+        font-size: 1.25rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="legal-page">
+    <div class="container">
+        <div class="legal-container">
+            <div class="legal-header">
+                <h1><i class="fas fa-file-contract me-2"></i>İstifadə Şərtləri</h1>
+                <p>Acteezer platformasından istifadə qaydaları</p>
+            </div>
+            
+            <div class="legal-content">
+                <a href="{% url 'home' %}" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Ana səhifəyə qayıt
+                </a>
+                
+                <div class="legal-section">
+                    <h2>1. Giriş</h2>
+                    <p>
+                        Bu İstifadə Şərtləri ("Şərtlər") Acteezer mobil tətbiqi və veb saytının ("Platforma") istifadəsini tənzimləyir. 
+                        Platformadan istifadə etməklə siz bu Şərtlərlə razılaşırsınız. Əgər bu Şərtlərlə razı deyilsinizsə, 
+                        xahiş edirik Platformadan istifadə etməyin.
+                    </p>
+                    
+                    <div class="highlight-box">
+                        <p><strong>Vacib:</strong> Bu Şərtlər 16 yaşdan yuxarı şəxslərə aiddir. Platformadan istifadə etməklə siz 16 yaşınızın olduğunu təsdiq edirsiniz.</p>
+                    </div>
+                </div>
+                
+                <div class="legal-section">
+                    <h2>2. Hesab Yaratma</h2>
+                    <h3>2.1 Qeydiyyat</h3>
+                    <p>Platformadan istifadə etmək üçün hesab yaratmalısınız. Qeydiyyat zamanı aşağıdakı məlumatları təqdim etməlisiniz:</p>
+                    <ul>
+                        <li>Düzgün və aktual telefon nömrəsi</li>
+                        <li>Həqiqi ad və soyad</li>
+                        <li>Doğum tarixi</li>
+                        <li>Profil şəkli</li>
+                    </ul>
+                    
+                    <h3>2.2 Hesab Təhlükəsizliyi</h3>
+                    <p>
+                        Hesabınızın təhlükəsizliyinə görə siz məsuliyyət daşıyırsınız. Şifrənizi heç kimlə paylaşmayın. 
+                        Hesabınızda baş verən hər hansı icazəsiz fəaliyyət barədə dərhal bizə məlumat verin.
+                    </p>
+                </div>
+                
+                <div class="legal-section">
+                    <h2>3. İstifadə Qaydaları</h2>
+                    <h3>3.1 İcazə verilən istifadə</h3>
+                    <p>Platformadan istifadə edərkən siz:</p>
+                    <ul>
+                        <li>Digər istifadəçilərlə hörmətlə davranmalısınız</li>
+                        <li>Yalnız şəxsi və qeyri-kommersiya məqsədləri üçün istifadə etməlisiniz</li>
+                        <li>Doğru və dürüst məlumat paylaşmalısınız</li>
+                        <li>Aktivitələrdə məsuliyyətli şəkildə iştirak etməlisiniz</li>
+                    </ul>
+                    
+                    <h3>3.2 Qadağan edilən davranışlar</h3>
+                    <p>Aşağıdakı davranışlar qəti qadağandır:</p>
+                    <ul>
+                        <li>Saxta və ya aldadıcı məlumat paylaşmaq</li>
+                        <li>Digər istifadəçiləri təhqir etmək, təhdid etmək və ya ayrı-seçkilik etmək</li>
+                        <li>Spam və ya reklam xarakterli məzmun paylaşmaq</li>
+                        <li>Qeyri-qanuni fəaliyyətlər üçün Platformadan istifadə etmək</li>
+                        <li>Başqalarının şəxsi məlumatlarını icazəsiz paylaşmaq</li>
+                        <li>Platformanın normal fəaliyyətini pozmaq</li>
+                    </ul>
+                </div>
+                
+                <div class="legal-section">
+                    <h2>4. Aktivitələr</h2>
+                    <h3>4.1 Aktivitə Yaratma</h3>
+                    <p>
+                        Aktivitə yaradarkən təşkilatçı olaraq siz aktivitənin düzgün keçirilməsinə görə məsuliyyət daşıyırsınız. 
+                        Aktivitə məlumatları (tarix, yer, qiymət) dəqiq olmalıdır.
+                    </p>
+                    
+                    <h3>4.2 Aktivitədə İştirak</h3>
+                    <p>
+                        Aktivitələrdə iştirak edərkən qeydiyyatdan keçdiyiniz vaxtda hazır olmağa çalışın. 
+                        İştirak edə bilmədiyiniz halda əvvəlcədən xəbər verin.
+                    </p>
+                    
+                    <div class="highlight-box">
+                        <p><strong>Diqqət:</strong> Acteezer aktivitələrin keçirilməsinə zəmanət vermir. Platformada olan aktivitələr istifadəçilər tərəfindən yaradılır.</p>
+                    </div>
+                </div>
+                
+                <div class="legal-section">
+                    <h2>5. Məzmun və Əqli Mülkiyyət</h2>
+                    <p>
+                        Platformada paylaşdığınız məzmunun (şəkillər, mətnlər) hüquqları sizə məxsusdur. Lakin Platformada 
+                        paylaşmaqla bizə bu məzmundan istifadə hüququ verirsiniz.
+                    </p>
+                    <p>
+                        Acteezer loqosu, dizaynı və proqram təminatı Acteezer-in əqli mülkiyyətidir və icazəsiz istifadə qadağandır.
+                    </p>
+                </div>
+                
+                <div class="legal-section">
+                    <h2>6. Hesabın Dayandırılması</h2>
+                    <p>
+                        Bu Şərtləri pozduğunuz halda hesabınız xəbərdarlıq edilmədən dayandırıla bilər. 
+                        Siz də istənilən vaxt hesabınızı silə bilərsiniz.
+                    </p>
+                </div>
+                
+                <div class="legal-section">
+                    <h2>7. Məsuliyyətin Məhdudlaşdırılması</h2>
+                    <p>
+                        Acteezer istifadəçilər arasında əlaqə platformasıdır. Aktivitələr zamanı baş verən hadisələrə görə 
+                        birbaşa məsuliyyət daşımır. İstifadəçilər aktivitələrdə öz məsuliyyətləri ilə iştirak edirlər.
+                    </p>
+                </div>
+                
+                <div class="legal-section">
+                    <h2>8. Dəyişikliklər</h2>
+                    <p>
+                        Bu Şərtlər istənilən vaxt dəyişdirilə bilər. Əhəmiyyətli dəyişikliklər barədə sizi xəbərdar edəcəyik. 
+                        Dəyişikliklərdən sonra Platformadan istifadə etməyə davam etmək yeni Şərtləri qəbul etmək deməkdir.
+                    </p>
+                </div>
+                
+                <div class="legal-section">
+                    <h2>9. Əlaqə</h2>
+                    <p>Bu Şərtlərlə bağlı suallarınız varsa, bizimlə əlaqə saxlayın:</p>
+                    <ul>
+                        <li><strong>E-poçt:</strong> support@acteezer.com</li>
+                        <li><strong>Telefon:</strong> +994 50 123 45 67</li>
+                    </ul>
+                </div>
+                
+                <div class="last-updated">
+                    <i class="fas fa-calendar-alt me-2"></i>
+                    Son yenilənmə: Dekabr 2024
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

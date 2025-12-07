@@ -4,149 +4,227 @@
 {% block title %}İnsanlar - Acteezer{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-    --primary-color: #5DD3BE;
-    --primary-dark: #4BC5AA;
-    --primary-light: #7CDDC9;
-    --gradient-primary: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    --gradient-soft: linear-gradient(135deg, rgba(93, 211, 190, 0.1) 0%, rgba(75, 197, 170, 0.1) 100%);
-    --text-dark: #1a2e2a;
-    --text-gray: #64748b;
-    --bg-light: #f8fafc;
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
-    --shadow-primary: 0 8px 25px rgba(93, 211, 190, 0.3);
+    /* Dark theme color palette */
+    --bg-primary: #0a0a0b;
+    --bg-secondary: #111113;
+    --bg-tertiary: #1a1a1f;
+    --bg-card: #16161a;
+    --bg-card-hover: #1e1e24;
+    --surface-light: #252530;
+    --surface-highlight: #2a2a35;
+    
+    /* Accent colors */
+    --accent-primary: #00d9a5;
+    --accent-primary-dark: #00b88a;
+    --accent-primary-glow: rgba(0, 217, 165, 0.3);
+    --accent-secondary: #7c5cff;
+    --accent-tertiary: #ff6b9d;
+    --accent-warning: #ffb84d;
+    
+    /* Text colors */
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0b0;
+    --text-muted: #6b6b7b;
+    
+    /* Borders */
+    --border-color: #2a2a35;
+    --border-glow: rgba(0, 217, 165, 0.2);
+    
+    /* Shadows */
+    --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow-card-hover: 0 20px 60px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 0 40px rgba(0, 217, 165, 0.15);
+}
+
+* {
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .people-page {
-    background: var(--bg-light);
+    background: var(--bg-primary);
     min-height: 100vh;
-    padding: 2rem 0 4rem;
 }
 
-/* Hero Search Section */
-.search-hero {
-    background: linear-gradient(135deg, rgba(93, 211, 190, 0.1) 0%, rgba(75, 197, 170, 0.05) 100%);
-    border-radius: 24px;
-    padding: 2.5rem;
-    margin-bottom: 2.5rem;
-    box-shadow: var(--shadow-md);
-    backdrop-filter: blur(10px);
+/* ===== HERO SECTION ===== */
+.people-hero {
+    position: relative;
+    padding: 4rem 0 3rem;
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    overflow: hidden;
 }
 
-.search-hero h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 0.5rem;
-    display: flex;
+.people-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 92, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 80% 20%, rgba(0, 217, 165, 0.05) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-badge {
+    display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(124, 92, 255, 0.1);
+    border: 1px solid rgba(124, 92, 255, 0.2);
+    border-radius: 50px;
+    color: var(--accent-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
 }
 
-.search-hero h1 i {
-    color: var(--primary-color);
-    font-size: 1.8rem;
+.hero-badge i {
+    font-size: 0.9rem;
 }
 
-.search-hero p {
-    color: var(--text-gray);
-    margin-bottom: 2rem;
-    font-size: 1.05rem;
+.hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
 }
 
-/* Advanced Search Form */
-.advanced-search {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: var(--shadow-md);
-    margin-top: 1.5rem;
+.hero-title span {
+    background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-tertiary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.search-form-modern {
+.hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    margin-bottom: 2.5rem;
+    max-width: 500px;
+}
+
+/* ===== SEARCH CONTAINER ===== */
+.search-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-card);
+    max-width: 900px;
+}
+
+.search-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.25rem;
-    align-items: end;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
-.form-group-modern {
+.search-input-group {
     position: relative;
 }
 
-.form-group-modern label {
-    display: block;
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.form-group-modern label i {
-    color: var(--primary-color);
-    font-size: 0.85rem;
-}
-
-.form-control-modern {
+.search-input {
     width: 100%;
-    padding: 0.875rem 1.25rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
+    padding: 1rem 1.25rem 1rem 3rem;
+    background: var(--bg-tertiary);
+    border: 2px solid transparent;
+    border-radius: 14px;
+    color: var(--text-primary);
     font-size: 0.95rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: white;
-    color: var(--text-dark);
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
-.form-control-modern:focus {
+.search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-input:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(93, 211, 190, 0.1);
-    transform: translateY(-1px);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 4px var(--accent-primary-glow);
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 1rem 2.5rem 1rem 1rem;
+    background: var(--bg-tertiary);
+    border: 2px solid transparent;
+    border-radius: 14px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b6b7b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
 }
 
 .search-actions {
     display: flex;
     gap: 0.75rem;
-    align-items: center;
+    justify-content: flex-end;
 }
 
-.btn-search {
-    background: var(--gradient-primary);
-    color: white;
+.search-btn {
+    padding: 0.85rem 1.75rem;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-dark) 100%);
     border: none;
-    padding: 0.875rem 2rem;
     border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.95rem;
+    color: var(--bg-primary);
+    font-weight: 700;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--shadow-primary);
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    white-space: nowrap;
 }
 
-.btn-search:hover {
+.search-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 35px rgba(93, 211, 190, 0.4);
+    box-shadow: 0 8px 25px rgba(0, 217, 165, 0.35);
 }
 
-.btn-clear {
-    background: white;
-    color: var(--text-gray);
-    border: 2px solid #e2e8f0;
-    padding: 0.875rem 1.5rem;
+.clear-btn {
+    padding: 0.85rem 1.25rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
+    color: var(--text-secondary);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
@@ -155,131 +233,212 @@
     gap: 0.5rem;
 }
 
-.btn-clear:hover {
-    background: #f1f5f9;
-    border-color: var(--primary-color);
-    color: var(--primary-color);
+.clear-btn:hover {
+    background: var(--surface-light);
+    color: var(--text-primary);
     text-decoration: none;
 }
 
-/* Results Header */
-.results-header-modern {
+/* ===== ADVANCED FILTERS ===== */
+.advanced-filters {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.filter-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.filter-chip input {
+    width: 60px;
+    padding: 0.4rem 0.6rem;
+    background: var(--surface-light);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.filter-chip input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+/* ===== RESULTS BAR ===== */
+.results-bar {
+    padding: 1.5rem 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    padding: 1.5rem 2rem;
-    background: white;
-    border-radius: 16px;
-    box-shadow: var(--shadow-sm);
-}
-
-.results-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
 }
 
 .results-count {
     font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-dark);
-}
-
-.results-count strong {
-    color: var(--primary-color);
-    font-size: 1.3rem;
-}
-
-.filter-badge {
-    background: var(--gradient-soft);
-    color: var(--primary-dark);
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
+    color: var(--text-primary);
     font-weight: 600;
 }
 
-/* People Grid - Clean Modern Style */
-.people-grid-modern {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+.results-count span {
+    color: var(--accent-primary);
+    font-weight: 700;
 }
 
-.person-card-modern {
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    border: 1px solid #f1f5f9;
+.filter-tags {
     display: flex;
-    flex-direction: column;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
-.person-card-modern:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(93, 211, 190, 0.15);
-    border-color: var(--primary-light);
+.filter-tag {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(124, 92, 255, 0.15);
+    border: 1px solid rgba(124, 92, 255, 0.3);
+    border-radius: 8px;
+    color: var(--accent-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
-.person-card-header-modern {
+/* ===== PEOPLE GRID ===== */
+.people-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    padding-bottom: 4rem;
+}
+
+@media (max-width: 1400px) {
+    .people-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .people-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ===== PERSON CARD ===== */
+.person-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
     position: relative;
-    padding: 1.5rem 1.5rem 0;
-    background: linear-gradient(180deg, rgba(93, 211, 190, 0.05) 0%, transparent 100%);
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
-.person-avatar-wrapper {
+.person-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--accent-secondary);
+    box-shadow: var(--shadow-card-hover), 0 0 40px rgba(124, 92, 255, 0.15);
+    text-decoration: none;
+    color: inherit;
+}
+
+.person-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-secondary) 0%, var(--accent-tertiary) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.person-card:hover::before {
+    opacity: 1;
+}
+
+.card-header {
+    position: relative;
+    padding: 2rem 1.5rem 1rem;
+    background: linear-gradient(180deg, rgba(124, 92, 255, 0.05) 0%, transparent 100%);
     display: flex;
     justify-content: center;
-    margin-bottom: 1rem;
+}
+
+.avatar-wrapper {
     position: relative;
 }
 
-.person-avatar-modern {
+.avatar {
     width: 100px;
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid white;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border: 4px solid var(--surface-light);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
-    background: var(--gradient-soft);
+    background: var(--bg-tertiary);
 }
 
-.person-card-modern:hover .person-avatar-modern {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(93, 211, 190, 0.25);
-}
-
-.status-badge-modern {
-    position: absolute;
-    bottom: 8px;
-    right: calc(50% - 50px + 8px);
-    width: 16px;
-    height: 16px;
+.avatar-placeholder {
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
-    background: #10b981;
-    border: 3px solid white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    z-index: 2;
-}
-
-.person-info-modern {
-    padding: 0 1.5rem 1.5rem;
-    text-align: center;
-    flex: 1;
+    background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-tertiary) 100%);
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid var(--surface-light);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    font-size: 2.5rem;
+    color: white;
+    font-weight: 700;
 }
 
-.person-name-modern {
-    font-size: 1.25rem;
+.person-card:hover .avatar,
+.person-card:hover .avatar-placeholder {
+    transform: scale(1.05);
+    border-color: var(--accent-secondary);
+}
+
+.online-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    background: #10b981;
+    border: 3px solid var(--bg-card);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+.card-body {
+    padding: 1rem 1.5rem 1.5rem;
+    text-align: center;
+}
+
+.person-name {
+    font-size: 1.15rem;
     font-weight: 700;
-    color: var(--text-dark);
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
     line-height: 1.3;
 }
@@ -288,550 +447,548 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
     flex-wrap: wrap;
-    font-size: 0.875rem;
 }
 
-.person-age-modern {
-    color: var(--text-gray);
-    font-weight: 500;
+.meta-item {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.3rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
 }
 
-.person-age-modern i {
-    color: var(--primary-color);
+.meta-item i {
     font-size: 0.75rem;
 }
 
-.person-location-modern {
-    color: var(--primary-color);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
+.meta-item.age i {
+    color: var(--accent-tertiary);
 }
 
-.person-location-modern i {
-    font-size: 0.75rem;
+.meta-item.location i {
+    color: var(--accent-primary);
 }
 
-.person-bio-modern {
-    color: var(--text-gray);
-    font-size: 0.875rem;
+.person-bio {
+    color: var(--text-muted);
+    font-size: 0.85rem;
     line-height: 1.5;
     margin-bottom: 1rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 2.625rem;
-    flex: 1;
+    min-height: 2.55rem;
 }
 
-.person-interests-modern {
+.interests-list {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
     justify-content: center;
-    margin-bottom: 1.25rem;
-    min-height: 1.5rem;
+    margin-bottom: 1rem;
+    min-height: 1.8rem;
 }
 
-.interest-tag-modern {
-    background: #f8fafc;
-    color: var(--primary-dark);
-    padding: 0.3rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
+.interest-tag {
+    padding: 0.3rem 0.7rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
     font-weight: 600;
-    transition: all 0.2s ease;
-    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
 }
 
-.interest-tag-modern:hover {
-    background: var(--gradient-primary);
+.interest-tag:hover {
+    background: var(--accent-secondary);
     color: white;
-    border-color: var(--primary-color);
-    transform: translateY(-1px);
+    border-color: var(--accent-secondary);
 }
 
-.person-actions-modern {
+.card-footer {
     padding-top: 1rem;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid var(--border-color);
 }
 
-.friend-btn-modern {
+.friend-btn {
     width: 100%;
     padding: 0.75rem 1rem;
-    border-radius: 10px;
+    border-radius: 12px;
     font-weight: 600;
     border: none;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    position: relative;
-    overflow: hidden;
 }
 
-.friend-btn-modern::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s ease;
-}
-
-.friend-btn-modern:hover::before {
-    left: 100%;
-}
-
-.friend-btn-modern.send-request {
-    background: var(--gradient-primary);
+.friend-btn.send-request {
+    background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-tertiary) 100%);
     color: white;
-    box-shadow: 0 2px 8px rgba(93, 211, 190, 0.3);
 }
 
-.friend-btn-modern.send-request:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(93, 211, 190, 0.4);
+.friend-btn.send-request:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 92, 255, 0.4);
 }
 
-.friend-btn-modern.pending {
-    background: #fef3c7;
-    color: #92400e;
+.friend-btn.pending {
+    background: rgba(255, 184, 77, 0.15);
+    color: var(--accent-warning);
     cursor: not-allowed;
 }
 
-.friend-btn-modern.friends {
-    background: #d1fae5;
-    color: #065f46;
+.friend-btn.friends {
+    background: rgba(0, 217, 165, 0.15);
+    color: var(--accent-primary);
     cursor: default;
 }
 
-.friend-btn-modern.rejected {
-    background: #fee2e2;
-    color: #991b1b;
+.friend-btn.rejected {
+    background: rgba(255, 107, 157, 0.15);
+    color: var(--accent-tertiary);
     cursor: not-allowed;
 }
 
-/* Pagination Modern */
-.pagination-modern {
+/* ===== PAGINATION ===== */
+.pagination-wrapper {
     display: flex;
     justify-content: center;
+    padding: 2rem 0 4rem;
+}
+
+.pagination {
+    display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-top: 3rem;
 }
 
-.page-link-modern {
+.page-btn {
     min-width: 44px;
     height: 44px;
-    border-radius: 12px;
-    border: 2px solid #e2e8f0;
-    background: white;
-    color: var(--text-dark);
-    text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-secondary);
     font-weight: 600;
-    transition: all 0.3s ease;
-    font-size: 0.95rem;
-}
-
-.page-link-modern:hover {
-    border-color: var(--primary-color);
-    background: var(--gradient-soft);
-    color: var(--primary-color);
     text-decoration: none;
-    transform: translateY(-2px);
+    transition: all 0.3s ease;
 }
 
-.page-link-modern.active {
-    background: var(--gradient-primary);
-    border-color: var(--primary-color);
+.page-btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+    border-color: var(--accent-secondary);
+    text-decoration: none;
+}
+
+.page-btn.active {
+    background: var(--accent-secondary);
     color: white;
-    box-shadow: var(--shadow-primary);
+    border-color: var(--accent-secondary);
 }
 
-/* Empty State */
-.empty-state-modern {
+/* ===== EMPTY STATE ===== */
+.empty-state {
     text-align: center;
     padding: 5rem 2rem;
-    background: white;
-    border-radius: 24px;
-    box-shadow: var(--shadow-md);
 }
 
-.empty-icon-modern {
+.empty-icon {
     width: 120px;
     height: 120px;
-    margin: 0 auto 1.5rem;
-    background: var(--gradient-soft);
+    margin: 0 auto 2rem;
+    background: var(--bg-card);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3.5rem;
-    color: var(--primary-color);
+    border: 2px dashed var(--border-color);
 }
 
-.empty-title-modern {
-    font-size: 1.75rem;
+.empty-icon i {
+    font-size: 3rem;
+    color: var(--text-muted);
+}
+
+.empty-title {
+    font-size: 1.5rem;
     font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
 }
 
-.empty-message-modern {
-    color: var(--text-gray);
-    font-size: 1.1rem;
+.empty-text {
+    color: var(--text-secondary);
     margin-bottom: 2rem;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
-/* Responsive Design */
-@media (max-width: 992px) {
-    .search-form-modern {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .people-grid-modern {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 1.5rem;
-    }
-}
-
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-    .people-page {
-        padding: 1rem 0 2rem;
+    .hero-title {
+        font-size: 2.5rem;
     }
     
-    .search-hero {
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border-radius: 16px;
+    .search-container {
+        padding: 1rem;
     }
     
-    .search-hero h1 {
-        font-size: 1.5rem;
-    }
-    
-    .advanced-search {
-        padding: 1.5rem;
-    }
-    
-    .search-form-modern {
+    .search-grid {
         grid-template-columns: 1fr;
-        gap: 1rem;
     }
     
     .search-actions {
         flex-direction: column;
-        width: 100%;
     }
     
-    .btn-search,
-    .btn-clear {
+    .search-btn, .clear-btn {
         width: 100%;
         justify-content: center;
     }
     
-    .results-header-modern {
+    .advanced-filters {
+        flex-direction: column;
+    }
+    
+    .filter-chip {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .filter-chip input {
+        width: 80px;
+    }
+    
+    .results-bar {
         flex-direction: column;
         gap: 1rem;
         text-align: center;
-        padding: 1.25rem;
-    }
-    
-    .people-grid-modern {
-        grid-template-columns: 1fr;
-        gap: 1.25rem;
     }
 }
 
 @media (max-width: 576px) {
-    .search-hero {
-        margin: 0 1rem 1rem;
+    .people-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
     }
     
-    .advanced-search {
-        margin: 0 1rem 1rem;
+    .card-header {
+        padding: 1.25rem 1rem 0.75rem;
     }
     
-    .results-header-modern {
-        margin: 0 1rem 1rem;
+    .avatar, .avatar-placeholder {
+        width: 70px;
+        height: 70px;
+        font-size: 1.75rem;
     }
     
-    .people-grid-modern {
-        margin: 0 1rem;
+    .card-body {
+        padding: 0.75rem 1rem 1rem;
     }
     
-    .person-info-modern {
-        padding: 0 1.25rem 1.25rem;
+    .person-name {
+        font-size: 0.95rem;
     }
     
-    .person-name-modern {
-        font-size: 1.15rem;
+    .person-meta {
+        gap: 0.5rem;
     }
     
-    .person-avatar-modern {
-        width: 90px;
-        height: 90px;
+    .meta-item {
+        font-size: 0.75rem;
     }
+    
+    .person-bio {
+        font-size: 0.75rem;
+        -webkit-line-clamp: 1;
+        min-height: 1.125rem;
+    }
+    
+    .interests-list {
+        display: none;
+    }
+    
+    .friend-btn {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.75rem;
+    }
+    
+    .online-badge {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--surface-light);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--surface-highlight);
 }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="people-page">
-    <div class="container">
-        <!-- Hero Search Section -->
-        <div class="search-hero">
-            <h1>
-                <i class="fas fa-users"></i>
-                İnsanları Kəşf Et
-            </h1>
-            <p>Yeni dostlar tapın və maraqlı insanlarla tanış olun</p>
-            
-            <!-- Advanced Search Form -->
-            <div class="advanced-search">
-                <form method="get" class="search-form-modern">
-                    <div class="form-group-modern">
-                        <label>
-                            <i class="fas fa-search"></i>
-                            Ad və ya Bio
-                        </label>
-                        <input type="text" name="q" class="form-control-modern" placeholder="Ad, soyad və ya bio axtarın..." value="{{ query }}">
-                    </div>
-                    
-                    <div class="form-group-modern">
-                        <label>
-                            <i class="fas fa-map-marker-alt"></i>
-                            Şəhər
-                        </label>
-                        <select name="city" class="form-control-modern">
+    <!-- Hero Section -->
+    <section class="people-hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-users"></i>
+                    <span>İcma</span>
+                </div>
+                <h1 class="hero-title">
+                    Yeni <span>İnsanlar</span><br>Kəşf Edin
+                </h1>
+                <p class="hero-subtitle">
+                    Eyni maraqları paylaşan insanlarla tanış olun, yeni dostluqlar qurun və birlikdə unudulmaz anlar yaşayın.
+                </p>
+                
+                <!-- Search Container -->
+                <form method="get" class="search-container">
+                    <div class="search-grid">
+                        <div class="search-input-group">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" name="q" class="search-input" placeholder="Ad, soyad və ya bio axtarın..." value="{{ query }}">
+                        </div>
+                        
+                        <select name="city" class="filter-select">
                             <option value="">Bütün şəhərlər</option>
                             {% for city in cities %}
-                                <option value="{{ city }}" {% if city == city_filter %}selected{% endif %}>{{ city }}</option>
+                            <option value="{{ city }}" {% if city == city_filter %}selected{% endif %}>{{ city }}</option>
                             {% endfor %}
                         </select>
-                    </div>
-                    
-                    <div class="form-group-modern">
-                        <label>
-                            <i class="fas fa-heart"></i>
-                            Maraqlar
-                        </label>
-                        <select name="interest" class="form-control-modern">
+                        
+                        <select name="interest" class="filter-select">
                             <option value="">Bütün maraqlar</option>
                             {% for interest in interests %}
-                                <option value="{{ interest.id }}" {% if interest.id|stringformat:"s" == interest_filter %}selected{% endif %}>{{ interest.name }}</option>
+                            <option value="{{ interest.id }}" {% if interest.id|stringformat:"s" == interest_filter %}selected{% endif %}>{{ interest.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     
-                    <div class="form-group-modern">
-                        <label>
+                    <div class="advanced-filters">
+                        <div class="filter-chip">
                             <i class="fas fa-birthday-cake"></i>
-                            Min yaş
-                        </label>
-                        <input type="number" name="age_min" class="form-control-modern" placeholder="18" min="18" max="100" value="{{ age_min }}">
-                    </div>
-                    
-                    <div class="form-group-modern">
-                        <label>
+                            <span>Min yaş:</span>
+                            <input type="number" name="age_min" placeholder="18" min="18" max="100" value="{{ age_min }}">
+                        </div>
+                        <div class="filter-chip">
                             <i class="fas fa-birthday-cake"></i>
-                            Max yaş
-                        </label>
-                        <input type="number" name="age_max" class="form-control-modern" placeholder="65" min="18" max="100" value="{{ age_max }}">
-                    </div>
-                    
-                    <div class="form-group-modern search-actions">
-                        <button type="submit" class="btn-search">
-                            <i class="fas fa-search"></i>
-                            Axtar
-                        </button>
-                        <a href="{% url 'accounts:people_list' %}" class="btn-clear">
-                            <i class="fas fa-times"></i>
-                            Təmizlə
-                        </a>
+                            <span>Max yaş:</span>
+                            <input type="number" name="age_max" placeholder="65" min="18" max="100" value="{{ age_max }}">
+                        </div>
+                        <div class="search-actions" style="margin-left: auto;">
+                            <a href="{% url 'accounts:people_list' %}" class="clear-btn">
+                                <i class="fas fa-times"></i>
+                                Təmizlə
+                            </a>
+                            <button type="submit" class="search-btn">
+                                <i class="fas fa-search"></i>
+                                Axtar
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
-        
-        <!-- Results Header -->
-        <div class="results-header-modern">
-            <div class="results-info">
+    </section>
+    
+    <!-- Results Section -->
+    <section style="background: var(--bg-primary); padding-top: 1rem;">
+        <div class="container">
+            <!-- Results Bar -->
+            <div class="results-bar">
                 <div class="results-count">
-                    <strong>{{ page_obj.paginator.count }}</strong> nəfər tapıldı
+                    <span>{{ page_obj.paginator.count }}</span> nəfər tapıldı
                 </div>
                 {% if query or city_filter or interest_filter or age_min or age_max %}
-                    <span class="filter-badge">
-                        <i class="fas fa-filter"></i>
-                        Filtrlənmiş
-                    </span>
+                <div class="filter-tags">
+                    {% if query %}
+                    <span class="filter-tag"><i class="fas fa-search"></i> "{{ query }}"</span>
+                    {% endif %}
+                    {% if city_filter %}
+                    <span class="filter-tag"><i class="fas fa-map-marker-alt"></i> {{ city_filter }}</span>
+                    {% endif %}
+                    {% if age_min or age_max %}
+                    <span class="filter-tag"><i class="fas fa-birthday-cake"></i> {{ age_min|default:"18" }}-{{ age_max|default:"99" }} yaş</span>
+                    {% endif %}
+                </div>
                 {% endif %}
             </div>
-        </div>
-        
-        <!-- People Grid -->
-        {% if page_obj.object_list %}
-            <div class="people-grid-modern" id="people-container">
+            
+            <!-- People Grid -->
+            {% if page_obj.object_list %}
+            <div class="people-grid">
                 {% for person in page_obj.object_list %}
-                    <a href="{% url 'accounts:user_detail' person.id %}" class="person-card-modern" style="text-decoration: none; color: inherit;">
-                        <div class="person-card-header-modern">
-                            <div class="person-avatar-wrapper">
-                                {% if person.images.first %}
-                                    <img src="{{ person.images.first.image.url }}" alt="{{ person.get_full_name }}" class="person-avatar-modern">
-                                {% else %}
-                                    <div class="person-avatar-modern" style="display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-user" style="color: var(--primary-color); font-size: 2.5rem;"></i>
-                                    </div>
-                                {% endif %}
-                                <div class="status-badge-modern"></div>
+                <a href="{% url 'accounts:user_detail' person.id %}" class="person-card">
+                    <div class="card-header">
+                        <div class="avatar-wrapper">
+                            {% if person.profile_image %}
+                            <img src="{{ person.profile_image.url }}" alt="{{ person.get_full_name }}" class="avatar">
+                            {% elif person.images.first %}
+                            <img src="{{ person.images.first.image.url }}" alt="{{ person.get_full_name }}" class="avatar">
+                            {% else %}
+                            <div class="avatar-placeholder">
+                                {{ person.first_name|slice:":1"|upper }}{{ person.last_name|slice:":1"|upper }}
                             </div>
+                            {% endif %}
+                            <div class="online-badge"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <h5 class="person-name">{{ person.get_full_name }}</h5>
+                        
+                        <div class="person-meta">
+                            {% if person.age %}
+                            <span class="meta-item age">
+                                <i class="fas fa-heart"></i>
+                                {{ person.age }} yaş
+                            </span>
+                            {% endif %}
+                            {% if person.city %}
+                            <span class="meta-item location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ person.city }}
+                            </span>
+                            {% endif %}
                         </div>
                         
-                        <div class="person-info-modern">
-                            <h5 class="person-name-modern">{{ person.get_full_name }}</h5>
-                            
-                            <div class="person-meta">
-                                {% if person.age %}
-                                    <span class="person-age-modern">
-                                        <i class="fas fa-birthday-cake"></i>
-                                        {{ person.age }} yaş
-                                    </span>
-                                {% endif %}
-                                
-                                {% if person.city %}
-                                    <span class="person-location-modern">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        {{ person.city }}
-                                    </span>
-                                {% endif %}
-                            </div>
-                            
-                            {% if person.bio %}
-                                <p class="person-bio-modern">{{ person.bio }}</p>
-                            {% else %}
-                                <p class="person-bio-modern" style="color: #cbd5e1; font-style: italic;">Bio məlumatı yoxdur</p>
+                        {% if person.bio %}
+                        <p class="person-bio">{{ person.bio }}</p>
+                        {% else %}
+                        <p class="person-bio" style="color: var(--text-muted); font-style: italic;">Bio məlumatı yoxdur</p>
+                        {% endif %}
+                        
+                        {% if person.interests.all %}
+                        <div class="interests-list">
+                            {% for interest in person.interests.all|slice:":3" %}
+                            <span class="interest-tag">{{ interest.name }}</span>
+                            {% endfor %}
+                            {% if person.interests.count > 3 %}
+                            <span class="interest-tag">+{{ person.interests.count|add:"-3" }}</span>
                             {% endif %}
-                            
-                            {% if person.interests.all %}
-                                <div class="person-interests-modern">
-                                    {% for interest in person.interests.all|slice:":3" %}
-                                        <span class="interest-tag-modern">{{ interest.name }}</span>
-                                    {% endfor %}
-                                    {% if person.interests.count > 3 %}
-                                        <span class="interest-tag-modern">+{{ person.interests.count|add:"-3" }}</span>
-                                    {% endif %}
-                                </div>
-                            {% else %}
-                                <div class="person-interests-modern"></div>
-                            {% endif %}
-                            
-                            <div class="person-actions-modern" onclick="event.stopPropagation();">
-                                {% if user.is_authenticated %}
-                                    {% if not person.friendship_status %}
-                                        <button class="friend-btn-modern send-request" onclick="event.stopPropagation(); sendFriendRequest({{ person.id }}, this); return false;">
-                                            <i class="fas fa-user-plus"></i>
-                                            <span>Dostluq sorğusu</span>
-                                        </button>
-                                    {% elif person.friendship_status.status == 'pending' %}
-                                        {% if person.friendship_status.initiated_by.id == user.id %}
-                                            <button class="friend-btn-modern pending" disabled onclick="event.stopPropagation(); return false;">
-                                                <i class="fas fa-clock"></i>
-                                                <span>Gözləyir</span>
-                                            </button>
-                                        {% else %}
-                                            <button class="friend-btn-modern send-request" onclick="event.stopPropagation(); respondFriendRequest({{ person.friendship_status.friendship.id }}, 'accept', this); return false;">
-                                                <i class="fas fa-check"></i>
-                                                <span>Qəbul et</span>
-                                            </button>
-                                        {% endif %}
-                                    {% elif person.friendship_status.status == 'accepted' %}
-                                        <button class="friend-btn-modern friends" disabled onclick="event.stopPropagation(); return false;">
-                                            <i class="fas fa-check-circle"></i>
-                                            <span>Dostdur</span>
-                                        </button>
-                                    {% elif person.friendship_status.status == 'rejected' %}
-                                        <button class="friend-btn-modern rejected" disabled onclick="event.stopPropagation(); return false;">
-                                            <i class="fas fa-times"></i>
-                                            <span>Rədd edildi</span>
-                                        </button>
-                                    {% endif %}
-                                {% else %}
-                                    <a href="{% url 'accounts:login' %}" class="friend-btn-modern send-request" style="text-decoration: none;" onclick="event.stopPropagation();">
-                                        <i class="fas fa-sign-in-alt"></i>
-                                        <span>Daxil olun</span>
-                                    </a>
-                                {% endif %}
-                            </div>
                         </div>
-                    </a>
+                        {% else %}
+                        <div class="interests-list"></div>
+                        {% endif %}
+                        
+                        <div class="card-footer" onclick="event.preventDefault(); event.stopPropagation();">
+                            {% if user.is_authenticated %}
+                                {% if not person.friendship_status %}
+                                <button class="friend-btn send-request" onclick="event.preventDefault(); event.stopPropagation(); sendFriendRequest({{ person.id }}, this);">
+                                    <i class="fas fa-user-plus"></i>
+                                    <span>Dostluq sorğusu</span>
+                                </button>
+                                {% elif person.friendship_status.status == 'pending' %}
+                                    {% if person.friendship_status.initiated_by.id == user.id %}
+                                    <button class="friend-btn pending" disabled onclick="event.preventDefault(); event.stopPropagation();">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Gözləyir</span>
+                                    </button>
+                                    {% else %}
+                                    <button class="friend-btn send-request" onclick="event.preventDefault(); event.stopPropagation(); respondFriendRequest({{ person.friendship_status.friendship.id }}, 'accept', this);">
+                                        <i class="fas fa-check"></i>
+                                        <span>Qəbul et</span>
+                                    </button>
+                                    {% endif %}
+                                {% elif person.friendship_status.status == 'accepted' %}
+                                <button class="friend-btn friends" disabled onclick="event.preventDefault(); event.stopPropagation();">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Dostdur</span>
+                                </button>
+                                {% elif person.friendship_status.status == 'rejected' %}
+                                <button class="friend-btn rejected" disabled onclick="event.preventDefault(); event.stopPropagation();">
+                                    <i class="fas fa-times"></i>
+                                    <span>Rədd edildi</span>
+                                </button>
+                                {% endif %}
+                            {% else %}
+                            <a href="{% url 'accounts:login' %}" class="friend-btn send-request" onclick="event.stopPropagation();">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>Daxil olun</span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
                 {% endfor %}
             </div>
             
             <!-- Pagination -->
             {% if page_obj.has_other_pages %}
-                <div class="pagination-modern">
+            <div class="pagination-wrapper">
+                <nav class="pagination">
                     {% if page_obj.has_previous %}
-                        <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-link-modern">
-                            <i class="fas fa-chevron-left"></i>
-                        </a>
+                    <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
                     {% endif %}
                     
                     {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                            <span class="page-link-modern active">{{ num }}</span>
-                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                            <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ num }}" class="page-link-modern">{{ num }}</a>
-                        {% endif %}
+                    {% if page_obj.number == num %}
+                    <span class="page-btn active">{{ num }}</span>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ num }}" class="page-btn">{{ num }}</a>
+                    {% endif %}
                     {% endfor %}
                     
                     {% if page_obj.has_next %}
-                        <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-link-modern">
-                            <i class="fas fa-chevron-right"></i>
-                        </a>
+                    <a href="?{% if query %}q={{ query }}&{% endif %}{% if city_filter %}city={{ city_filter }}&{% endif %}{% if interest_filter %}interest={{ interest_filter }}&{% endif %}{% if age_min %}age_min={{ age_min }}&{% endif %}{% if age_max %}age_max={{ age_max }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
                     {% endif %}
-                </div>
+                </nav>
+            </div>
             {% endif %}
-        {% else %}
+            
+            {% else %}
             <!-- Empty State -->
-            <div class="empty-state-modern">
-                <div class="empty-icon-modern">
-                    <i class="fas fa-search"></i>
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-user-friends"></i>
                 </div>
-                <h3 class="empty-title-modern">Heç kim tapılmadı</h3>
-                <p class="empty-message-modern">
+                <h3 class="empty-title">Heç kim tapılmadı</h3>
+                <p class="empty-text">
                     {% if query or city_filter or interest_filter or age_min or age_max %}
-                        Axtarış kriteriyalarınızı dəyişdirərək yenidən cəhd edin.
+                    Axtarış kriteriyalarınızı dəyişdirərək yenidən cəhd edin.
                     {% else %}
-                        Hazırda heç bir istifadəçi mövcud deyil.
+                    Hazırda heç bir istifadəçi mövcud deyil.
                     {% endif %}
                 </p>
-                <a href="{% url 'accounts:people_list' %}" class="btn-search">
+                <a href="{% url 'accounts:people_list' %}" class="search-btn">
                     <i class="fas fa-redo"></i>
                     Yenidən Axtar
                 </a>
             </div>
-        {% endif %}
-    </div>
+            {% endif %}
+        </div>
+    </section>
 </div>
 {% endblock %}
 
@@ -859,7 +1016,7 @@ async function sendFriendRequest(userId, button) {
         
         if (data.success) {
             button.innerHTML = '<i class="fas fa-clock"></i><span>Gözləyir</span>';
-            button.className = 'friend-btn-modern pending';
+            button.className = 'friend-btn pending';
             button.disabled = true;
             showMessage(data.message, 'success');
         } else {
@@ -897,10 +1054,10 @@ async function respondFriendRequest(friendshipId, action, button) {
         if (data.success) {
             if (action === 'accept') {
                 button.innerHTML = '<i class="fas fa-check-circle"></i><span>Dostdur</span>';
-                button.className = 'friend-btn-modern friends';
+                button.className = 'friend-btn friends';
             } else {
                 button.innerHTML = '<i class="fas fa-times"></i><span>Rədd edildi</span>';
-                button.className = 'friend-btn-modern rejected';
+                button.className = 'friend-btn rejected';
             }
             button.disabled = true;
             showMessage(data.message, 'success');
@@ -919,13 +1076,13 @@ async function respondFriendRequest(friendshipId, action, button) {
 function showMessage(message, type) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-    messageDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border-radius: 12px;';
+    messageDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.4); border-radius: 12px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary);';
     messageDiv.innerHTML = `
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" style="font-size: 1.2rem;"></i>
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" style="font-size: 1.2rem; color: ${type === 'success' ? 'var(--accent-primary)' : 'var(--accent-tertiary)'};"></i>
             <span>${message}</span>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="filter: invert(1);"></button>
     `;
     
     document.body.appendChild(messageDiv);
@@ -954,17 +1111,14 @@ function getCookie(name) {
     return cookieValue;
 }
 
-// Smooth scroll to top on page load
+// Add fade-in animation to cards
 document.addEventListener('DOMContentLoaded', function() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // Add fade-in animation to cards
-    const cards = document.querySelectorAll('.person-card-modern');
+    const cards = document.querySelectorAll('.person-card');
     cards.forEach((card, index) => {
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
         setTimeout(() => {
-            card.style.transition = 'all 0.5s ease';
+            card.style.transition = 'all 0.4s ease';
             card.style.opacity = '1';
             card.style.transform = 'translateY(0)';
         }, index * 50);

@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from accounts.views import home, about, contact, blog, blog_detail
+from django.conf.urls.i18n import i18n_patterns
+from accounts.views import home, about, contact, blog, blog_detail, terms_of_use, privacy_policy
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,10 +27,19 @@ urlpatterns = [
     path('activities/', include('activities.urls')),
     path('about/', about, name='about'),
     path('contact/', contact, name='contact'),
+    path('terms/', terms_of_use, name='terms'),
+    path('privacy/', privacy_policy, name='privacy'),
     path('blog/', blog, name='blog'),
     path('blog/<slug:slug>/', blog_detail, name='blog_detail'),
     path('places/', include('places.urls')),
     path('accounts/', include('accounts.urls')),
+    
+    # Allauth URLs for social authentication
+    path('accounts/social/', include('allauth.urls')),
+    
+    # Language switching
+    path('i18n/', include('django.conf.urls.i18n')),
+    
     # API endpoints
     path('api/accounts/', include('accounts.api_urls')),
     path('api/activities/', include('activities.api_urls')),

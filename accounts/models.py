@@ -117,6 +117,9 @@ class User(AbstractUser):
     otp_code = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
     
+    # Google OAuth fields
+    is_google_signup = models.BooleanField(default=False, help_text="True if user registered via Google OAuth")
+    
     # Personal information
     birthday = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES, blank=True, null=True)

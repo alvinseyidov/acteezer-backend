@@ -1,720 +1,685 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Aktivitə Axtar - Acteezer{% endblock %}
-
-{% block content %}
-<!-- Advanced Hero Section with Search -->
-<section class="activities-hero-section">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="activities-hero-content text-center">
-                    <h1 class="activities-hero-title">Yaxınlıqdakı Aktivitələr</h1>
-                    <p class="activities-hero-subtitle">Şəhərdə ən maraqlı aktivitələri kəşf edin və yeni dostlar tapın</p>
-                    
-                    <!-- Advanced Search Bar -->
-                    <form method="GET" action="{% url 'activities:activities_list' %}" id="searchForm" class="main-search-container">
-                        <div class="main-search-box">
-                            <div class="search-input-wrapper">
-                                <i class="fas fa-search search-icon"></i>
-                                <input type="text" 
-                                       name="search" 
-                                       class="search-input" 
-                                       placeholder="Hansı aktivitə axtarırsınız?" 
-                                       value="{{ search_query }}">
-                                <button type="submit" class="search-submit-btn">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                            
-                            <!-- Category Tabs -->
-                            <div class="search-tabs">
-                                <button type="button" class="search-tab {% if not category_filter %}active{% endif %}" data-category="">
-                                    <i class="fas fa-th-large me-1"></i>Bütün Aktivitələr
-                                </button>
-                                {% for cat_type, cat_name in category_types %}
-                                <button type="button" class="search-tab {% if category_filter == cat_type %}active{% endif %}" data-category="{{ cat_type }}">
-                                    <i class="fas fa-{{ cat_type|slice:':1' }} me-1"></i>{{ cat_name }}
-                                </button>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        
-                        <!-- Advanced Filter Panel -->
-                        <div class="advanced-filters-panel" id="filtersPanel">
-                            <div class="row g-3">
-                                <!-- District Filter -->
-                                <div class="col-md-3 col-sm-6">
-                                    <label class="filter-label">
-                                        <i class="fas fa-map-marker-alt me-2"></i>Rayon
-                                    </label>
-                                    <select name="district" class="form-select filter-select" id="districtFilter">
-                                        <option value="">Bütün rayonlar</option>
-                                        {% for district_code, district_name in district_choices %}
-                                        <option value="{{ district_code }}" {% if district_filter == district_code %}selected{% endif %}>
-                                            {{ district_name }}
-                                        </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                
-                                <!-- Date Filter -->
-                                <div class="col-md-3 col-sm-6">
-                                    <label class="filter-label">
-                                        <i class="fas fa-calendar-alt me-2"></i>Vaxt
-                                    </label>
-                                    <select name="date" class="form-select filter-select" id="dateFilter">
-                                        <option value="">Bütün tarixlər</option>
-                                        <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Bu gün</option>
-                                        <option value="tomorrow" {% if date_filter == 'tomorrow' %}selected{% endif %}>Sabah</option>
-                                        <option value="week" {% if date_filter == 'week' %}selected{% endif %}>Bu həftə</option>
-                                        <option value="upcoming" {% if date_filter == 'upcoming' %}selected{% endif %}>Gələcək</option>
-                                    </select>
-                                </div>
-                                
-                                <!-- Price Filter -->
-                                <div class="col-md-3 col-sm-6">
-                                    <label class="filter-label">
-                                        <i class="fas fa-money-bill-wave me-2"></i>Qiymət
-                                    </label>
-                                    <select name="price" class="form-select filter-select" id="priceFilter">
-                                        <option value="">Bütün qiymətlər</option>
-                                        <option value="free" {% if price_filter == 'free' %}selected{% endif %}>Pulsuz</option>
-                                        <option value="paid" {% if price_filter == 'paid' %}selected{% endif %}>Ödənişli</option>
-                                    </select>
-                                </div>
-                                
-                                <!-- Difficulty Filter -->
-                                <div class="col-md-3 col-sm-6">
-                                    <label class="filter-label">
-                                        <i class="fas fa-signal me-2"></i>Çətinlik
-                                    </label>
-                                    <select name="difficulty" class="form-select filter-select" id="difficultyFilter">
-                                        <option value="">Bütün səviyyələr</option>
-                                        {% for diff_code, diff_name in difficulty_choices %}
-                                        <option value="{{ diff_code }}" {% if difficulty_filter == diff_code %}selected{% endif %}>
-                                            {{ diff_name }}
-                                        </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <!-- Sort Options -->
-                            <div class="row mt-3">
-                                <div class="col-12">
-                                    <div class="sort-options">
-                                        <label class="filter-label me-3">
-                                            <i class="fas fa-sort me-2"></i>Sıralama:
-                                        </label>
-                                        <div class="sort-buttons">
-                                            <button type="button" class="sort-btn {% if sort_by == 'featured' or not sort_by %}active{% endif %}" data-sort="featured">
-                                                <i class="fas fa-star me-1"></i>Seçilmiş
-                                            </button>
-                                            <button type="button" class="sort-btn {% if sort_by == 'date' %}active{% endif %}" data-sort="date">
-                                                <i class="fas fa-calendar me-1"></i>Tarix
-                                            </button>
-                                            <button type="button" class="sort-btn {% if sort_by == 'newest' %}active{% endif %}" data-sort="newest">
-                                                <i class="fas fa-clock me-1"></i>Ən yeni
-                                            </button>
-                                            <button type="button" class="sort-btn {% if sort_by == 'price_low' %}active{% endif %}" data-sort="price_low">
-                                                <i class="fas fa-sort-amount-down me-1"></i>Qiymət (aşağıdan)
-                                            </button>
-                                            <button type="button" class="sort-btn {% if sort_by == 'price_high' %}active{% endif %}" data-sort="price_high">
-                                                <i class="fas fa-sort-amount-up me-1"></i>Qiymət (yuxarıdan)
-                                            </button>
-                                        </div>
-                                        <input type="hidden" name="sort" id="sortInput" value="{{ sort_by|default:'featured' }}">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Filter Actions -->
-                            <div class="row mt-3">
-                                <div class="col-12 text-end">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="clearFilters">
-                                        <i class="fas fa-times me-1"></i>Filtrləri təmizlə
-                                    </button>
-                                    <button type="submit" class="btn btn-primary btn-sm ms-2">
-                                        <i class="fas fa-filter me-1"></i>Filtr tətbiq et
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Toggle Filters Button -->
-                        <div class="text-center mt-3">
-                            <button type="button" class="btn btn-link text-decoration-none toggle-filters-btn" id="toggleFilters">
-                                <i class="fas fa-filter me-2"></i>
-                                <span id="toggleFiltersText">Ətraflı filtrlər</span>
-                                <i class="fas fa-chevron-down ms-2" id="toggleFiltersIcon"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Results Count -->
-{% if total_count %}
-<section class="results-count-section py-3 bg-light">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <h5 class="mb-0">
-                    <i class="fas fa-search me-2 text-primary"></i>
-                    <strong>{{ total_count }}</strong> aktivitə tapıldı
-                </h5>
-            </div>
-            <div class="col-md-6 text-md-end">
-                {% if search_query or category_filter or district_filter or date_filter or price_filter or difficulty_filter %}
-                <a href="{% url 'activities:activities_list' %}" class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-redo me-1"></i>Bütün filtrləri təmizlə
-                </a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- Featured Activities Section -->
-{% if featured_activities %}
-<section class="featured-activities-section py-5">
-    <div class="container">
-        <div class="row text-center mb-4">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="section-title-main">
-                    <i class="fas fa-star text-warning me-2"></i>
-                    Seçilmiş Aktivitələr
-                </h2>
-                <p class="section-subtitle">Bu həftə ən populyar aktivitələr</p>
-            </div>
-        </div>
-        
-        <div class="row g-4">
-            {% for activity in featured_activities %}
-            <div class="col-lg-3 col-md-6">
-                <div class="activity-card-modern">
-                    <div class="activity-image-wrapper">
-                        {% if activity.main_image %}
-                            <img src="{{ activity.main_image.url }}" alt="{{ activity.image_alt|default:activity.title }}" class="activity-image">
-                        {% else %}
-                            <img src="{% static '1.png' %}" alt="{{ activity.title }}" class="activity-image">
-                        {% endif %}
-                        <div class="activity-overlay">
-                            <div class="activity-badges-top">
-                                <span class="badge activity-category-badge" style="background-color: {{ activity.category.color|default:'#5DD3BE' }};">
-                                    <i class="{{ activity.category.icon|default:'fas fa-calendar' }} me-1"></i>{{ activity.category.name }}
-                                </span>
-                            </div>
-                            <div class="activity-actions-overlay">
-                                <a href="{{ activity.get_absolute_url }}" class="btn btn-light btn-sm">
-                                    <i class="fas fa-eye me-1"></i>Ətraflı
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="activity-content-modern">
-                        <h5 class="activity-title-modern">
-                            <a href="{{ activity.get_absolute_url }}">{{ activity.title }}</a>
-                        </h5>
-                        <p class="activity-description-modern">{{ activity.short_description|truncatewords:15 }}</p>
-                        
-                        <div class="activity-meta-modern">
-                            <div class="meta-item">
-                                <i class="fas fa-calendar text-primary"></i>
-                                <span>{{ activity.start_date|date:"d M Y, H:i" }}</span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-map-marker-alt text-danger"></i>
-                                <span>{{ activity.district|title }}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="activity-footer-modern">
-                            <div class="participants-info">
-                                <i class="fas fa-users text-muted"></i>
-                                <span>{{ activity.participants_count }}/{{ activity.max_participants }}</span>
-                            </div>
-                            <a href="{{ activity.get_absolute_url }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus me-1"></i>Qoşul
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- All Activities Section -->
-<section class="all-activities-section py-5 {% if featured_activities %}bg-light{% else %}bg-white{% endif %}">
-    <div class="container">
-        {% if activities %}
-        <div class="row g-4">
-            {% for activity in activities %}
-            <div class="col-lg-3 col-md-6">
-                <div class="activity-card-modern">
-                    <div class="activity-image-wrapper">
-                        {% if activity.main_image %}
-                            <img src="{{ activity.main_image.url }}" alt="{{ activity.image_alt|default:activity.title }}" class="activity-image">
-                        {% else %}
-                            <img src="{% static '1.png' %}" alt="{{ activity.title }}" class="activity-image">
-                        {% endif %}
-                        <div class="activity-overlay">
-                            <div class="activity-badges-top">
-                                <span class="badge activity-category-badge" style="background-color: {{ activity.category.color|default:'#5DD3BE' }};">
-                                    <i class="{{ activity.category.icon|default:'fas fa-calendar' }} me-1"></i>{{ activity.category.name }}
-                                </span>
-                            </div>
-                            <div class="activity-actions-overlay">
-                                <a href="{{ activity.get_absolute_url }}" class="btn btn-light btn-sm">
-                                    <i class="fas fa-eye me-1"></i>Ətraflı
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="activity-content-modern">
-                        <h5 class="activity-title-modern">
-                            <a href="{{ activity.get_absolute_url }}">{{ activity.title }}</a>
-                        </h5>
-                        <p class="activity-description-modern">{{ activity.short_description|truncatewords:15 }}</p>
-                        
-                        <div class="activity-meta-modern">
-                            <div class="meta-item">
-                                <i class="fas fa-calendar text-primary"></i>
-                                <span>{{ activity.start_date|date:"d M Y, H:i" }}</span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-map-marker-alt text-danger"></i>
-                                <span>{{ activity.get_district_display }}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="activity-footer-modern">
-                            <div class="participants-info">
-                                <i class="fas fa-users text-muted"></i>
-                                <span>{{ activity.participants_count }}/{{ activity.max_participants }}</span>
-                            </div>
-                            <a href="{{ activity.get_absolute_url }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus me-1"></i>Qoşul
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        
-        <!-- Pagination -->
-        {% if page_obj.has_other_pages %}
-        <div class="row mt-5">
-            <div class="col-12">
-                <nav aria-label="Activities pagination">
-                    <ul class="pagination justify-content-center pagination-modern">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">
-                                    <i class="fas fa-chevron-left"></i> Əvvəlki
-                                </a>
-                            </li>
-                        {% endif %}
-                        
-                        {% for num in page_obj.paginator.page_range %}
-                            {% if page_obj.number == num %}
-                                <li class="page-item active">
-                                    <span class="page-link">{{ num }}</span>
-                                </li>
-                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                        
-                        {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">
-                                    Növbəti <i class="fas fa-chevron-right"></i>
-                                </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        {% endif %}
-        
-        {% else %}
-        <!-- No Results -->
-        <div class="row">
-            <div class="col-12 text-center py-5">
-                <div class="no-results-container">
-                    <i class="fas fa-search fa-4x text-muted mb-4"></i>
-                    <h3 class="text-muted mb-3">Aktivitə tapılmadı</h3>
-                    <p class="text-muted mb-4">Axtarış parametrlərini dəyişərək yenidən cəhd edin.</p>
-                    <a href="{% url 'activities:activities_list' %}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-redo me-2"></i>Bütün aktivitələri gör
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-</section>
-{% endblock %}
+{% block title %}Aktivitələr - Acteezer{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Hero Section */
-.activities-hero-section {
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    padding: 5rem 0 4rem;
+:root {
+    /* Dark theme color palette */
+    --bg-primary: #0a0a0b;
+    --bg-secondary: #111113;
+    --bg-tertiary: #1a1a1f;
+    --bg-card: #16161a;
+    --bg-card-hover: #1e1e24;
+    --surface-light: #252530;
+    --surface-highlight: #2a2a35;
+    
+    /* Accent colors */
+    --accent-primary: #00d9a5;
+    --accent-primary-dark: #00b88a;
+    --accent-primary-glow: rgba(0, 217, 165, 0.3);
+    --accent-secondary: #7c5cff;
+    --accent-tertiary: #ff6b9d;
+    --accent-warning: #ffb84d;
+    
+    /* Text colors */
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0b0;
+    --text-muted: #6b6b7b;
+    
+    /* Borders */
+    --border-color: #2a2a35;
+    --border-glow: rgba(0, 217, 165, 0.2);
+    
+    /* Shadows */
+    --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow-card-hover: 0 20px 60px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 0 40px rgba(0, 217, 165, 0.15);
+}
+
+* {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.activities-page {
+    background: var(--bg-primary);
+    min-height: 100vh;
+}
+
+/* ===== HERO SECTION ===== */
+.activities-hero {
     position: relative;
+    padding: 4rem 0 3rem;
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
     overflow: hidden;
 }
 
-.activities-hero-section::before {
+.activities-hero::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
-    opacity: 0.3;
+    background: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 217, 165, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 80% 20%, rgba(124, 92, 255, 0.05) 0%, transparent 40%);
+    pointer-events: none;
 }
 
-.activities-hero-content {
+.hero-content {
     position: relative;
     z-index: 1;
 }
 
-.activities-hero-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    color: white;
-    margin-bottom: 1rem;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-}
-
-.activities-hero-subtitle {
-    font-size: 1.3rem;
-    color: rgba(255,255,255,0.95);
-    margin-bottom: 3rem;
-    font-weight: 400;
-}
-
-/* Search Container */
-.main-search-container {
-    background: white;
-    border-radius: 24px;
-    padding: 2rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-    margin-bottom: 2rem;
-}
-
-.search-input-wrapper {
-    position: relative;
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 217, 165, 0.1);
+    border: 1px solid rgba(0, 217, 165, 0.2);
+    border-radius: 50px;
+    color: var(--accent-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
     margin-bottom: 1.5rem;
+}
+
+.hero-badge i {
+    font-size: 0.9rem;
+}
+
+.hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
+}
+
+.hero-title span {
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    margin-bottom: 2.5rem;
+    max-width: 500px;
+}
+
+/* ===== SEARCH CONTAINER ===== */
+.search-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-card);
+    max-width: 800px;
+}
+
+.search-input-group {
+    position: relative;
+    margin-bottom: 1.25rem;
+}
+
+.search-main-input {
+    width: 100%;
+    padding: 1rem 1.25rem 1rem 3.5rem;
+    background: var(--bg-tertiary);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.search-main-input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-main-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 4px var(--accent-primary-glow);
 }
 
 .search-icon {
     position: absolute;
-    left: 1.5rem;
+    left: 1.25rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #6c757d;
+    color: var(--text-muted);
     font-size: 1.1rem;
-    z-index: 2;
 }
 
-.search-input {
-    width: 100%;
-    padding: 1.25rem 4rem 1.25rem 3.5rem;
-    border: 2px solid #e9ecef;
-    border-radius: 16px;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #5DD3BE;
-    box-shadow: 0 0 0 4px rgba(93, 211, 190, 0.1);
-}
-
-.search-submit-btn {
+.search-btn {
     position: absolute;
-    right: 0.5rem;
+    right: 6px;
     top: 50%;
     transform: translateY(-50%);
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-dark) 100%);
     border: none;
     border-radius: 12px;
-    padding: 0.75rem 1.5rem;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.search-submit-btn:hover {
-    transform: translateY(-50%) scale(1.05);
-    box-shadow: 0 4px 15px rgba(93, 211, 190, 0.4);
-}
-
-/* Category Tabs */
-.search-tabs {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.search-tab {
-    padding: 0.75rem 1.5rem;
-    border: 2px solid #e9ecef;
-    background: white;
-    color: #6c757d;
-    border-radius: 24px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.search-tab:hover {
-    border-color: #5DD3BE;
-    color: #5DD3BE;
-    transform: translateY(-2px);
-}
-
-.search-tab.active {
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    color: white;
-    border-color: transparent;
-}
-
-/* Advanced Filters Panel */
-.advanced-filters-panel {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 2px solid #f1f5f9;
-    display: none;
-}
-
-.advanced-filters-panel.active {
-    display: block;
-    animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.filter-label {
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 0.5rem;
-    display: block;
+    color: var(--bg-primary);
+    font-weight: 700;
     font-size: 0.9rem;
-}
-
-.filter-select {
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-    padding: 0.75rem 1rem;
+    cursor: pointer;
     transition: all 0.3s ease;
-}
-
-.filter-select:focus {
-    border-color: #5DD3BE;
-    box-shadow: 0 0 0 4px rgba(93, 211, 190, 0.1);
-}
-
-.sort-options {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.5rem;
 }
 
-.sort-buttons {
+.search-btn:hover {
+    transform: translateY(-50%) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 217, 165, 0.35);
+}
+
+/* ===== DATE FILTER PILLS ===== */
+.date-filters {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
 }
 
-.sort-btn {
-    padding: 0.6rem 1.2rem;
-    border: 2px solid #e9ecef;
-    background: white;
-    color: #6c757d;
-    border-radius: 12px;
-    font-weight: 500;
+.date-pill {
+    padding: 0.6rem 1.1rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    color: var(--text-secondary);
     font-size: 0.9rem;
-    transition: all 0.3s ease;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
-.sort-btn:hover {
-    border-color: #5DD3BE;
-    color: #5DD3BE;
+.date-pill:hover {
+    background: var(--surface-light);
+    color: var(--text-primary);
+    border-color: var(--surface-highlight);
+}
+
+.date-pill.active {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border-color: var(--accent-primary);
+}
+
+/* ===== CATEGORIES SECTION ===== */
+.categories-section {
+    padding: 2rem 0;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.categories-scroll {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.categories-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.category-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+.category-chip:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
     transform: translateY(-2px);
 }
 
-.sort-btn.active {
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    color: white;
+.category-chip.active {
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-dark) 100%);
+    color: var(--bg-primary);
     border-color: transparent;
+    box-shadow: 0 8px 25px rgba(0, 217, 165, 0.3);
 }
 
-.toggle-filters-btn {
-    color: #5DD3BE;
-    font-weight: 600;
+.category-chip i {
+    font-size: 1.1rem;
+}
+
+/* ===== FILTERS BAR ===== */
+.filters-bar {
+    padding: 1.5rem 0;
+    background: var(--bg-primary);
+}
+
+.filters-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.results-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.results-count {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.results-count span {
+    color: var(--accent-primary);
+}
+
+.view-toggle {
+    display: flex;
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.view-btn {
+    padding: 0.6rem 1rem;
+    background: transparent;
     border: none;
-    background: none;
-    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: var(--text-muted);
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.toggle-filters-btn:hover {
-    color: #4BC5AA;
+.view-btn.active {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
 }
 
-/* Results Count */
-.results-count-section {
-    border-bottom: 1px solid #e9ecef;
+.filter-dropdowns {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
-.results-count-section .text-primary {
-    color: #5DD3BE !important;
+.filter-select {
+    padding: 0.7rem 1.25rem;
+    padding-right: 2.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b6b7b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
 }
 
-/* Activity Cards */
-.activity-card-modern {
-    background: white;
+.filter-select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.filter-select:hover {
+    border-color: var(--surface-highlight);
+}
+
+/* ===== ACTIVITIES GRID ===== */
+.activities-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    padding: 2rem 0 4rem;
+}
+
+@media (max-width: 1400px) {
+    .activities-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .activities-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .activities-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .card-image-wrapper {
+        height: 120px;
+    }
+    
+    .card-content {
+        padding: 0.85rem;
+    }
+    
+    .card-title {
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        -webkit-line-clamp: 1;
+    }
+    
+    .card-meta {
+        gap: 0.35rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .meta-item {
+        font-size: 0.7rem;
+    }
+    
+    .meta-item i {
+        font-size: 0.65rem;
+    }
+    
+    .card-footer {
+        padding-top: 0.6rem;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+    
+    .organizer-info {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .organizer-avatar,
+    .organizer-avatar-placeholder {
+        width: 22px;
+        height: 22px;
+        font-size: 0.55rem;
+    }
+    
+    .organizer-name {
+        font-size: 0.75rem;
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+    
+    .join-btn {
+        display: none;
+    }
+    
+    .card-actions-mobile {
+        display: flex;
+        width: 100%;
+        gap: 0.5rem;
+    }
+    
+    .card-action-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+        padding: 0.5rem;
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-secondary);
+        font-size: 0.7rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .card-action-btn:hover {
+        background: var(--surface-light);
+        color: var(--text-primary);
+    }
+    
+    .card-action-btn.primary {
+        background: var(--accent-primary);
+        border-color: var(--accent-primary);
+        color: var(--bg-primary);
+    }
+    
+    .card-action-btn.primary:hover {
+        background: var(--accent-primary-dark);
+    }
+    
+    .card-action-btn i {
+        font-size: 0.75rem;
+    }
+    
+    .category-badge,
+    .participants-badge {
+        font-size: 0.6rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .free-badge {
+        font-size: 0.55rem;
+        padding: 0.2rem 0.45rem;
+    }
+}
+
+/* Hide mobile actions on desktop */
+.card-actions-mobile {
+    display: none;
+}
+
+/* ===== ACTIVITY CARD ===== */
+.activity-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    border: 1px solid #f1f5f9;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.activity-card-modern:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-}
-
-.activity-image-wrapper {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
     position: relative;
-    height: 220px;
+}
+
+.activity-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-card-hover), var(--shadow-glow);
+}
+
+.activity-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.activity-card:hover::before {
+    opacity: 1;
+}
+
+.card-image-wrapper {
+    position: relative;
+    height: 180px;
     overflow: hidden;
 }
 
-.activity-image {
+.card-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
 
-.activity-card-modern:hover .activity-image {
-    transform: scale(1.1);
+.activity-card:hover .card-image {
+    transform: scale(1.08);
 }
 
-.activity-overlay {
+.card-gradient {
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    height: 100px;
+    background: linear-gradient(to top, rgba(22, 22, 26, 0.95) 0%, transparent 100%);
+}
+
+.card-badges {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
-    padding: 1rem;
+    align-items: flex-start;
 }
 
-.activity-card-modern:hover .activity-overlay {
-    opacity: 1;
-}
-
-.activity-badges-top {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.activity-category-badge {
+.category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    color: var(--text-primary);
     font-size: 0.75rem;
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
     font-weight: 600;
 }
 
-.activity-actions-overlay {
+.category-badge i {
+    color: var(--accent-primary);
+    font-size: 0.7rem;
+}
+
+.participants-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.participants-badge i {
+    color: var(--accent-tertiary);
+}
+
+.card-favorite {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 50%;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
     display: flex;
+    align-items: center;
     justify-content: center;
+    opacity: 0;
+    transform: scale(0.8);
 }
 
-.activity-content-modern {
-    padding: 1.5rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+.activity-card:hover .card-favorite {
+    opacity: 1;
+    transform: scale(1);
 }
 
-.activity-title-modern {
-    font-size: 1.15rem;
+.card-favorite:hover {
+    background: var(--accent-tertiary);
+    color: white;
+}
+
+.card-favorite.active {
+    opacity: 1;
+    background: var(--accent-tertiary);
+    color: white;
+}
+
+.card-content {
+    padding: 1.25rem;
+}
+
+.card-title {
+    font-size: 1.05rem;
     font-weight: 700;
+    color: var(--text-primary);
     margin-bottom: 0.75rem;
     line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.activity-title-modern a {
-    color: #212529;
+.activity-card a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.activity-card a:hover {
+    text-decoration: none;
+}
+
+.card-title a {
+    color: inherit;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-.activity-title-modern a:hover {
-    color: #5DD3BE;
+.card-title a:hover {
+    color: var(--accent-primary);
+    text-decoration: none;
 }
 
-.activity-description-modern {
-    color: #6c757d;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin-bottom: 1rem;
-    flex: 1;
-}
-
-.activity-meta-modern {
+.card-meta {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #f1f5f9;
 }
 
 .meta-item {
@@ -722,205 +687,1061 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.85rem;
-    color: #6c757d;
+    color: var(--text-secondary);
 }
 
-.activity-footer-modern {
+.meta-item i {
+    width: 16px;
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.meta-item.date i {
+    color: var(--accent-primary);
+}
+
+.meta-item.location i {
+    color: var(--accent-tertiary);
+}
+
+.meta-item.price i {
+    color: var(--accent-warning);
+}
+
+.card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
 }
 
-.participants-info {
+.organizer-info {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    color: #6c757d;
+    gap: 0.6rem;
+}
+
+.organizer-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-primary);
+    object-fit: cover;
+}
+
+.organizer-avatar-placeholder {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-dark) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.organizer-name {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
     font-weight: 500;
 }
 
-/* Pagination */
-.pagination-modern .page-link {
-    border-radius: 12px;
-    border: 2px solid #e9ecef;
-    color: #5DD3BE;
-    margin: 0 0.25rem;
-    padding: 0.75rem 1rem;
+.join-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-dark) 100%);
+    border: none;
+    border-radius: 10px;
+    color: var(--bg-primary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.join-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 217, 165, 0.4);
+    color: var(--bg-primary);
+}
+
+.join-btn i {
+    font-size: 0.75rem;
+}
+
+/* ===== FREE BADGE ===== */
+.free-badge {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    padding: 0.3rem 0.7rem;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-dark) 100%);
+    border-radius: 8px;
+    color: var(--bg-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ===== FEATURED SECTION ===== */
+.featured-section {
+    padding: 3rem 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-title i {
+    color: var(--accent-warning);
+}
+
+.see-all-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent-primary);
+    font-weight: 600;
+    text-decoration: none;
     transition: all 0.3s ease;
 }
 
-.pagination-modern .page-link:hover {
-    background: #5DD3BE;
-    color: white;
-    border-color: #5DD3BE;
-    transform: translateY(-2px);
+.see-all-link:hover {
+    color: var(--accent-primary-dark);
+    gap: 0.75rem;
 }
 
-.pagination-modern .page-item.active .page-link {
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    border-color: transparent;
-    color: white;
+.featured-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
 }
 
-/* Section Titles */
-.section-title-main {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #212529;
-    margin-bottom: 0.5rem;
+@media (max-width: 1200px) {
+    .featured-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
-.section-subtitle {
-    font-size: 1.1rem;
-    color: #6c757d;
+@media (max-width: 576px) {
+    .featured-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-/* No Results */
-.no-results-container {
-    padding: 3rem;
+/* ===== PAGINATION ===== */
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0 4rem;
 }
 
-/* Responsive */
+.modern-pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.page-btn {
+    min-width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.page-btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+}
+
+.page-btn.active {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border-color: var(--accent-primary);
+}
+
+.page-btn.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    text-align: center;
+    padding: 5rem 2rem;
+}
+
+.empty-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 2rem;
+    background: var(--bg-card);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--border-color);
+}
+
+.empty-icon i {
+    font-size: 3rem;
+    color: var(--text-muted);
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+.empty-text {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.empty-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-dark) 100%);
+    border: none;
+    border-radius: 14px;
+    color: var(--bg-primary);
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.empty-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 217, 165, 0.4);
+    color: var(--bg-primary);
+}
+
+/* ===== ADVANCED FILTERS MODAL ===== */
+.filters-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.filters-modal.active {
+    display: flex;
+}
+
+.filters-panel {
+    width: 100%;
+    max-width: 600px;
+    max-height: 85vh;
+    background: var(--bg-card);
+    border-radius: 24px 24px 0 0;
+    padding: 2rem;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.filters-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filters-panel-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.close-filters {
+    width: 40px;
+    height: 40px;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close-filters:hover {
+    background: var(--surface-light);
+    color: var(--text-primary);
+}
+
+.filter-group {
+    margin-bottom: 1.5rem;
+}
+
+.filter-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.filter-option {
+    padding: 0.6rem 1rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-option:hover,
+.filter-option.active {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border-color: var(--accent-primary);
+}
+
+.filters-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-clear-filters {
+    flex: 1;
+    padding: 1rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-clear-filters:hover {
+    background: var(--surface-light);
+    color: var(--text-primary);
+}
+
+.btn-apply-filters {
+    flex: 2;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-dark) 100%);
+    border: none;
+    border-radius: 14px;
+    color: var(--bg-primary);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-apply-filters:hover {
+    box-shadow: 0 8px 25px rgba(0, 217, 165, 0.4);
+}
+
+/* ===== MOBILE FILTERS BUTTON ===== */
+.mobile-filters-btn {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.25rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
 @media (max-width: 768px) {
-    .activities-hero-title {
+    .mobile-filters-btn {
+        display: flex;
+    }
+    
+    .filter-dropdowns {
+        display: none;
+    }
+    
+    .hero-title {
         font-size: 2.5rem;
     }
     
-    .activities-hero-subtitle {
-        font-size: 1.1rem;
+    .search-container {
+        padding: 1rem;
     }
     
-    .main-search-container {
-        padding: 1.5rem;
-    }
-    
-    .search-tabs {
-        justify-content: flex-start;
-        overflow-x: auto;
-        padding-bottom: 0.5rem;
-    }
-    
-    .search-tab {
-        white-space: nowrap;
-        padding: 0.6rem 1.2rem;
-        font-size: 0.85rem;
-    }
-    
-    .sort-options {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .sort-buttons {
-        width: 100%;
-        flex-direction: column;
-    }
-    
-    .sort-btn {
-        width: 100%;
-    }
-    
-    .section-title-main {
-        font-size: 2rem;
+    .categories-scroll {
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 }
+
+/* ===== LOADING SKELETON ===== */
+.skeleton-card {
+    background: var(--bg-card);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.skeleton-image {
+    height: 180px;
+    background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--surface-light) 50%, var(--bg-tertiary) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+.skeleton-content {
+    padding: 1.25rem;
+}
+
+.skeleton-line {
+    height: 16px;
+    background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--surface-light) 50%, var(--bg-tertiary) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.skeleton-line.short {
+    width: 60%;
+}
+
+.skeleton-line.tiny {
+    width: 40%;
+    height: 12px;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--surface-light);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--surface-highlight);
+}
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="activities-page">
+    <!-- Hero Section -->
+    <section class="activities-hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-compass"></i>
+                    <span>Kəşf edin</span>
+                </div>
+                <h1 class="hero-title">
+                    Yeni <span>Aktivitələr</span><br>Sizi Gözləyir
+                </h1>
+                <p class="hero-subtitle">
+                    Şəhərdə baş verən ən maraqlı tədbirləri tapın, yeni insanlarla tanış olun və unudulmaz anlar yaşayın.
+                </p>
+                
+                <!-- Search Container -->
+                <form method="GET" action="{% url 'activities:activities_list' %}" id="mainSearchForm" class="search-container">
+                    <div class="search-input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" 
+                               name="search" 
+                               class="search-main-input" 
+                               placeholder="Aktivitə, məkan və ya kateqoriya axtarın..." 
+                               value="{{ search_query }}">
+                        <button type="submit" class="search-btn">
+                            <i class="fas fa-arrow-right"></i>
+                            <span class="d-none d-md-inline">Axtar</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Date Filter Pills -->
+                    <div class="date-filters">
+                        <button type="button" class="date-pill {% if not date_filter %}active{% endif %}" data-date="">
+                            Hamısı
+                        </button>
+                        <button type="button" class="date-pill {% if date_filter == 'today' %}active{% endif %}" data-date="today">
+                            <i class="far fa-clock me-1"></i>Bu gün
+                        </button>
+                        <button type="button" class="date-pill {% if date_filter == 'tomorrow' %}active{% endif %}" data-date="tomorrow">
+                            Sabah
+                        </button>
+                        <button type="button" class="date-pill {% if date_filter == 'week' %}active{% endif %}" data-date="week">
+                            Bu həftə
+                        </button>
+                        <button type="button" class="date-pill {% if date_filter == 'upcoming' %}active{% endif %}" data-date="upcoming">
+                            Gələcək
+                        </button>
+                    </div>
+                    <input type="hidden" name="date" id="dateInput" value="{{ date_filter }}">
+                    <input type="hidden" name="category" id="categoryInput" value="{{ category_filter }}">
+                    <input type="hidden" name="district" id="districtInput" value="{{ district_filter }}">
+                    <input type="hidden" name="price" id="priceInput" value="{{ price_filter }}">
+                    <input type="hidden" name="difficulty" id="difficultyInput" value="{{ difficulty_filter }}">
+                    <input type="hidden" name="sort" id="sortInput" value="{{ sort_by|default:'featured' }}">
+                </form>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Categories Section -->
+    <section class="categories-section">
+        <div class="container">
+            <div class="categories-scroll">
+                <button type="button" class="category-chip {% if not category_filter %}active{% endif %}" data-category="">
+                    <i class="fas fa-th-large"></i>
+                    <span>Hamısı</span>
+                </button>
+                {% for cat_type, cat_name in category_types %}
+                <button type="button" class="category-chip {% if category_filter == cat_type %}active{% endif %}" data-category="{{ cat_type }}">
+                    {% if cat_type == 'sports' %}
+                    <i class="fas fa-futbol"></i>
+                    {% elif cat_type == 'culture' %}
+                    <i class="fas fa-landmark"></i>
+                    {% elif cat_type == 'nature' %}
+                    <i class="fas fa-leaf"></i>
+                    {% elif cat_type == 'art' %}
+                    <i class="fas fa-palette"></i>
+                    {% elif cat_type == 'food' %}
+                    <i class="fas fa-utensils"></i>
+                    {% elif cat_type == 'education' %}
+                    <i class="fas fa-graduation-cap"></i>
+                    {% elif cat_type == 'social' %}
+                    <i class="fas fa-users"></i>
+                    {% elif cat_type == 'entertainment' %}
+                    <i class="fas fa-gamepad"></i>
+                    {% elif cat_type == 'technology' %}
+                    <i class="fas fa-microchip"></i>
+                    {% elif cat_type == 'music' %}
+                    <i class="fas fa-music"></i>
+                    {% elif cat_type == 'photography' %}
+                    <i class="fas fa-camera"></i>
+                    {% elif cat_type == 'travel' %}
+                    <i class="fas fa-plane"></i>
+                    {% elif cat_type == 'business' %}
+                    <i class="fas fa-briefcase"></i>
+                    {% elif cat_type == 'health' %}
+                    <i class="fas fa-heartbeat"></i>
+                    {% else %}
+                    <i class="fas fa-calendar-alt"></i>
+                    {% endif %}
+                    <span>{{ cat_name }}</span>
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    
+    <!-- Filters Bar -->
+    <section class="filters-bar">
+        <div class="container">
+            <div class="filters-row">
+                <div class="results-info">
+                    <div class="results-count">
+                        <span>{{ total_count }}</span> aktivitə tapıldı
+                    </div>
+                </div>
+                
+                <button type="button" class="mobile-filters-btn" id="openFiltersModal">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Filtrlər</span>
+                </button>
+                
+                <div class="filter-dropdowns">
+                    <select class="filter-select" id="districtFilter" onchange="applyFilter('district', this.value)">
+                        <option value="">Bütün rayonlar</option>
+                        {% for district_code, district_name in district_choices %}
+                        <option value="{{ district_code }}" {% if district_filter == district_code %}selected{% endif %}>
+                            {{ district_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select class="filter-select" id="priceFilter" onchange="applyFilter('price', this.value)">
+                        <option value="">Bütün qiymətlər</option>
+                        <option value="free" {% if price_filter == 'free' %}selected{% endif %}>Pulsuz</option>
+                        <option value="paid" {% if price_filter == 'paid' %}selected{% endif %}>Ödənişli</option>
+                    </select>
+                    
+                    <select class="filter-select" id="sortFilter" onchange="applyFilter('sort', this.value)">
+                        <option value="featured" {% if sort_by == 'featured' or not sort_by %}selected{% endif %}>Seçilmiş</option>
+                        <option value="date" {% if sort_by == 'date' %}selected{% endif %}>Tarixə görə</option>
+                        <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Ən yeni</option>
+                        <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Qiymət ↑</option>
+                        <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Qiymət ↓</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Featured Activities -->
+    {% if featured_activities and not search_query and not category_filter and not district_filter %}
+    <section class="featured-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-fire-alt"></i>
+                    Populyar Aktivitələr
+                </h2>
+                <a href="{% url 'activities:activities_list' %}?sort=featured" class="see-all-link">
+                    Hamısını gör
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            
+            <div class="featured-grid">
+                {% for activity in featured_activities %}
+                <article class="activity-card">
+                    <a href="{{ activity.get_absolute_url }}">
+                        <div class="card-image-wrapper">
+                            {% if activity.main_image %}
+                            <img src="{{ activity.main_image.url }}" alt="{{ activity.title }}" class="card-image">
+                            {% else %}
+                            <img src="{% static '1.png' %}" alt="{{ activity.title }}" class="card-image">
+                            {% endif %}
+                            <div class="card-gradient"></div>
+                            
+                            <div class="card-badges">
+                                <span class="category-badge">
+                                    <i class="fas fa-circle"></i>
+                                    {{ activity.category.name }}
+                                </span>
+                                <span class="participants-badge">
+                                    <i class="fas fa-users"></i>
+                                    {{ activity.participants_count }}/{{ activity.max_participants }}
+                                </span>
+                            </div>
+                            
+                            {% if activity.is_free %}
+                            <span class="free-badge">Pulsuz</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card-content">
+                            <h3 class="card-title">{{ activity.title }}</h3>
+                            
+                            <div class="card-meta">
+                                <div class="meta-item date">
+                                    <i class="far fa-calendar-alt"></i>
+                                    <span>{{ activity.start_date|date:"d M Y, H:i" }}</span>
+                                </div>
+                                <div class="meta-item location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ activity.get_district_display }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer">
+                                <div class="organizer-info">
+                                    {% if activity.organizer.profile_image %}
+                                    <img src="{{ activity.organizer.profile_image.url }}" alt="{{ activity.organizer.get_full_name }}" class="organizer-avatar">
+                                    {% else %}
+                                    <div class="organizer-avatar-placeholder">
+                                        {{ activity.organizer.first_name|slice:":1" }}{{ activity.organizer.last_name|slice:":1" }}
+                                    </div>
+                                    {% endif %}
+                                    <span class="organizer-name">{{ activity.organizer.first_name }}</span>
+                                </div>
+                                <span class="join-btn">
+                                    <i class="fas fa-plus"></i>
+                                    Qoşul
+                                </span>
+                                <div class="card-actions-mobile">
+                                    <button type="button" class="card-action-btn" onclick="event.preventDefault(); event.stopPropagation();">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                    <button type="button" class="card-action-btn" onclick="event.preventDefault(); event.stopPropagation();">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
+                                    <button type="button" class="card-action-btn primary" onclick="event.preventDefault(); event.stopPropagation();">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    
+    <!-- Main Activities Grid -->
+    <section class="pb-5" style="background: var(--bg-primary);">
+        <div class="container">
+            {% if activities %}
+            <div class="activities-grid">
+                {% for activity in activities %}
+                <article class="activity-card">
+                    <a href="{{ activity.get_absolute_url }}">
+                        <div class="card-image-wrapper">
+                            {% if activity.main_image %}
+                            <img src="{{ activity.main_image.url }}" alt="{{ activity.title }}" class="card-image">
+                            {% else %}
+                            <img src="{% static '1.png' %}" alt="{{ activity.title }}" class="card-image">
+                            {% endif %}
+                            <div class="card-gradient"></div>
+                            
+                            <div class="card-badges">
+                                <span class="category-badge">
+                                    <i class="fas fa-circle"></i>
+                                    {{ activity.category.name }}
+                                </span>
+                                <span class="participants-badge">
+                                    <i class="fas fa-users"></i>
+                                    {{ activity.participants_count }}/{{ activity.max_participants }}
+                                </span>
+                            </div>
+                            
+                            {% if activity.is_free %}
+                            <span class="free-badge">Pulsuz</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card-content">
+                            <h3 class="card-title">{{ activity.title }}</h3>
+                            
+                            <div class="card-meta">
+                                <div class="meta-item date">
+                                    <i class="far fa-calendar-alt"></i>
+                                    <span>{{ activity.start_date|date:"d M Y, H:i" }}</span>
+                                </div>
+                                <div class="meta-item location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ activity.get_district_display }}</span>
+                                </div>
+                                {% if not activity.is_free %}
+                                <div class="meta-item price">
+                                    <i class="fas fa-tag"></i>
+                                    <span>{{ activity.price }} ₼</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="card-footer">
+                                <div class="organizer-info">
+                                    {% if activity.organizer.profile_image %}
+                                    <img src="{{ activity.organizer.profile_image.url }}" alt="{{ activity.organizer.get_full_name }}" class="organizer-avatar">
+                                    {% else %}
+                                    <div class="organizer-avatar-placeholder">
+                                        {{ activity.organizer.first_name|slice:":1" }}{{ activity.organizer.last_name|slice:":1" }}
+                                    </div>
+                                    {% endif %}
+                                    <span class="organizer-name">{{ activity.organizer.first_name }}</span>
+                                </div>
+                                <span class="join-btn">
+                                    <i class="fas fa-plus"></i>
+                                    Qoşul
+                                </span>
+                                <div class="card-actions-mobile">
+                                    <button type="button" class="card-action-btn" onclick="event.preventDefault(); event.stopPropagation();">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                    <button type="button" class="card-action-btn" onclick="event.preventDefault(); event.stopPropagation();">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
+                                    <button type="button" class="card-action-btn primary" onclick="event.preventDefault(); event.stopPropagation();">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <div class="pagination-wrapper">
+                <nav class="modern-pagination">
+                    {% if page_obj.has_previous %}
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" class="page-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    {% else %}
+                    <span class="page-btn disabled">
+                        <i class="fas fa-chevron-left"></i>
+                    </span>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <span class="page-btn active">{{ num }}</span>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}" class="page-btn">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" class="page-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    {% else %}
+                    <span class="page-btn disabled">
+                        <i class="fas fa-chevron-right"></i>
+                    </span>
+                    {% endif %}
+                </nav>
+            </div>
+            {% endif %}
+            
+            {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="empty-title">Aktivitə tapılmadı</h3>
+                <p class="empty-text">Axtarış parametrlərini dəyişərək yenidən cəhd edin.</p>
+                <a href="{% url 'activities:activities_list' %}" class="empty-btn">
+                    <i class="fas fa-redo"></i>
+                    Bütün aktivitələri gör
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+<!-- Mobile Filters Modal -->
+<div class="filters-modal" id="filtersModal">
+    <div class="filters-panel">
+        <div class="filters-panel-header">
+            <h3 class="filters-panel-title">Filtrlər</h3>
+            <button type="button" class="close-filters" id="closeFiltersModal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">
+                <i class="fas fa-map-marker-alt me-2"></i>Rayon
+            </label>
+            <div class="filter-options" id="districtOptions">
+                <button type="button" class="filter-option {% if not district_filter %}active{% endif %}" data-value="">Hamısı</button>
+                {% for district_code, district_name in district_choices %}
+                <button type="button" class="filter-option {% if district_filter == district_code %}active{% endif %}" data-value="{{ district_code }}">
+                    {{ district_name }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">
+                <i class="fas fa-tag me-2"></i>Qiymət
+            </label>
+            <div class="filter-options" id="priceOptions">
+                <button type="button" class="filter-option {% if not price_filter %}active{% endif %}" data-value="">Hamısı</button>
+                <button type="button" class="filter-option {% if price_filter == 'free' %}active{% endif %}" data-value="free">Pulsuz</button>
+                <button type="button" class="filter-option {% if price_filter == 'paid' %}active{% endif %}" data-value="paid">Ödənişli</button>
+            </div>
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">
+                <i class="fas fa-signal me-2"></i>Çətinlik
+            </label>
+            <div class="filter-options" id="difficultyOptions">
+                <button type="button" class="filter-option {% if not difficulty_filter %}active{% endif %}" data-value="">Hamısı</button>
+                {% for diff_code, diff_name in difficulty_choices %}
+                <button type="button" class="filter-option {% if difficulty_filter == diff_code %}active{% endif %}" data-value="{{ diff_code }}">
+                    {{ diff_name }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="filters-actions">
+            <button type="button" class="btn-clear-filters" id="clearAllFilters">
+                <i class="fas fa-times me-2"></i>Təmizlə
+            </button>
+            <button type="button" class="btn-apply-filters" id="applyFilters">
+                <i class="fas fa-check me-2"></i>Tətbiq et
+            </button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle filters panel
-    const toggleFiltersBtn = document.getElementById('toggleFilters');
-    const filtersPanel = document.getElementById('filtersPanel');
-    const toggleFiltersText = document.getElementById('toggleFiltersText');
-    const toggleFiltersIcon = document.getElementById('toggleFiltersIcon');
-    
-    if (toggleFiltersBtn && filtersPanel) {
-        toggleFiltersBtn.addEventListener('click', function() {
-            filtersPanel.classList.toggle('active');
-            if (filtersPanel.classList.contains('active')) {
-                toggleFiltersText.textContent = 'Filtrləri gizlət';
-                toggleFiltersIcon.classList.remove('fa-chevron-down');
-                toggleFiltersIcon.classList.add('fa-chevron-up');
-            } else {
-                toggleFiltersText.textContent = 'Ətraflı filtrlər';
-                toggleFiltersIcon.classList.remove('fa-chevron-up');
-                toggleFiltersIcon.classList.add('fa-chevron-down');
-            }
-        });
-    }
-    
-    // Category tabs
-    const categoryTabs = document.querySelectorAll('.search-tab[data-category]');
-    const categoryInput = document.createElement('input');
-    categoryInput.type = 'hidden';
-    categoryInput.name = 'category';
-    categoryInput.id = 'categoryInput';
-    document.getElementById('searchForm').appendChild(categoryInput);
-    
-    categoryTabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            // Remove active class from all tabs
-            categoryTabs.forEach(t => t.classList.remove('active'));
-            // Add active class to clicked tab
-            this.classList.add('active');
-            // Set category value
-            categoryInput.value = this.dataset.category;
-            // Submit form
-            document.getElementById('searchForm').submit();
-        });
-    });
-    
-    // Sort buttons
-    const sortButtons = document.querySelectorAll('.sort-btn[data-sort]');
+    const form = document.getElementById('mainSearchForm');
+    const dateInput = document.getElementById('dateInput');
+    const categoryInput = document.getElementById('categoryInput');
+    const districtInput = document.getElementById('districtInput');
+    const priceInput = document.getElementById('priceInput');
+    const difficultyInput = document.getElementById('difficultyInput');
     const sortInput = document.getElementById('sortInput');
     
-    sortButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Remove active class from all buttons
-            sortButtons.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
+    // Date filter pills
+    document.querySelectorAll('.date-pill').forEach(pill => {
+        pill.addEventListener('click', function() {
+            document.querySelectorAll('.date-pill').forEach(p => p.classList.remove('active'));
             this.classList.add('active');
-            // Set sort value
-            sortInput.value = this.dataset.sort;
-            // Submit form
-            document.getElementById('searchForm').submit();
+            dateInput.value = this.dataset.date;
+            form.submit();
         });
     });
     
-    // Clear filters
-    const clearFiltersBtn = document.getElementById('clearFilters');
-    if (clearFiltersBtn) {
-        clearFiltersBtn.addEventListener('click', function() {
-            window.location.href = '{% url "activities:activities_list" %}';
+    // Category chips
+    document.querySelectorAll('.category-chip').forEach(chip => {
+        chip.addEventListener('click', function() {
+            document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            categoryInput.value = this.dataset.category;
+            form.submit();
+        });
+    });
+    
+    // Filters Modal
+    const filtersModal = document.getElementById('filtersModal');
+    const openFiltersBtn = document.getElementById('openFiltersModal');
+    const closeFiltersBtn = document.getElementById('closeFiltersModal');
+    
+    if (openFiltersBtn) {
+        openFiltersBtn.addEventListener('click', function() {
+            filtersModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         });
     }
     
-    // Auto-submit on filter change
-    const filterSelects = document.querySelectorAll('.filter-select');
-    filterSelects.forEach(select => {
-        select.addEventListener('change', function() {
-            // Small delay to allow multiple selections
-            setTimeout(() => {
-                document.getElementById('searchForm').submit();
-            }, 100);
+    if (closeFiltersBtn) {
+        closeFiltersBtn.addEventListener('click', function() {
+            filtersModal.classList.remove('active');
+            document.body.style.overflow = '';
         });
-    });
+    }
     
-    // Show filters panel if any filter is active
-    {% if category_filter or district_filter or date_filter or price_filter or difficulty_filter %}
-    if (filtersPanel) {
-        filtersPanel.classList.add('active');
-        if (toggleFiltersText) toggleFiltersText.textContent = 'Filtrləri gizlət';
-        if (toggleFiltersIcon) {
-            toggleFiltersIcon.classList.remove('fa-chevron-down');
-            toggleFiltersIcon.classList.add('fa-chevron-up');
+    filtersModal.addEventListener('click', function(e) {
+        if (e.target === filtersModal) {
+            filtersModal.classList.remove('active');
+            document.body.style.overflow = '';
         }
-    }
-    {% endif %}
+    });
+    
+    // Modal filter options
+    document.querySelectorAll('#districtOptions .filter-option').forEach(opt => {
+        opt.addEventListener('click', function() {
+            document.querySelectorAll('#districtOptions .filter-option').forEach(o => o.classList.remove('active'));
+            this.classList.add('active');
+            districtInput.value = this.dataset.value;
+        });
+    });
+    
+    document.querySelectorAll('#priceOptions .filter-option').forEach(opt => {
+        opt.addEventListener('click', function() {
+            document.querySelectorAll('#priceOptions .filter-option').forEach(o => o.classList.remove('active'));
+            this.classList.add('active');
+            priceInput.value = this.dataset.value;
+        });
+    });
+    
+    document.querySelectorAll('#difficultyOptions .filter-option').forEach(opt => {
+        opt.addEventListener('click', function() {
+            document.querySelectorAll('#difficultyOptions .filter-option').forEach(o => o.classList.remove('active'));
+            this.classList.add('active');
+            difficultyInput.value = this.dataset.value;
+        });
+    });
+    
+    // Apply filters
+    document.getElementById('applyFilters')?.addEventListener('click', function() {
+        form.submit();
+    });
+    
+    // Clear all filters
+    document.getElementById('clearAllFilters')?.addEventListener('click', function() {
+        window.location.href = '{% url "activities:activities_list" %}';
+    });
 });
+
+// Apply filter from select dropdowns
+function applyFilter(type, value) {
+    const form = document.getElementById('mainSearchForm');
+    document.getElementById(type + 'Input').value = value;
+    form.submit();
+}
 </script>
 {% endblock %}

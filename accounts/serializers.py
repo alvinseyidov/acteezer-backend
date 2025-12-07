@@ -144,7 +144,7 @@ class UserSerializer(serializers.ModelSerializer):
             'images', 'age', 'is_phone_verified', 'is_registration_complete',
             'registration_step', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'email', 'is_phone_verified', 'registration_step', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'is_phone_verified', 'registration_step', 'created_at', 'updated_at']
     
     def get_full_name(self, obj):
         return obj.get_full_name()

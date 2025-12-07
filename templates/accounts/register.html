@@ -1,0 +1,742 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans "Qeydiyyat" %} - Acteezer</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Dark theme (default) */
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --bg-input: #22222e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #6b6b7a;
+            --accent: #5DD3BE;
+            --accent-hover: #4BC5AA;
+            --accent-glow: rgba(93, 211, 190, 0.3);
+            --border-color: #2a2a38;
+            --error: #ff6b6b;
+            --success: #5DD3BE;
+            --shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            --gradient-bg: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0f0f18 100%);
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            color: var(--text-primary);
+            transition: background 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+        }
+        
+        /* Background decoration */
+        .bg-decoration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .bg-decoration::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        .bg-decoration::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(93, 211, 190, 0.15) 0%, transparent 70%);
+            bottom: -100px;
+            left: -100px;
+            animation: float 15s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, 30px) scale(1.1); }
+        }
+        
+        /* Top bar */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(var(--bg-secondary), 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+        
+        .logo img {
+            width: 36px;
+            height: 36px;
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+        }
+        
+        .top-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        /* Language selector */
+        .language-selector {
+            position: relative;
+        }
+        
+        .language-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .language-btn:hover {
+            border-color: var(--accent);
+            background: var(--bg-card);
+        }
+        
+        .language-dropdown {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.5rem;
+            min-width: 160px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+        }
+        
+        .language-selector:hover .language-dropdown,
+        .language-selector:focus-within .language-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+        
+        .language-option:hover {
+            background: var(--bg-input);
+            color: var(--accent);
+        }
+        
+        .language-option.active {
+            background: var(--accent);
+            color: #0a0a0f;
+        }
+        
+        /* Theme toggle */
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: rotate(15deg);
+        }
+        
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 1.5rem 2rem;
+        }
+        
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Header */
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .auth-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .auth-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        /* Social buttons */
+        .social-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .social-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(93, 211, 190, 0.15);
+        }
+        
+        .social-btn img {
+            width: 22px;
+            height: 22px;
+        }
+        
+        .social-btn.google {
+            background: #ffffff;
+            color: #333;
+            border-color: #e0e0e0;
+        }
+        
+        [data-theme="dark"] .social-btn.google {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        
+        .social-btn.google:hover {
+            background: #f8f8f8;
+        }
+        
+        [data-theme="dark"] .social-btn.google:hover {
+            background: var(--bg-secondary);
+        }
+        
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+        
+        .divider-text {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        /* Primary buttons */
+        .primary-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            border: none;
+            border-radius: 14px;
+            color: #0a0a0f;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px var(--accent-glow);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px var(--accent-glow);
+        }
+        
+        .btn-secondary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        /* Footer */
+        .auth-footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .auth-footer p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        
+        .auth-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Terms */
+        .terms-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+        
+        .terms-text a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        /* Alert messages */
+        .alert {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .alert-error {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            color: var(--error);
+        }
+        
+        .alert-success {
+            background: rgba(93, 211, 190, 0.1);
+            border: 1px solid rgba(93, 211, 190, 0.3);
+            color: var(--success);
+        }
+        
+        /* Feature highlights */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 1rem 0.5rem;
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 0.75rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0a0f;
+            font-size: 1.25rem;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .feature-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .top-bar {
+                padding: 1rem;
+            }
+            
+            .logo-text {
+                display: none;
+            }
+            
+            .auth-card {
+                padding: 1.5rem;
+                border-radius: 20px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .feature {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                text-align: left;
+                padding: 0.75rem;
+                background: var(--bg-input);
+                border-radius: 12px;
+            }
+            
+            .feature-icon {
+                margin: 0;
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-decoration"></div>
+    
+    <!-- Top bar -->
+    <div class="top-bar">
+        <a href="{% url 'home' %}" class="logo">
+            <img src="{% static 'logo.png' %}" alt="Acteezer">
+            <span class="logo-text">Acteezer</span>
+        </a>
+        
+        <div class="top-controls">
+            <!-- Language selector -->
+            <div class="language-selector">
+                <button class="language-btn" type="button">
+                    <i class="fas fa-globe"></i>
+                    <span id="currentLang">
+                        {% if LANGUAGE_CODE == 'az' %}AZ
+                        {% elif LANGUAGE_CODE == 'tr' %}TR
+                        {% elif LANGUAGE_CODE == 'ru' %}RU
+                        {% else %}EN{% endif %}
+                    </span>
+                    <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
+                </button>
+                <div class="language-dropdown">
+                    <form action="{% url 'set_language' %}" method="post" id="langForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <a href="#" class="language-option {% if LANGUAGE_CODE == 'az' %}active{% endif %}" 
+                           onclick="setLanguage('az')">
+                            🇦🇿 Azərbaycan
+                        </a>
+                        <a href="#" class="language-option {% if LANGUAGE_CODE == 'tr' %}active{% endif %}"
+                           onclick="setLanguage('tr')">
+                            🇹🇷 Türkçe
+                        </a>
+                        <a href="#" class="language-option {% if LANGUAGE_CODE == 'ru' %}active{% endif %}"
+                           onclick="setLanguage('ru')">
+                            🇷🇺 Русский
+                        </a>
+                        <a href="#" class="language-option {% if LANGUAGE_CODE == 'en' %}active{% endif %}"
+                           onclick="setLanguage('en')">
+                            🇬🇧 English
+                        </a>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Theme toggle -->
+            <button class="theme-toggle" id="themeToggle" title="{% trans 'Tema dəyiş' %}">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main content -->
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>{% trans "Acteezer-ə Xoş Gəlmisiniz" %}</h1>
+                <p>{% trans "Yeni dostlar tapın, maraqlı aktivitələrdə iştirak edin" %}</p>
+            </div>
+            
+            <!-- Error messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'error' }}">
+                        <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %}"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Social login buttons -->
+            <div class="social-buttons">
+                <a href="/accounts/social/google/login/" class="social-btn google">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    {% trans "Google ilə davam et" %}
+                </a>
+            </div>
+            
+            <!-- Divider -->
+            <div class="divider">
+                <div class="divider-line"></div>
+                <span class="divider-text">{% trans "və ya" %}</span>
+                <div class="divider-line"></div>
+            </div>
+            
+            <!-- Primary action buttons -->
+            <div class="primary-buttons">
+                <a href="{% url 'accounts:phone_registration' %}" class="btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    {% trans "Telefon ilə Qeydiyyat" %}
+                </a>
+                
+                <a href="{% url 'accounts:login' %}" class="btn-secondary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    {% trans "Daxil ol" %}
+                </a>
+            </div>
+            
+            <!-- Terms -->
+            <p class="terms-text">
+                {% trans "Davam etməklə siz" %}
+                <a href="{% url 'terms' %}" target="_blank">{% trans "İstifadə Şərtləri" %}</a>
+                {% trans "və" %}
+                <a href="{% url 'privacy' %}" target="_blank">{% trans "Məxfilik Siyasəti" %}</a>{% trans "ni qəbul edirsiniz" %}
+            </p>
+            
+            <!-- Features -->
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <div class="feature-title">{% trans "Təhlükəsiz" %}</div>
+                        <div class="feature-text">{% trans "Məlumatlarınız qorunur" %}</div>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div>
+                        <div class="feature-title">{% trans "Sürətli" %}</div>
+                        <div class="feature-text">{% trans "1 dəqiqədə hazır" %}</div>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <div class="feature-title">{% trans "Sosial" %}</div>
+                        <div class="feature-text">{% trans "Yeni dostlar tapın" %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+        
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+        
+        function updateThemeIcon(theme) {
+            themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        
+        // Language switching
+        function setLanguage(langCode) {
+            event.preventDefault();
+            const form = document.getElementById('langForm');
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'language';
+            input.value = langCode;
+            form.appendChild(input);
+            form.submit();
+        }
+    </script>
+</body>
+</html>
+
