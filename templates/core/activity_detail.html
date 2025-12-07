@@ -3,1785 +3,1550 @@
 
 {% block title %}{{ activity.title }} - Acteezer{% endblock %}
 
+{% block extra_css %}
+<style>
+    :root {
+        --bg-primary: #fafbfc;
+        --bg-card: #ffffff;
+        --bg-subtle: #f4f6f8;
+        --text-primary: #1a1d21;
+        --text-secondary: #5e6c84;
+        --text-muted: #97a0af;
+        --border-color: #e4e8eb;
+        --accent: #00b894;
+        --accent-hover: #00a384;
+        --accent-light: rgba(0, 184, 148, 0.1);
+        --purple: #6c5ce7;
+        --purple-light: rgba(108, 92, 231, 0.1);
+        --orange: #f39c12;
+        --orange-light: rgba(243, 156, 18, 0.1);
+        --blue: #0984e3;
+        --blue-light: rgba(9, 132, 227, 0.1);
+        --red: #e74c3c;
+        --red-light: rgba(231, 76, 60, 0.1);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+        --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+    }
+    
+    body.dark-mode {
+        --bg-primary: #0d1117;
+        --bg-card: #161b22;
+        --bg-subtle: #21262d;
+        --text-primary: #f0f6fc;
+        --text-secondary: #8b949e;
+        --text-muted: #6e7681;
+        --border-color: #30363d;
+    }
+    
+    .activity-detail-page {
+        background: var(--bg-primary);
+        min-height: 100vh;
+        padding-bottom: 4rem;
+    }
+    
+    /* Hero Section */
+    .activity-hero {
+        position: relative;
+        height: 450px;
+        overflow: hidden;
+    }
+    
+    .hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .hero-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--accent) 0%, #00cec9 50%, #81ecec 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 6rem;
+        color: rgba(255,255,255,0.3);
+    }
+    
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.3) 100%);
+    }
+    
+    .hero-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 2rem 0;
+        color: white;
+    }
+    
+    .hero-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .hero-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+    }
+    
+    .badge-category {
+        color: white;
+    }
+    
+    .badge-status {
+        background: rgba(255,255,255,0.2);
+        color: white;
+    }
+    
+    .badge-featured {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        color: white;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0 0 0.75rem;
+        line-height: 1.2;
+        text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    
+    .hero-description {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+        max-width: 700px;
+    }
+    
+    /* Quick Info Bar */
+    .quick-info-bar {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 0;
+        position: sticky;
+        top: 76px;
+        z-index: 100;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .quick-info-grid {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .quick-info-items {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .quick-info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .quick-info-item i {
+        color: var(--accent);
+        font-size: 1rem;
+    }
+    
+    .quick-info-item span {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+    
+    .quick-info-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-share, .btn-save {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-color);
+        background: var(--bg-card);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-share:hover, .btn-save:hover {
+        background: var(--accent-light);
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+    
+    /* Main Content Layout */
+    .content-layout {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    /* Section Cards */
+    .section-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    
+    .section-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .section-header i {
+        color: var(--accent);
+        font-size: 1.1rem;
+    }
+    
+    .section-header h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+    
+    .section-body {
+        padding: 1.5rem;
+    }
+    
+    /* Description */
+    .description-text {
+        font-size: 1rem;
+        line-height: 1.8;
+        color: var(--text-secondary);
+    }
+    
+    .description-text p {
+        margin-bottom: 1rem;
+    }
+    
+    .description-text p:last-child {
+        margin-bottom: 0;
+    }
+    
+    /* Info Grid */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .info-box {
+        background: var(--bg-subtle);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .info-box-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    
+    .info-box-icon.green { background: var(--accent-light); color: var(--accent); }
+    .info-box-icon.purple { background: var(--purple-light); color: var(--purple); }
+    .info-box-icon.orange { background: var(--orange-light); color: var(--orange); }
+    .info-box-icon.blue { background: var(--blue-light); color: var(--blue); }
+    
+    .info-box-content h4 {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0 0 0.25rem;
+    }
+    
+    .info-box-content p {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+    
+    /* Requirements & Included Lists */
+    .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .checklist li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+    
+    .checklist li:last-child {
+        border-bottom: none;
+    }
+    
+    .checklist li i {
+        color: var(--accent);
+        margin-top: 0.15rem;
+    }
+    
+    /* Location Card */
+    .location-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .location-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+    
+    .location-address {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+    
+    .location-address i {
+        color: var(--red);
+        margin-top: 0.15rem;
+    }
+    
+    .btn-map {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1rem;
+        background: var(--accent);
+        color: white;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-map:hover {
+        background: var(--accent-hover);
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    /* Participants Section */
+    .participants-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .participants-count {
+        background: var(--accent-light);
+        color: var(--accent);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .participants-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+    
+    .participant-card {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        background: var(--bg-subtle);
+        border-radius: var(--radius-md);
+        transition: all 0.2s ease;
+    }
+    
+    .participant-card:hover {
+        background: var(--accent-light);
+    }
+    
+    .participant-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent) 0%, #00cec9 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    
+    .participant-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .participant-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+    
+    .participant-date {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+    
+    .empty-participants {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-muted);
+    }
+    
+    .empty-participants i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    /* Pending Requests */
+    .pending-section {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .pending-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--orange);
+        margin-bottom: 1rem;
+    }
+    
+    .pending-card {
+        background: var(--orange-light);
+        border: 1px solid rgba(243, 156, 18, 0.3);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .pending-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .pending-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .pending-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-approve, .btn-reject {
+        padding: 0.4rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-approve {
+        background: var(--accent);
+        color: white;
+    }
+    
+    .btn-approve:hover {
+        background: var(--accent-hover);
+    }
+    
+    .btn-reject {
+        background: var(--red);
+        color: white;
+    }
+    
+    .btn-reject:hover {
+        background: #c0392b;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+        position: sticky;
+        top: 140px;
+    }
+    
+    /* Join Card */
+    .join-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        border: 2px solid var(--accent);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    
+    .join-card-header {
+        background: linear-gradient(135deg, var(--accent) 0%, #00cec9 100%);
+        padding: 1.5rem;
+        text-align: center;
+        color: white;
+    }
+    
+    .join-card-header h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem;
+    }
+    
+    .join-card-header p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+    
+    .join-card-body {
+        padding: 1.5rem;
+    }
+    
+    .spots-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: var(--bg-subtle);
+        border-radius: var(--radius-md);
+    }
+    
+    .spots-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--accent);
+    }
+    
+    .spots-text {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .btn-join {
+        width: 100%;
+        padding: 1rem;
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-join:hover {
+        background: var(--accent-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+    }
+    
+    .btn-join:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .join-message-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        resize: vertical;
+        min-height: 80px;
+        margin-bottom: 1rem;
+    }
+    
+    .join-message-input:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+    
+    /* Status Cards */
+    .status-card {
+        text-align: center;
+        padding: 1.5rem;
+    }
+    
+    .status-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.5rem;
+    }
+    
+    .status-icon.success { background: var(--accent-light); color: var(--accent); }
+    .status-icon.warning { background: var(--orange-light); color: var(--orange); }
+    .status-icon.danger { background: var(--red-light); color: var(--red); }
+    .status-icon.gold { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); color: white; }
+    
+    .status-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .status-desc {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Activity Info Card */
+    .info-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        margin-bottom: 1.5rem;
+    }
+    
+    .info-card-header {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .info-card-header h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .info-card-header i {
+        color: var(--accent);
+    }
+    
+    .info-card-body {
+        padding: 1rem 1.25rem;
+    }
+    
+    .info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .info-list-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .info-list-item i {
+        width: 20px;
+        text-align: center;
+        margin-top: 0.15rem;
+    }
+    
+    .info-list-item .icon-primary { color: var(--blue); }
+    .info-list-item .icon-danger { color: var(--red); }
+    .info-list-item .icon-warning { color: var(--orange); }
+    .info-list-item .icon-success { color: var(--accent); }
+    
+    .info-list-item-content {
+        flex: 1;
+    }
+    
+    .info-list-item-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .info-list-item-value {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+    
+    .info-list-item-sub {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+    
+    /* Organizer Card */
+    .organizer-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .organizer-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent) 0%, #00cec9 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        overflow: hidden;
+        font-size: 2rem;
+        color: white;
+    }
+    
+    .organizer-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .organizer-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+    
+    .organizer-role {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+    
+    .organizer-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn-profile, .btn-contact {
+        padding: 0.6rem 1rem;
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-profile {
+        background: var(--accent);
+        color: white;
+    }
+    
+    .btn-profile:hover {
+        background: var(--accent-hover);
+        color: white;
+    }
+    
+    .btn-contact {
+        background: var(--bg-subtle);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+    
+    .btn-contact:hover {
+        background: var(--accent-light);
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+    
+    /* Related Activities */
+    .related-section {
+        margin-top: 3rem;
+        padding-top: 3rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .related-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .related-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .related-subtitle {
+        color: var(--text-secondary);
+    }
+    
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .related-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+    
+    .related-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--accent);
+    }
+    
+    .related-image {
+        height: 160px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .related-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .related-card:hover .related-image img {
+        transform: scale(1.05);
+    }
+    
+    .related-image-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--accent) 0%, #00cec9 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: rgba(255,255,255,0.3);
+    }
+    
+    .related-content {
+        padding: 1.25rem;
+    }
+    
+    .related-card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .related-card-title a {
+        color: inherit;
+        text-decoration: none;
+    }
+    
+    .related-card-title a:hover {
+        color: var(--accent);
+    }
+    
+    .related-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+    
+    .related-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    
+    .related-meta i {
+        width: 14px;
+        color: var(--accent);
+    }
+    
+    .related-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .related-participants {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+    
+    .btn-related {
+        padding: 0.4rem 0.75rem;
+        background: var(--accent);
+        color: white;
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-related:hover {
+        background: var(--accent-hover);
+        color: white;
+    }
+    
+    /* Responsive */
+    @media (max-width: 991px) {
+        .content-layout {
+            grid-template-columns: 1fr;
+        }
+        
+        .sidebar {
+            position: static;
+        }
+        
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .activity-hero {
+            height: 350px;
+        }
+        
+        .hero-title {
+            font-size: 1.75rem;
+        }
+        
+        .hero-description {
+            font-size: 1rem;
+        }
+        
+        .quick-info-items {
+            gap: 1rem;
+        }
+        
+        .quick-info-item span {
+            font-size: 0.85rem;
+        }
+        
+        .participants-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .pending-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .pending-actions {
+            width: 100%;
+            margin-top: 0.75rem;
+        }
+        
+        .pending-actions button {
+            flex: 1;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<!-- Activity Hero Section -->
-<section class="activity-detail-hero">
-    <div class="hero-image-container">
+<div class="activity-detail-page">
+    <!-- Hero Section -->
+    <div class="activity-hero">
         {% if activity.main_image %}
-            <img src="{{ activity.main_image.url }}" alt="{{ activity.image_alt|default:activity.title }}" class="hero-image">
+            <img src="{{ activity.main_image.url }}" alt="{{ activity.title }}" class="hero-image">
         {% else %}
-            <img src="{% static '1.png' %}" alt="{{ activity.title }}" class="hero-image">
+            <div class="hero-placeholder">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
         {% endif %}
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <div class="container">
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div class="activity-badges-hero mb-3">
-                            <span class="badge activity-category-badge-large" style="background-color: {{ activity.category.color|default:'#5DD3BE' }};">
-                                <i class="{{ activity.category.icon|default:'fas fa-calendar' }} me-2"></i>{{ activity.category.name }}
-                            </span>
-                            <span class="badge {{ activity.get_status_badge_class }} ms-2">
-                                {{ activity.get_status_display }}
-                            </span>
-                            {% if activity.is_featured %}
-                            <span class="badge bg-warning ms-2">
-                                <i class="fas fa-star me-1"></i>Seçilmiş
-                            </span>
-                            {% endif %}
-                        </div>
-                        <h1 class="activity-hero-title">{{ activity.title }}</h1>
-                        <p class="activity-hero-description">{{ activity.short_description }}</p>
-                        
-                        <div class="activity-hero-meta-advanced">
-                            <div class="meta-item-hero">
-                                <i class="fas fa-calendar-alt"></i>
-                                <div>
-                                    <strong>Tarix</strong>
-                                    <span>{{ activity.start_date|date:"d M Y" }}</span>
-                                </div>
-                            </div>
-                            <div class="meta-item-hero">
-                                <i class="fas fa-clock"></i>
-                                <div>
-                                    <strong>Vaxt</strong>
-                                    <span>{{ activity.start_date|date:"H:i" }} - {{ activity.end_date|date:"H:i" }}</span>
-                                </div>
-                            </div>
-                            <div class="meta-item-hero">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <div>
-                                    <strong>Məkan</strong>
-                                    <span>{{ activity.location_name }}</span>
-                                </div>
-                            </div>
-                            <div class="meta-item-hero">
-                                <i class="fas fa-users"></i>
-                                <div>
-                                    <strong>İştirakçılar</strong>
-                                    <span>{{ activity.participants_count }}/{{ activity.max_participants }}</span>
-                                </div>
-                            </div>
-                        </div>
+                <div class="hero-badges">
+                    <span class="hero-badge badge-category" style="background-color: {{ activity.category.color|default:'#00b894' }};">
+                        <i class="{{ activity.category.icon|default:'fas fa-calendar' }} me-1"></i>{{ activity.category.name }}
+                    </span>
+                    <span class="hero-badge badge-status">{{ activity.get_status_display }}</span>
+                    {% if activity.is_featured %}
+                        <span class="hero-badge badge-featured">
+                            <i class="fas fa-star me-1"></i>Seçilmiş
+                        </span>
+                    {% endif %}
+                </div>
+                <h1 class="hero-title">{{ activity.title }}</h1>
+                <p class="hero-description">{{ activity.short_description }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Info Bar -->
+    <div class="quick-info-bar">
+        <div class="container">
+            <div class="quick-info-grid">
+                <div class="quick-info-items">
+                    <div class="quick-info-item">
+                        <i class="far fa-calendar"></i>
+                        <span>{{ activity.start_date|date:"d M Y" }}</span>
                     </div>
+                    <div class="quick-info-item">
+                        <i class="far fa-clock"></i>
+                        <span>{{ activity.start_date|date:"H:i" }} - {{ activity.end_date|date:"H:i" }}</span>
+                    </div>
+                    <div class="quick-info-item">
+                        <i class="fas fa-map-pin"></i>
+                        <span>{{ activity.location_name }}</span>
+                    </div>
+                    <div class="quick-info-item">
+                        <i class="fas fa-users"></i>
+                        <span>{{ activity.participants_count }}/{{ activity.max_participants }}</span>
+                    </div>
+                </div>
+                <div class="quick-info-actions">
+                    <button class="btn-share" title="Paylaş">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                    <button class="btn-save" title="Saxla">
+                        <i class="far fa-bookmark"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-</section>
-
-<!-- Activity Detail Content -->
-<section class="activity-detail-content py-5">
+    
     <div class="container">
-        <div class="row">
+        <div class="content-layout">
             <!-- Main Content -->
-            <div class="col-lg-8">
-                <!-- About Activity -->
-                <div class="activity-section-card mb-4">
-                    <h3 class="section-title-card">
-                        <i class="fas fa-info-circle me-2 text-primary"></i>
-                        Aktivitə Haqqında
-                    </h3>
-                    <div class="activity-description-full">
-                        {{ activity.description|linebreaks }}
+            <div class="main-content">
+                <!-- Description -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h3>Aktivitə Haqqında</h3>
+                    </div>
+                    <div class="section-body">
+                        <div class="description-text">
+                            {{ activity.description|linebreaks }}
+                        </div>
                     </div>
                 </div>
-
-                <!-- Activity Details Grid -->
-                <div class="activity-section-card mb-4">
-                    <h3 class="section-title-card">
-                        <i class="fas fa-list-ul me-2 text-primary"></i>
-                        Ətraflı Məlumat
-                    </h3>
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="detail-item-card">
-                                <div class="detail-icon">
+                
+                <!-- Details Grid -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <i class="fas fa-list-ul"></i>
+                        <h3>Ətraflı Məlumat</h3>
+                    </div>
+                    <div class="section-body">
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <div class="info-box-icon green">
                                     <i class="fas fa-hourglass-half"></i>
                                 </div>
-                                <div class="detail-content">
-                                    <h6>Müddət</h6>
+                                <div class="info-box-content">
+                                    <h4>Müddət</h4>
                                     <p>{{ activity.duration_hours }} saat</p>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="detail-item-card">
-                                <div class="detail-icon">
+                            <div class="info-box">
+                                <div class="info-box-icon purple">
                                     <i class="fas fa-signal"></i>
                                 </div>
-                                <div class="detail-content">
-                                    <h6>Çətinlik Səviyyəsi</h6>
-                                    <p>
-                                        <span class="badge {{ activity.get_difficulty_badge_class }}">
-                                            {{ activity.get_difficulty_level_display }}
-                                        </span>
-                                    </p>
+                                <div class="info-box-content">
+                                    <h4>Çətinlik Səviyyəsi</h4>
+                                    <p>{{ activity.get_difficulty_level_display }}</p>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="detail-item-card">
-                                <div class="detail-icon">
+                            <div class="info-box">
+                                <div class="info-box-icon blue">
                                     <i class="fas fa-map-marker-alt"></i>
                                 </div>
-                                <div class="detail-content">
-                                    <h6>Rayon</h6>
+                                <div class="info-box-content">
+                                    <h4>Rayon</h4>
                                     <p>{{ activity.get_district_display }}</p>
                                 </div>
                             </div>
+                            <div class="info-box">
+                                <div class="info-box-icon orange">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="info-box-content">
+                                    <h4>Maksimum İştirakçı</h4>
+                                    <p>{{ activity.max_participants }} nəfər</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Requirements -->
                 {% if activity.requirements %}
-                <div class="activity-section-card mb-4">
-                    <h3 class="section-title-card">
-                        <i class="fas fa-clipboard-check me-2 text-primary"></i>
-                        Tələblər
-                    </h3>
-                    <div class="requirements-content">
-                        {{ activity.requirements|linebreaks }}
+                <div class="section-card">
+                    <div class="section-header">
+                        <i class="fas fa-clipboard-check"></i>
+                        <h3>Tələblər</h3>
+                    </div>
+                    <div class="section-body">
+                        <ul class="checklist">
+                            {% for req in activity.requirements|linebreaksbr|striptags|split:',' %}
+                                <li><i class="fas fa-check-circle"></i> {{ req|trim }}</li>
+                            {% empty %}
+                                <li><i class="fas fa-check-circle"></i> {{ activity.requirements }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
                 {% endif %}
-
+                
                 <!-- What's Included -->
                 {% if activity.what_included %}
-                <div class="activity-section-card mb-4">
-                    <h3 class="section-title-card">
-                        <i class="fas fa-check-circle me-2 text-success"></i>
-                        Nə Daxildir
-                    </h3>
-                    <div class="included-content">
-                        {{ activity.what_included|linebreaks }}
+                <div class="section-card">
+                    <div class="section-header">
+                        <i class="fas fa-gift"></i>
+                        <h3>Nə Daxildir</h3>
+                    </div>
+                    <div class="section-body">
+                        <ul class="checklist">
+                            {% for item in activity.what_included|linebreaksbr|striptags|split:',' %}
+                                <li><i class="fas fa-check"></i> {{ item|trim }}</li>
+                            {% empty %}
+                                <li><i class="fas fa-check"></i> {{ activity.what_included }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
                 {% endif %}
-
-                <!-- Location Details -->
-                <div class="activity-section-card mb-4">
-                    <h3 class="section-title-card">
-                        <i class="fas fa-map-marked-alt me-2 text-danger"></i>
-                        Məkan Məlumatları
-                    </h3>
-                    <div class="location-details">
-                        <h5 class="mb-3">{{ activity.location_name }}</h5>
-                        <p class="mb-2">
-                            <i class="fas fa-map-marker-alt text-danger me-2"></i>
-                            <strong>Ünvan:</strong> {{ activity.address }}
-                        </p>
-                        <p class="mb-2">
-                            <i class="fas fa-layer-group text-primary me-2"></i>
-                            <strong>Rayon:</strong> {{ activity.get_district_display }}
-                        </p>
-                        {% if activity.latitude and activity.longitude %}
-                        <div class="mt-3">
+                
+                <!-- Location -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <h3>Məkan</h3>
+                    </div>
+                    <div class="section-body">
+                        <div class="location-info">
+                            <h4 class="location-name">{{ activity.location_name }}</h4>
+                            <div class="location-address">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ activity.address }}</span>
+                            </div>
+                            {% if activity.latitude and activity.longitude %}
                             <a href="https://www.google.com/maps?q={{ activity.latitude }},{{ activity.longitude }}" 
-                               target="_blank" 
-                               class="btn btn-outline-primary">
-                                <i class="fas fa-map me-2"></i>Xəritədə aç
+                               target="_blank" class="btn-map">
+                                <i class="fas fa-external-link-alt"></i>
+                                Xəritədə aç
                             </a>
+                            {% endif %}
                         </div>
-                        {% endif %}
                     </div>
                 </div>
-
-                <!-- Participants Section -->
-                <div class="activity-section-card mb-4">
-                    <h3 class="section-title-card">
-                        <i class="fas fa-users me-2 text-primary"></i>
-                        İştirakçılar
-                        <span class="participants-badge">{{ activity.participants_count }}/{{ activity.max_participants }}</span>
-                    </h3>
-                    
-                    {% if approved_participants %}
-                    <div class="participants-grid-modern">
-                        {% for participant in approved_participants %}
-                        <div class="participant-card-modern">
-                            <div class="participant-avatar-modern">
-                                {% if participant.user.profile_image %}
-                                    <img src="{{ participant.user.profile_image.url }}" alt="{{ participant.user.get_full_name }}">
-                                {% else %}
-                                    <i class="fas fa-user"></i>
-                                {% endif %}
-                            </div>
-                            <div class="participant-info-modern">
-                                <h6 class="participant-name-modern">{{ participant.user.get_full_name }}</h6>
-                                <small class="participant-date-modern">
-                                    <i class="fas fa-calendar me-1"></i>
-                                    {{ participant.join_requested_at|date:"d M Y" }}
-                                </small>
-                            </div>
+                
+                <!-- Participants -->
+                <div class="section-card">
+                    <div class="section-header participants-header">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <i class="fas fa-users"></i>
+                            <h3>İştirakçılar</h3>
                         </div>
-                        {% endfor %}
+                        <span class="participants-count">{{ activity.participants_count }}/{{ activity.max_participants }}</span>
                     </div>
-                    {% else %}
-                    <div class="empty-state">
-                        <i class="fas fa-user-friends fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">Hələ ki heç kim qoşulmayıb. İlk siz olun!</p>
-                    </div>
-                    {% endif %}
-                    
-                    {% if pending_participants and user.is_authenticated and user == activity.organizer %}
-                    <div class="pending-requests-section mt-4">
-                        <h5 class="mb-3">
-                            <i class="fas fa-clock text-warning me-2"></i>
-                            Gözləyən Sorğular ({{ pending_participants.count }})
-                        </h5>
-                        <div class="pending-requests-list">
+                    <div class="section-body">
+                        {% if approved_participants %}
+                            <div class="participants-grid">
+                                {% for participant in approved_participants %}
+                                <div class="participant-card">
+                                    <div class="participant-avatar">
+                                        {% if participant.user.profile_image %}
+                                            <img src="{{ participant.user.profile_image.url }}" alt="{{ participant.user.get_full_name }}">
+                                        {% else %}
+                                            <i class="fas fa-user"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <div class="participant-name">{{ participant.user.get_full_name }}</div>
+                                        <div class="participant-date">{{ participant.join_requested_at|date:"d M" }}</div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty-participants">
+                                <i class="fas fa-user-friends"></i>
+                                <p>Hələ ki heç kim qoşulmayıb. İlk siz olun!</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if pending_participants and user.is_authenticated and user == activity.organizer %}
+                        <div class="pending-section">
+                            <div class="pending-title">
+                                <i class="fas fa-clock"></i>
+                                Gözləyən Sorğular ({{ pending_participants.count }})
+                            </div>
                             {% for participant in pending_participants %}
-                            <div class="pending-request-card-modern">
-                                <div class="pending-request-header">
-                                    <div class="pending-user-info">
-                                        <div class="pending-user-avatar">
+                            <div class="pending-card">
+                                <div class="pending-header">
+                                    <div class="pending-user">
+                                        <div class="participant-avatar">
                                             {% if participant.user.profile_image %}
-                                                <img src="{{ participant.user.profile_image.url }}" alt="{{ participant.user.get_full_name }}">
+                                                <img src="{{ participant.user.profile_image.url }}" alt="">
                                             {% else %}
                                                 <i class="fas fa-user"></i>
                                             {% endif %}
                                         </div>
                                         <div>
-                                            <h6 class="mb-1">{{ participant.user.get_full_name }}</h6>
-                                            <small class="text-muted">
-                                                <i class="fas fa-clock me-1"></i>
-                                                {{ participant.join_requested_at|date:"d M Y, H:i" }}
-                                            </small>
+                                            <div class="participant-name">{{ participant.user.get_full_name }}</div>
+                                            <div class="participant-date">{{ participant.join_requested_at|date:"d M Y, H:i" }}</div>
                                         </div>
                                     </div>
-                                    <div class="pending-request-actions">
-                                        <form method="post" action="{% url 'activities:manage_participant' activity.pk participant.pk %}" class="d-inline">
+                                    <div class="pending-actions">
+                                        <form method="post" action="{% url 'activities:manage_participant' activity.pk participant.pk %}" style="display: inline;">
                                             {% csrf_token %}
                                             <input type="hidden" name="action" value="approve">
-                                            <button type="submit" class="btn btn-success btn-sm">
-                                                <i class="fas fa-check me-1"></i>Təsdiqlə
+                                            <button type="submit" class="btn-approve">
+                                                <i class="fas fa-check"></i> Təsdiqlə
                                             </button>
                                         </form>
-                                        <form method="post" action="{% url 'activities:manage_participant' activity.pk participant.pk %}" class="d-inline">
+                                        <form method="post" action="{% url 'activities:manage_participant' activity.pk participant.pk %}" style="display: inline;">
                                             {% csrf_token %}
                                             <input type="hidden" name="action" value="reject">
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-times me-1"></i>Rədd et
+                                            <button type="submit" class="btn-reject">
+                                                <i class="fas fa-times"></i> Rədd
                                             </button>
                                         </form>
                                     </div>
                                 </div>
-                                {% if participant.message %}
-                                <div class="pending-message">
-                                    <p class="mb-0"><strong>Mesaj:</strong> {{ participant.message }}</p>
-                                </div>
-                                {% endif %}
                             </div>
                             {% endfor %}
                         </div>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <!-- Group Chat Section -->
-                {% if can_chat %}
-                <div class="activity-section-card mb-4" id="chat-section">
-                    <h3 class="section-title-card">
-                        <i class="fas fa-comments me-2 text-primary"></i>
-                        Qrup Söhbəti
-                        <small class="text-muted">(Yalnız qoşulmuş iştirakçılar)</small>
-                    </h3>
-                    
-                    <div class="chat-container-modern">
-                        <div class="chat-messages-modern" id="chat-messages">
-                            <div class="text-center text-muted py-4">
-                                <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
-                                <p>Mesajlar yüklənir...</p>
-                            </div>
-                        </div>
-                        
-                        <div class="chat-input-container-modern">
-                            <form id="chat-form" class="chat-form-modern">
-                                {% csrf_token %}
-                                <div class="input-group-modern">
-                                    <textarea id="chat-message" 
-                                            class="form-control chat-textarea-modern" 
-                                            placeholder="Mesajınızı yazın..." 
-                                            rows="2" 
-                                            maxlength="1000"></textarea>
-                                    <button type="submit" class="btn btn-primary chat-send-btn-modern">
-                                        <i class="fas fa-paper-plane"></i>
-                                    </button>
-                                </div>
-                                <small class="text-muted d-block mt-2">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Enter ilə göndər, Shift+Enter ilə yeni sətir
-                                </small>
-                            </form>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
-                {% endif %}
             </div>
-
+            
             <!-- Sidebar -->
-            <div class="col-lg-4">
-                <div class="activity-sidebar-modern">
-                    <!-- Join Activity Card -->
-                    <div class="sidebar-card join-card-modern mb-4">
-                        {% if user.is_authenticated %}
-                            {% if user == activity.organizer %}
-                                <div class="organizer-card">
-                                    <div class="organizer-icon">
+            <div class="sidebar">
+                <!-- Join Card -->
+                <div class="join-card">
+                    {% if user.is_authenticated %}
+                        {% if user == activity.organizer %}
+                            <div class="join-card-body">
+                                <div class="status-card">
+                                    <div class="status-icon gold">
                                         <i class="fas fa-crown"></i>
                                     </div>
-                                    <h5 class="mb-2">Siz Təşkilatçısınız</h5>
-                                    <p class="text-muted mb-3">Bu aktivitənin təşkilatçısı kimi iştirakçı sorğularını idarə edə bilərsiniz.</p>
-                                    <div class="organizer-stats">
-                                        <div class="stat-item">
-                                            <span class="stat-number">{{ activity.participants_count }}</span>
-                                            <span class="stat-label">Təsdiqlənmiş</span>
-                                        </div>
-                                        <div class="stat-item">
-                                            <span class="stat-number">{{ activity.pending_requests_count }}</span>
-                                            <span class="stat-label">Gözləyən</span>
-                                        </div>
-                                    </div>
+                                    <div class="status-title">Siz Təşkilatçısınız</div>
+                                    <p class="status-desc">Bu aktivitənin təşkilatçısı kimi iştirakçı sorğularını idarə edə bilərsiniz.</p>
                                 </div>
-                            {% elif user_participation %}
-                                <div class="participation-status-card">
-                                    <h5 class="mb-3">Sizin Statusunuz</h5>
-                                    <div class="status-badge-large">
-                                        <span class="badge {{ user_participation.get_status_badge_class }} fs-6 px-3 py-2">
-                                            {{ user_participation.get_status_display }}
-                                        </span>
-                                    </div>
-                                    
+                            </div>
+                        {% elif user_participation %}
+                            <div class="join-card-body">
+                                <div class="status-card">
                                     {% if user_participation.status == 'pending' %}
-                                        <p class="text-muted mt-3 mb-3">
-                                            <i class="fas fa-hourglass-half me-2"></i>
-                                            Təşkilatçının cavabını gözləyin
-                                        </p>
+                                        <div class="status-icon warning">
+                                            <i class="fas fa-hourglass-half"></i>
+                                        </div>
+                                        <div class="status-title">Sorğunuz Gözləyir</div>
+                                        <p class="status-desc">Təşkilatçının cavabını gözləyin</p>
                                         <form method="post" action="{% url 'activities:cancel_join_request' activity.pk %}">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn btn-outline-danger w-100">
-                                                <i class="fas fa-times me-2"></i>Sorğunu ləğv et
+                                            <button type="submit" class="btn-join" style="background: var(--red);">
+                                                <i class="fas fa-times"></i> Sorğunu Ləğv Et
                                             </button>
                                         </form>
                                     {% elif user_participation.status == 'approved' %}
-                                        <p class="text-success mt-3 mb-3">
-                                            <i class="fas fa-check-circle me-2"></i>
-                                            Siz bu aktivitəyə qoşulmusunuz!
-                                        </p>
+                                        <div class="status-icon success">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <div class="status-title">Qoşulmusunuz!</div>
+                                        <p class="status-desc">Siz bu aktivitəyə qoşulmusunuz</p>
                                         <form method="post" action="{% url 'activities:cancel_join_request' activity.pk %}">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn btn-outline-danger w-100">
-                                                <i class="fas fa-sign-out-alt me-2"></i>Aktivitədən çıx
+                                            <button type="submit" class="btn-join" style="background: var(--red);">
+                                                <i class="fas fa-sign-out-alt"></i> Aktivitədən Çıx
                                             </button>
                                         </form>
                                     {% elif user_participation.status == 'rejected' %}
-                                        <p class="text-danger mt-3 mb-3">
-                                            <i class="fas fa-times-circle me-2"></i>
-                                            Sorğunuz rədd edildi
-                                        </p>
-                                        {% if user_participation.organizer_response %}
-                                        <div class="alert alert-info">
-                                            <strong>Təşkilatçının cavabı:</strong>
-                                            <p class="mb-0 mt-2">{{ user_participation.organizer_response }}</p>
+                                        <div class="status-icon danger">
+                                            <i class="fas fa-times"></i>
                                         </div>
-                                        {% endif %}
+                                        <div class="status-title">Sorğunuz Rədd Edildi</div>
+                                        <p class="status-desc">Təəssüf ki, təşkilatçı sorğunuzu rədd etdi</p>
                                     {% endif %}
                                 </div>
-                            {% elif can_join %}
-                                <div class="join-form-card">
-                                    <h5 class="mb-3">
-                                        <i class="fas fa-user-plus me-2 text-primary"></i>
-                                        Aktivitəyə Qoşul
-                                    </h5>
-                                    <form method="post" action="{% url 'activities:join_activity' activity.pk %}">
-                                        {% csrf_token %}
-                                        <div class="mb-3">
-                                            <label for="message" class="form-label">Təşkilatçıya mesaj (ixtiyari)</label>
-                                            <textarea class="form-control" 
-                                                    id="message" 
-                                                    name="message" 
-                                                    rows="4" 
-                                                    placeholder="Özünüz haqqında qısa məlumat və ya sual..."></textarea>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary w-100 btn-lg">
-                                            <i class="fas fa-paper-plane me-2"></i>Qoşulma sorğusu göndər
-                                        </button>
-                                    </form>
+                            </div>
+                        {% elif can_join %}
+                            <div class="join-card-header">
+                                <h3><i class="fas fa-user-plus me-2"></i>Aktivitəyə Qoşul</h3>
+                                <p>Bu aktivitəyə qoşulma sorğusu göndərin</p>
+                            </div>
+                            <div class="join-card-body">
+                                <div class="spots-indicator">
+                                    <span class="spots-number">{{ activity.available_spots }}</span>
+                                    <span class="spots-text">yer qalıb</span>
                                 </div>
-                            {% else %}
-                                <div class="cannot-join-card">
-                                    <div class="alert alert-warning">
-                                        <i class="fas fa-exclamation-triangle me-2"></i>
-                                        <strong>Qoşula bilməzsiniz</strong>
+                                <form method="post" action="{% url 'activities:join_activity' activity.pk %}">
+                                    {% csrf_token %}
+                                    <textarea name="message" class="join-message-input" placeholder="Təşkilatçıya mesaj yazın (ixtiyari)..."></textarea>
+                                    <button type="submit" class="btn-join">
+                                        <i class="fas fa-paper-plane"></i>
+                                        Qoşulma Sorğusu Göndər
+                                    </button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <div class="join-card-body">
+                                <div class="status-card">
+                                    <div class="status-icon danger">
+                                        <i class="fas fa-ban"></i>
                                     </div>
-                                    <p class="text-muted">{{ join_message }}</p>
+                                    <div class="status-title">Qoşula Bilməzsiniz</div>
+                                    <p class="status-desc">{{ join_message }}</p>
                                 </div>
-                            {% endif %}
-                        {% else %}
-                            <div class="login-required-card">
-                                <div class="login-icon">
-                                    <i class="fas fa-lock"></i>
-                                </div>
-                                <h5 class="mb-3">Qoşulmaq üçün daxil olun</h5>
-                                <p class="text-muted mb-3">Aktivitəyə qoşulmaq üçün hesabınıza daxil olmalısınız.</p>
-                                <a href="{% url 'accounts:login' %}" class="btn btn-primary w-100 btn-lg">
-                                    <i class="fas fa-sign-in-alt me-2"></i>Daxil ol
-                                </a>
                             </div>
                         {% endif %}
-                    </div>
-
-                    <!-- Activity Info Card -->
-                    <div class="sidebar-card info-card-modern mb-4">
-                        <h5 class="sidebar-title-modern">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Aktivitə Məlumatları
-                        </h5>
-                        <div class="info-list-modern">
-                            <div class="info-item-modern">
-                                <i class="fas fa-calendar-alt text-primary"></i>
-                                <div>
-                                    <strong>Tarix və Vaxt</strong>
-                                    <p>{{ activity.start_date|date:"d M Y, H:i" }} - {{ activity.end_date|date:"H:i" }}</p>
-                                </div>
-                            </div>
-                            
-                            <div class="info-item-modern">
-                                <i class="fas fa-map-marker-alt text-danger"></i>
-                                <div>
-                                    <strong>Məkan</strong>
-                                    <p>{{ activity.location_name }}</p>
-                                    <small class="text-muted">{{ activity.address }}</small>
-                                </div>
-                            </div>
-                            
-                            <div class="info-item-modern">
-                                <i class="fas fa-users text-info"></i>
-                                <div>
-                                    <strong>İştirakçı sayı</strong>
-                                    <p>{{ activity.participants_count }}/{{ activity.max_participants }}</p>
-                                    {% if activity.available_spots > 0 %}
-                                        <small class="text-success">
-                                            <i class="fas fa-check-circle me-1"></i>{{ activity.available_spots }} yer var
-                                        </small>
-                                    {% else %}
-                                        <small class="text-danger">
-                                            <i class="fas fa-times-circle me-1"></i>Dolu
-                                        </small>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            
-                            <div class="info-item-modern">
-                                <i class="fas fa-clock text-warning"></i>
-                                <div>
-                                    <strong>Müddət</strong>
-                                    <p>{{ activity.duration_hours }} saat</p>
-                                </div>
-                            </div>
-                            
-                            {% if activity.contact_phone %}
-                            <div class="info-item-modern">
-                                <i class="fas fa-phone text-success"></i>
-                                <div>
-                                    <strong>Əlaqə</strong>
-                                    <p><a href="tel:{{ activity.contact_phone }}" class="text-decoration-none">{{ activity.contact_phone }}</a></p>
-                                </div>
-                            </div>
-                            {% endif %}
+                    {% else %}
+                        <div class="join-card-header">
+                            <h3><i class="fas fa-lock me-2"></i>Daxil Olun</h3>
+                            <p>Aktivitəyə qoşulmaq üçün hesabınıza daxil olmalısınız</p>
                         </div>
-                    </div>
-
-                    <!-- Organizer Card -->
-                    <div class="sidebar-card organizer-card-modern">
-                        <h5 class="sidebar-title-modern">
-                            <i class="fas fa-user-tie me-2"></i>
-                            Təşkilatçı
-                        </h5>
-                        <div class="organizer-info-modern">
-                            <div class="organizer-avatar-modern">
-                                {% if activity.organizer.profile_image %}
-                                    <img src="{{ activity.organizer.profile_image.url }}" alt="{{ activity.organizer.get_full_name }}">
-                                {% else %}
-                                    <i class="fas fa-user"></i>
-                                {% endif %}
-                            </div>
-                            <div class="organizer-details-modern">
-                                <h6 class="mb-1">{{ activity.organizer.get_full_name }}</h6>
-                                <p class="text-muted mb-2">Təşkilatçı</p>
-                                <a href="{% url 'accounts:user_detail' activity.organizer.pk %}" class="btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-user me-1"></i>Profili gör
-                                </a>
-                                {% if activity.contact_email %}
-                                <a href="mailto:{{ activity.contact_email }}" class="btn btn-outline-success btn-sm mt-2">
-                                    <i class="fas fa-envelope me-1"></i>Mesaj göndər
-                                </a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Related Activities Section -->
-{% if related_activities %}
-<section class="related-activities-section py-5">
-    <div class="container">
-        <!-- Section Header -->
-        <div class="row mb-5">
-            <div class="col-12">
-                <div class="related-activities-header text-center">
-                    <div class="section-icon-wrapper mb-3">
-                        <div class="section-icon-circle">
-                            <i class="fas fa-th-large"></i>
-                        </div>
-                    </div>
-                    <h2 class="related-activities-title">
-                        Oxşar Aktivitələr
-                    </h2>
-                    <p class="related-activities-subtitle">
-                        <span class="category-highlight">{{ activity.category.name }}</span> kateqoriyasından digər aktivitələr
-                    </p>
-                    <div class="section-divider"></div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Activities Grid -->
-        <div class="row g-4 mb-5">
-            {% for related_activity in related_activities %}
-            <div class="col-lg-3 col-md-6">
-                <div class="activity-card-modern related-activity-card">
-                    <div class="activity-image-wrapper">
-                        {% if related_activity.main_image %}
-                            <img src="{{ related_activity.main_image.url }}" alt="{{ related_activity.title }}" class="activity-image">
-                        {% else %}
-                            <img src="{% static '1.png' %}" alt="{{ related_activity.title }}" class="activity-image">
-                        {% endif %}
-                        <div class="activity-overlay">
-                            <div class="activity-badges-top">
-                                <span class="badge activity-category-badge" style="background-color: {{ related_activity.category.color|default:'#5DD3BE' }};">
-                                    <i class="{{ related_activity.category.icon|default:'fas fa-calendar' }} me-1"></i>{{ related_activity.category.name }}
-                                </span>
-                            </div>
-                            <div class="activity-actions-overlay">
-                                <a href="{{ related_activity.get_absolute_url }}" class="btn btn-light btn-sm">
-                                    <i class="fas fa-eye me-1"></i>Ətraflı
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="activity-content-modern">
-                        <h5 class="activity-title-modern">
-                            <a href="{{ related_activity.get_absolute_url }}">{{ related_activity.title }}</a>
-                        </h5>
-                        <p class="activity-description-modern">{{ related_activity.short_description|truncatewords:15 }}</p>
-                        
-                        <div class="activity-meta-modern">
-                            <div class="meta-item">
-                                <i class="fas fa-calendar text-primary"></i>
-                                <span>{{ related_activity.start_date|date:"d M Y, H:i" }}</span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-map-marker-alt text-danger"></i>
-                                <span>{{ related_activity.get_district_display }}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="activity-footer-modern">
-                            <div class="participants-info">
-                                <i class="fas fa-users text-muted"></i>
-                                <span>{{ related_activity.participants_count }}/{{ related_activity.max_participants }}</span>
-                            </div>
-                            <a href="{{ related_activity.get_absolute_url }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-arrow-right me-1"></i>Ətraflı
+                        <div class="join-card-body">
+                            <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn-join">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Daxil Ol
                             </a>
                         </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Activity Info Card -->
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <h4><i class="fas fa-info-circle"></i> Aktivitə Məlumatları</h4>
+                    </div>
+                    <div class="info-card-body">
+                        <div class="info-list">
+                            <div class="info-list-item">
+                                <i class="fas fa-calendar-alt icon-primary"></i>
+                                <div class="info-list-item-content">
+                                    <div class="info-list-item-label">Tarix və Vaxt</div>
+                                    <div class="info-list-item-value">{{ activity.start_date|date:"d M Y, H:i" }}</div>
+                                </div>
+                            </div>
+                            <div class="info-list-item">
+                                <i class="fas fa-map-marker-alt icon-danger"></i>
+                                <div class="info-list-item-content">
+                                    <div class="info-list-item-label">Məkan</div>
+                                    <div class="info-list-item-value">{{ activity.location_name }}</div>
+                                    <div class="info-list-item-sub">{{ activity.address|truncatechars:40 }}</div>
+                                </div>
+                            </div>
+                            <div class="info-list-item">
+                                <i class="fas fa-users icon-success"></i>
+                                <div class="info-list-item-content">
+                                    <div class="info-list-item-label">İştirakçı Sayı</div>
+                                    <div class="info-list-item-value">{{ activity.participants_count }}/{{ activity.max_participants }}</div>
+                                    <div class="info-list-item-sub" style="color: {% if activity.available_spots > 0 %}var(--accent){% else %}var(--red){% endif %};">
+                                        {% if activity.available_spots > 0 %}{{ activity.available_spots }} yer var{% else %}Dolu{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-list-item">
+                                <i class="fas fa-clock icon-warning"></i>
+                                <div class="info-list-item-content">
+                                    <div class="info-list-item-label">Müddət</div>
+                                    <div class="info-list-item-value">{{ activity.duration_hours }} saat</div>
+                                </div>
+                            </div>
+                            {% if activity.contact_phone %}
+                            <div class="info-list-item">
+                                <i class="fas fa-phone icon-success"></i>
+                                <div class="info-list-item-content">
+                                    <div class="info-list-item-label">Əlaqə</div>
+                                    <div class="info-list-item-value">
+                                        <a href="tel:{{ activity.contact_phone }}" style="color: var(--accent); text-decoration: none;">{{ activity.contact_phone }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Organizer Card -->
+                <div class="organizer-card">
+                    <div class="organizer-avatar">
+                        {% if activity.organizer.profile_image %}
+                            <img src="{{ activity.organizer.profile_image.url }}" alt="{{ activity.organizer.get_full_name }}">
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="organizer-name">{{ activity.organizer.get_full_name }}</div>
+                    <div class="organizer-role">Təşkilatçı</div>
+                    <div class="organizer-actions">
+                        <a href="{% url 'accounts:user_detail' activity.organizer.pk %}" class="btn-profile">
+                            <i class="fas fa-user"></i> Profili Gör
+                        </a>
+                        {% if activity.contact_email %}
+                        <a href="mailto:{{ activity.contact_email }}" class="btn-contact">
+                            <i class="fas fa-envelope"></i> Mesaj Göndər
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
         
-        <!-- View All Button -->
-        <div class="text-center">
-            <a href="{% url 'activities:activities_list' %}?category={{ activity.category.category_type }}" class="btn btn-view-all">
-                <i class="fas fa-search me-2"></i>
-                Bütün {{ activity.category.name }} aktivitələrini gör
-                <i class="fas fa-arrow-right ms-2"></i>
-            </a>
+        <!-- Related Activities -->
+        {% if related_activities %}
+        <div class="related-section">
+            <div class="related-header">
+                <h2 class="related-title">Oxşar Aktivitələr</h2>
+                <p class="related-subtitle">{{ activity.category.name }} kateqoriyasından digər aktivitələr</p>
+            </div>
+            <div class="related-grid">
+                {% for related in related_activities %}
+                <div class="related-card">
+                    <div class="related-image">
+                        {% if related.main_image %}
+                            <img src="{{ related.main_image.url }}" alt="{{ related.title }}">
+                        {% else %}
+                            <div class="related-image-placeholder">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="related-content">
+                        <h4 class="related-card-title">
+                            <a href="{{ related.get_absolute_url }}">{{ related.title }}</a>
+                        </h4>
+                        <div class="related-meta">
+                            <span><i class="far fa-calendar"></i> {{ related.start_date|date:"d M Y, H:i" }}</span>
+                            <span><i class="fas fa-map-pin"></i> {{ related.get_district_display }}</span>
+                        </div>
+                        <div class="related-footer">
+                            <span class="related-participants">
+                                <i class="fas fa-users"></i> {{ related.participants_count }}/{{ related.max_participants }}
+                            </span>
+                            <a href="{{ related.get_absolute_url }}" class="btn-related">Ətraflı</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
+        {% endif %}
     </div>
-</section>
-{% endif %}
-{% endblock %}
-
-{% block extra_css %}
-<style>
-/* Hero Section */
-.activity-detail-hero {
-    position: relative;
-    margin-top: -76px;
-    padding-top: 76px;
-}
-
-.hero-image-container {
-    position: relative;
-    height: 600px;
-    overflow: hidden;
-}
-
-.hero-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
-}
-
-.hero-content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 3rem 0;
-    color: white;
-}
-
-.activity-badges-hero {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.activity-category-badge-large {
-    font-size: 1rem;
-    padding: 0.6rem 1.2rem;
-    border-radius: 25px;
-    font-weight: 600;
-}
-
-.activity-hero-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    line-height: 1.2;
-}
-
-.activity-hero-description {
-    font-size: 1.3rem;
-    margin-bottom: 2rem;
-    opacity: 0.95;
-    line-height: 1.6;
-}
-
-.activity-hero-meta-advanced {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-}
-
-.meta-item-hero {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-    padding: 1rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-.meta-item-hero i {
-    font-size: 1.5rem;
-    color: #5DD3BE;
-}
-
-.meta-item-hero strong {
-    display: block;
-    font-size: 0.85rem;
-    opacity: 0.9;
-    margin-bottom: 0.25rem;
-}
-
-.meta-item-hero span {
-    display: block;
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-/* Section Cards */
-.activity-section-card {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
-}
-
-.section-title-card {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #212529;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #f1f5f9;
-}
-
-.activity-description-full {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #495057;
-}
-
-/* Detail Items */
-.detail-item-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem;
-    background: #f8fafc;
-    border-radius: 12px;
-    border: 1px solid #e9ecef;
-}
-
-.detail-icon {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.2rem;
-    flex-shrink: 0;
-}
-
-.detail-content h6 {
-    font-size: 0.9rem;
-    color: #6c757d;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-}
-
-.detail-content p {
-    margin: 0;
-    font-size: 1rem;
-    color: #212529;
-    font-weight: 500;
-}
-
-/* Requirements & Included */
-.requirements-content,
-.included-content {
-    font-size: 1rem;
-    line-height: 1.8;
-    color: #495057;
-}
-
-/* Location */
-.location-details h5 {
-    color: #212529;
-    font-weight: 700;
-}
-
-/* Participants */
-.participants-badge {
-    font-size: 1rem;
-    color: #5DD3BE;
-    font-weight: 600;
-}
-
-.participants-grid-modern {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.participant-card-modern {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: #f8fafc;
-    border-radius: 12px;
-    border: 1px solid #e9ecef;
-    transition: all 0.3s ease;
-}
-
-.participant-card-modern:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.participant-avatar-modern {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    overflow: hidden;
-    flex-shrink: 0;
-}
-
-.participant-avatar-modern img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.participant-name-modern {
-    margin-bottom: 0.25rem;
-    font-weight: 600;
-    color: #212529;
-    font-size: 0.95rem;
-}
-
-.participant-date-modern {
-    color: #6c757d;
-    font-size: 0.85rem;
-}
-
-/* Pending Requests */
-.pending-request-card-modern {
-    background: #fffbf0;
-    border: 2px solid #fed7aa;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.pending-request-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-}
-
-.pending-user-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.pending-user-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: #fed7aa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.pending-user-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.pending-request-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.pending-message {
-    background: white;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-top: 1rem;
-}
-
-/* Sidebar */
-.activity-sidebar-modern {
-    position: sticky;
-    top: 100px;
-}
-
-.sidebar-card {
-    background: white;
-    border-radius: 20px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
-}
-
-.join-card-modern {
-    border: 2px solid #5DD3BE;
-    background: linear-gradient(135deg, rgba(93, 211, 190, 0.05) 0%, rgba(75, 197, 170, 0.05) 100%);
-}
-
-.organizer-card {
-    text-align: center;
-}
-
-.organizer-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    font-size: 2rem;
-    color: white;
-}
-
-.organizer-stats {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e9ecef;
-}
-
-.organizer-stats .stat-item {
-    text-align: center;
-}
-
-.organizer-stats .stat-number {
-    display: block;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #5DD3BE;
-}
-
-.organizer-stats .stat-label {
-    display: block;
-    font-size: 0.85rem;
-    color: #6c757d;
-    margin-top: 0.25rem;
-}
-
-.participation-status-card {
-    text-align: center;
-}
-
-.status-badge-large {
-    margin: 1rem 0;
-}
-
-.join-form-card .form-label {
-    font-weight: 600;
-    color: #212529;
-}
-
-.login-required-card {
-    text-align: center;
-}
-
-.login-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    font-size: 2rem;
-    color: white;
-}
-
-.sidebar-title-modern {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #212529;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid #f1f5f9;
-}
-
-.info-list-modern {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.info-item-modern {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-}
-
-.info-item-modern i {
-    font-size: 1.2rem;
-    margin-top: 0.2rem;
-    width: 24px;
-    text-align: center;
-}
-
-.info-item-modern strong {
-    display: block;
-    color: #212529;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-}
-
-.info-item-modern p {
-    color: #495057;
-    margin-bottom: 0.25rem;
-    font-size: 0.95rem;
-}
-
-.info-item-modern a {
-    color: #5DD3BE;
-    text-decoration: none;
-}
-
-.info-item-modern a:hover {
-    text-decoration: underline;
-}
-
-.organizer-info-modern {
-    text-align: center;
-}
-
-.organizer-avatar-modern {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    margin: 0 auto 1rem;
-    overflow: hidden;
-    font-size: 2rem;
-}
-
-.organizer-avatar-modern img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.organizer-details-modern h6 {
-    font-weight: 700;
-    color: #212529;
-    margin-bottom: 0.5rem;
-}
-
-/* Chat Styles */
-.chat-container-modern {
-    border: 2px solid #f1f5f9;
-    border-radius: 16px;
-    overflow: hidden;
-    background: white;
-}
-
-.chat-messages-modern {
-    height: 400px;
-    overflow-y: auto;
-    padding: 1.5rem;
-    background: #f8fafc;
-}
-
-.chat-message-modern {
-    display: flex;
-    margin-bottom: 1rem;
-    animation: fadeInUp 0.3s ease;
-}
-
-.chat-message-modern.own {
-    justify-content: flex-end;
-}
-
-.chat-message-content-modern {
-    max-width: 70%;
-    padding: 1rem 1.25rem;
-    border-radius: 18px;
-    position: relative;
-}
-
-.chat-message-content-modern.own {
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    color: white;
-    border-bottom-right-radius: 6px;
-}
-
-.chat-message-content-modern.other {
-    background: white;
-    border: 2px solid #e9ecef;
-    border-bottom-left-radius: 6px;
-}
-
-.chat-message-header-modern {
-    font-size: 0.75rem;
-    margin-bottom: 0.5rem;
-    opacity: 0.8;
-    font-weight: 600;
-}
-
-.chat-message-text-modern {
-    word-wrap: break-word;
-    line-height: 1.5;
-    margin: 0;
-}
-
-.chat-message-footer-modern {
-    font-size: 0.7rem;
-    margin-top: 0.5rem;
-    opacity: 0.7;
-}
-
-.chat-input-container-modern {
-    padding: 1.5rem;
-    background: white;
-    border-top: 2px solid #f1f5f9;
-}
-
-.chat-textarea-modern {
-    resize: none;
-    border-radius: 16px;
-    border: 2px solid #e9ecef;
-    padding: 1rem 1.25rem;
-    min-height: 60px;
-    max-height: 120px;
-    font-size: 0.95rem;
-}
-
-.chat-textarea-modern:focus {
-    border-color: #5DD3BE;
-    box-shadow: 0 0 0 4px rgba(93, 211, 190, 0.1);
-    outline: none;
-}
-
-.chat-send-btn-modern {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    margin-left: 0.75rem;
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    border: none;
-}
-
-.chat-send-btn-modern:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(93, 211, 190, 0.4);
-}
-
-.input-group-modern {
-    display: flex;
-    align-items: flex-end;
-}
-
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-}
-
-/* Related Activities Section - Activity Card Styles */
-.activity-card-modern {
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    border: 1px solid #f1f5f9;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.activity-image-wrapper {
-    position: relative;
-    height: 220px;
-    overflow: hidden;
-}
-
-.activity-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.activity-card-modern:hover .activity-image {
-    transform: scale(1.1);
-}
-
-.activity-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 1rem;
-}
-
-.activity-card-modern:hover .activity-overlay {
-    opacity: 1;
-}
-
-.activity-badges-top {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.activity-category-badge {
-    font-size: 0.75rem;
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-weight: 600;
-}
-
-.activity-actions-overlay {
-    display: flex;
-    justify-content: center;
-}
-
-.activity-content-modern {
-    padding: 1.5rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.activity-title-modern {
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    line-height: 1.3;
-}
-
-.activity-title-modern a {
-    color: #212529;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.activity-title-modern a:hover {
-    color: #5DD3BE;
-}
-
-.activity-description-modern {
-    color: #6c757d;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin-bottom: 1rem;
-    flex: 1;
-}
-
-.activity-footer-modern {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: auto;
-}
-
-/* Related Activities Section */
-.related-activities-section {
-    background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 50%, #ffffff 100%);
-    position: relative;
-    overflow: hidden;
-}
-
-.related-activities-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(to right, transparent, #5DD3BE, transparent);
-}
-
-.related-activities-header {
-    position: relative;
-    padding: 2rem 0;
-}
-
-.section-icon-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.section-icon-circle {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 2rem;
-    box-shadow: 0 8px 25px rgba(93, 211, 190, 0.3);
-    position: relative;
-    animation: float 3s ease-in-out infinite;
-}
-
-.section-icon-circle::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    opacity: 0.3;
-    transform: scale(1.3);
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
-}
-
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1.3);
-        opacity: 0.3;
-    }
-    50% {
-        transform: scale(1.5);
-        opacity: 0;
-    }
-}
-
-.related-activities-title {
-    font-size: 2.75rem;
-    font-weight: 800;
-    color: #212529;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, #212529 0%, #5DD3BE 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.2;
-}
-
-.related-activities-subtitle {
-    font-size: 1.2rem;
-    color: #6c757d;
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-}
-
-.category-highlight {
-    color: #5DD3BE;
-    font-weight: 700;
-    font-size: 1.25rem;
-    position: relative;
-}
-
-.category-highlight::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #5DD3BE, transparent);
-    border-radius: 2px;
-}
-
-.section-divider {
-    width: 100px;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, #5DD3BE, transparent);
-    margin: 2rem auto 0;
-    border-radius: 2px;
-}
-
-.related-activity-card {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.related-activity-card:hover {
-    transform: translateY(-12px) scale(1.02);
-    box-shadow: 0 20px 50px rgba(93, 211, 190, 0.2);
-}
-
-.activity-meta-modern {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    color: #6c757d;
-}
-
-.meta-item i {
-    width: 16px;
-    text-align: center;
-}
-
-.participants-info {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    color: #6c757d;
-    font-weight: 500;
-}
-
-.btn-view-all {
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    color: white;
-    border: none;
-    padding: 1rem 2.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 50px;
-    box-shadow: 0 8px 25px rgba(93, 211, 190, 0.3);
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    text-decoration: none;
-}
-
-.btn-view-all:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(93, 211, 190, 0.4);
-    color: white;
-    background: linear-gradient(135deg, #4BC5AA 0%, #3BA895 100%);
-}
-
-.btn-view-all i:last-child {
-    transition: transform 0.3s ease;
-}
-
-.btn-view-all:hover i:last-child {
-    transform: translateX(5px);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .activity-hero-title {
-        font-size: 2.5rem;
-    }
-    
-    .activity-hero-description {
-        font-size: 1.1rem;
-    }
-    
-    .activity-hero-meta-advanced {
-        grid-template-columns: 1fr;
-    }
-    
-    .activity-section-card {
-        padding: 1.5rem;
-    }
-    
-    .activity-sidebar-modern {
-        position: static;
-        margin-top: 2rem;
-    }
-    
-    .participants-grid-modern {
-        grid-template-columns: 1fr;
-    }
-    
-    .pending-request-header {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .pending-request-actions {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    .chat-messages-modern {
-        height: 300px;
-    }
-    
-    .chat-message-content-modern {
-        max-width: 85%;
-    }
-    
-    .related-activities-title {
-        font-size: 2rem;
-    }
-    
-    .related-activities-subtitle {
-        font-size: 1rem;
-    }
-    
-    .section-icon-circle {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5rem;
-    }
-    
-    .btn-view-all {
-        padding: 0.875rem 2rem;
-        font-size: 1rem;
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-</style>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const chatForm = document.getElementById('chat-form');
-    const chatMessages = document.getElementById('chat-messages');
-    const chatTextarea = document.getElementById('chat-message');
-    const activityId = {{ activity.id }};
-    
-    let editingMessageId = null;
-    
-    if (!chatForm || !chatMessages || !chatTextarea) return;
-    
-    // Auto-resize textarea
-    chatTextarea.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-    });
-    
-    // Handle Enter key
-    chatTextarea.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            chatForm.dispatchEvent(new Event('submit'));
-        }
-    });
-    
-    // Load messages
-    function loadMessages() {
-        fetch(`/activities/${activityId}/chat/messages/`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    chatMessages.innerHTML = `<div class="text-center py-4"><i class="fas fa-exclamation-triangle text-danger mb-2"></i><p class="text-danger">${data.error}</p></div>`;
-                    return;
-                }
-                
-                if (data.messages.length === 0) {
-                    chatMessages.innerHTML = '<div class="empty-state"><i class="fas fa-comments fa-3x text-muted mb-3"></i><p class="text-muted">Hələ ki mesaj yoxdur. İlk mesajı siz yazın!</p></div>';
-                    return;
-                }
-                
-                chatMessages.innerHTML = '';
-                data.messages.forEach(message => {
-                    appendMessage(message);
-                });
-                scrollToBottom();
-            })
-            .catch(error => {
-                console.error('Error loading messages:', error);
-                chatMessages.innerHTML = '<div class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle mb-2"></i><p>Mesajlar yüklənərkən xəta baş verdi</p></div>';
+    // Share functionality
+    document.querySelector('.btn-share')?.addEventListener('click', function() {
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ activity.title|escapejs }}',
+                text: '{{ activity.short_description|escapejs }}',
+                url: window.location.href
             });
-    }
-    
-    // Append message to chat
-    function appendMessage(message) {
-        const currentUserId = {{ user.id|default:0 }};
-        const isOwn = message.user_id === currentUserId;
-        
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message-modern ${isOwn ? 'own' : ''}`;
-        messageDiv.setAttribute('data-message-id', message.id);
-        
-        const actionsHtml = message.can_edit || message.can_delete ? 
-            `<div class="chat-message-actions-modern">
-                ${message.can_edit ? `<button type="button" class="btn btn-sm btn-link text-primary p-0 me-2" onclick="editMessage(${message.id})"><i class="fas fa-edit"></i></button>` : ''}
-                ${message.can_delete ? `<button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="deleteMessage(${message.id})"><i class="fas fa-trash"></i></button>` : ''}
-            </div>` : '';
-        
-        messageDiv.innerHTML = `
-            <div class="chat-message-content-modern ${isOwn ? 'own' : 'other'}">
-                <div class="chat-message-header-modern ${isOwn ? 'own' : 'other'}">
-                    ${isOwn ? 'Siz' : message.user_name}
-                </div>
-                <p class="chat-message-text-modern">${message.message.replace(/\n/g, '<br>')}</p>
-                <div class="chat-message-footer-modern">
-                    <span>${message.created_at}${message.is_edited ? ' <i class="fas fa-edit"></i> redaktə edilib' : ''}</span>
-                    ${actionsHtml}
-                </div>
-            </div>
-        `;
-        
-        chatMessages.appendChild(messageDiv);
-    }
-    
-    // Send message
-    chatForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const message = chatTextarea.value.trim();
-        if (!message) return;
-        
-        const url = editingMessageId ? 
-            `/activities/${activityId}/chat/edit/${editingMessageId}/` :
-            `/activities/${activityId}/chat/send/`;
-        
-        const formData = new FormData();
-        formData.append('message', message);
-        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
-        
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                alert(data.error);
-                return;
-            }
-            
-            if (editingMessageId) {
-                const messageElement = document.querySelector(`[data-message-id="${editingMessageId}"] .chat-message-text-modern`);
-                const footerElement = document.querySelector(`[data-message-id="${editingMessageId}"] .chat-message-footer-modern span`);
-                if (messageElement) {
-                    messageElement.innerHTML = data.message.message.replace(/\n/g, '<br>');
-                }
-                if (footerElement) {
-                    footerElement.innerHTML = footerElement.textContent.split(' (')[0] + ' <i class="fas fa-edit"></i> redaktə edilib';
-                }
-                cancelEdit();
-            } else {
-                appendMessage(data.message);
-                scrollToBottom();
-            }
-            
-            chatTextarea.value = '';
-            chatTextarea.style.height = 'auto';
-        })
-        .catch(error => {
-            console.error('Error sending message:', error);
-            alert('Mesaj göndərilərkən xəta baş verdi');
-        });
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('Link kopyalandı!');
+            });
+        }
     });
     
-    // Edit message
-    window.editMessage = function(messageId) {
-        const messageElement = document.querySelector(`[data-message-id="${messageId}"] .chat-message-text-modern`);
-        if (!messageElement) return;
-        
-        const messageText = messageElement.textContent;
-        chatTextarea.value = messageText;
-        chatTextarea.focus();
-        chatTextarea.style.height = 'auto';
-        chatTextarea.style.height = Math.min(chatTextarea.scrollHeight, 120) + 'px';
-        
-        editingMessageId = messageId;
-        chatTextarea.classList.add('chat-editing');
-        chatTextarea.placeholder = 'Mesajı redaktə edin...';
-        
-        if (!document.querySelector('.chat-cancel-edit')) {
-            const cancelBtn = document.createElement('button');
-            cancelBtn.type = 'button';
-            cancelBtn.className = 'btn btn-outline-secondary btn-sm chat-cancel-edit mt-2';
-            cancelBtn.innerHTML = '<i class="fas fa-times me-1"></i>Ləğv et';
-            cancelBtn.onclick = cancelEdit;
-            chatForm.appendChild(cancelBtn);
+    // Save functionality
+    document.querySelector('.btn-save')?.addEventListener('click', function() {
+        this.classList.toggle('saved');
+        const icon = this.querySelector('i');
+        if (this.classList.contains('saved')) {
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+            this.style.background = 'var(--accent)';
+            this.style.color = 'white';
+            this.style.borderColor = 'var(--accent)';
+        } else {
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+            this.style.background = '';
+            this.style.color = '';
+            this.style.borderColor = '';
         }
-    };
-    
-    // Cancel edit
-    function cancelEdit() {
-        editingMessageId = null;
-        chatTextarea.classList.remove('chat-editing');
-        chatTextarea.placeholder = 'Mesajınızı yazın...';
-        chatTextarea.value = '';
-        chatTextarea.style.height = 'auto';
-        
-        const cancelBtn = document.querySelector('.chat-cancel-edit');
-        if (cancelBtn) {
-            cancelBtn.remove();
-        }
-    }
-    
-    // Delete message
-    window.deleteMessage = function(messageId) {
-        if (!confirm('Bu mesajı silmək istədiyinizə əminsiniz?')) return;
-        
-        const formData = new FormData();
-        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
-        
-        fetch(`/activities/${activityId}/chat/delete/${messageId}/`, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                alert(data.error);
-                return;
-            }
-            
-            const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
-            if (messageElement) {
-                messageElement.remove();
-            }
-        })
-        .catch(error => {
-            console.error('Error deleting message:', error);
-            alert('Mesaj silinərkən xəta baş verdi');
-        });
-    };
-    
-    // Scroll to bottom
-    function scrollToBottom() {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-    
-    // Auto-refresh messages every 10 seconds
-    setInterval(loadMessages, 10000);
-    
-    // Initial load
-    loadMessages();
+    });
 });
 </script>
 {% endblock %}
