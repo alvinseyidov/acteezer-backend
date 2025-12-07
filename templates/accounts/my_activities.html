@@ -3,717 +3,728 @@
 
 {% block title %}{{ page_title }} - Acteezer{% endblock %}
 
+{% block extra_css %}
+<style>
+    :root {
+        --bg-primary: #fafbfc;
+        --bg-card: #ffffff;
+        --bg-subtle: #f4f6f8;
+        --text-primary: #1a1d21;
+        --text-secondary: #5e6c84;
+        --text-muted: #97a0af;
+        --border-color: #e4e8eb;
+        --accent: #00b894;
+        --accent-hover: #00a384;
+        --accent-light: rgba(0, 184, 148, 0.1);
+        --purple: #6c5ce7;
+        --purple-light: rgba(108, 92, 231, 0.1);
+        --orange: #f39c12;
+        --orange-light: rgba(243, 156, 18, 0.1);
+        --blue: #0984e3;
+        --blue-light: rgba(9, 132, 227, 0.1);
+        --red: #e74c3c;
+        --red-light: rgba(231, 76, 60, 0.1);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+        --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+    }
+    
+    body.dark-mode {
+        --bg-primary: #0d1117;
+        --bg-card: #161b22;
+        --bg-subtle: #21262d;
+        --text-primary: #f0f6fc;
+        --text-secondary: #8b949e;
+        --text-muted: #6e7681;
+        --border-color: #30363d;
+    }
+    
+    .activities-page {
+        background: var(--bg-primary);
+        min-height: 100vh;
+        padding-bottom: 4rem;
+    }
+    
+    /* Hero Header */
+    .page-hero {
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 50%, #81ecec 100%);
+        padding: 3rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+    
+    .hero-text h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: white;
+        margin: 0 0 0.5rem;
+    }
+    
+    .hero-text p {
+        color: rgba(255,255,255,0.9);
+        margin: 0;
+        font-size: 1rem;
+    }
+    
+    .hero-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        margin-bottom: 1rem;
+    }
+    
+    .btn-create {
+        background: white;
+        color: var(--accent);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: var(--shadow-md);
+    }
+    
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: var(--accent-hover);
+    }
+    
+    /* Breadcrumb */
+    .breadcrumb-bar {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 0;
+    }
+    
+    .breadcrumb-bar .breadcrumb {
+        margin: 0;
+        padding: 0;
+        background: none;
+    }
+    
+    .breadcrumb-bar .breadcrumb-item a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .breadcrumb-bar .breadcrumb-item.active {
+        color: var(--text-muted);
+    }
+    
+    /* Stats Bar */
+    .stats-bar {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin: 2rem 0;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 0.75rem;
+        border-radius: var(--radius-md);
+        transition: all 0.2s ease;
+    }
+    
+    .stat-item:hover {
+        background: var(--bg-subtle);
+    }
+    
+    .stat-item .number {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1;
+    }
+    
+    .stat-item .label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Activity Grid */
+    .activity-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    /* Activity Card */
+    .activity-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+    
+    .activity-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--accent);
+    }
+    
+    .card-image {
+        position: relative;
+        height: 180px;
+        overflow: hidden;
+    }
+    
+    .card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .activity-card:hover .card-image img {
+        transform: scale(1.05);
+    }
+    
+    .card-image-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--accent) 0%, #00cec9 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3rem;
+    }
+    
+    .card-badges {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        right: 1rem;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .status-badge.upcoming {
+        background: rgba(9, 132, 227, 0.9);
+        color: white;
+    }
+    
+    .status-badge.ongoing {
+        background: rgba(0, 184, 148, 0.9);
+        color: white;
+    }
+    
+    .status-badge.past {
+        background: rgba(108, 117, 125, 0.9);
+        color: white;
+    }
+    
+    .category-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: white;
+        backdrop-filter: blur(10px);
+    }
+    
+    .card-content {
+        padding: 1.25rem;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem;
+        line-height: 1.3;
+    }
+    
+    .card-title a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    
+    .card-title a:hover {
+        color: var(--accent);
+    }
+    
+    .card-description {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .card-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+    
+    .meta-row i {
+        width: 16px;
+        color: var(--accent);
+    }
+    
+    /* Stats Grid */
+    .card-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .card-stat {
+        background: var(--bg-subtle);
+        border-radius: var(--radius-sm);
+        padding: 0.6rem;
+        text-align: center;
+    }
+    
+    .card-stat-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+    
+    .card-stat-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+    
+    /* Card Actions */
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-action {
+        flex: 1;
+        padding: 0.6rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        text-decoration: none;
+    }
+    
+    .btn-view {
+        background: var(--accent);
+        color: white;
+    }
+    
+    .btn-view:hover {
+        background: var(--accent-hover);
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .btn-edit {
+        background: var(--bg-subtle);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+    
+    .btn-edit:hover {
+        background: var(--border-color);
+        color: var(--text-primary);
+    }
+    
+    .btn-delete {
+        background: var(--red-light);
+        color: var(--red);
+        border: 1px solid transparent;
+    }
+    
+    .btn-delete:hover {
+        background: var(--red);
+        color: white;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--bg-card);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border-color);
+        margin-top: 2rem;
+    }
+    
+    .empty-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, var(--accent) 0%, #00cec9 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2.5rem;
+        color: white;
+    }
+    
+    .empty-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-desc {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+    
+    .btn-primary-custom {
+        background: var(--accent);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-primary-custom:hover {
+        background: var(--accent-hover);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    /* Modal Styling */
+    .modal-content {
+        border-radius: var(--radius-lg);
+        border: none;
+        overflow: hidden;
+    }
+    
+    .modal-header.delete-header {
+        background: linear-gradient(135deg, var(--red) 0%, #c0392b 100%);
+        color: white;
+        border: none;
+    }
+    
+    .modal-header.delete-header .btn-close {
+        filter: brightness(0) invert(1);
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .modal-footer {
+        background: var(--bg-subtle);
+        border: none;
+        padding: 1rem 1.5rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 991px) {
+        .stats-bar {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 575px) {
+        .activities-page {
+            padding-bottom: 5rem;
+        }
+        
+        .hero-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .btn-create {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .hero-text h1 {
+            font-size: 1.5rem;
+        }
+        
+        .stats-bar {
+            grid-template-columns: repeat(2, 1fr);
+            padding: 1rem;
+        }
+        
+        .stat-item .number {
+            font-size: 1.35rem;
+        }
+        
+        .activity-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .card-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<!-- Page Header -->
-<section class="my-activities-header">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <div class="header-content">
-                    <div class="header-icon mb-3">
+<div class="activities-page">
+    <!-- Hero Header -->
+    <div class="page-hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="hero-icon">
                         <i class="fas fa-calendar-check"></i>
                     </div>
-                    <h1 class="page-title-main">{{ page_title }}</h1>
-                    <p class="page-subtitle">Sizin təşkil etdiyiniz bütün aktivitələr</p>
+                    <h1>{{ page_title }}</h1>
+                    <p>Sizin təşkil etdiyiniz bütün aktivitələr</p>
                 </div>
-            </div>
-            <div class="col-lg-4 text-lg-end">
-                <a href="{% url 'activities:create_activity' %}" class="btn btn-create-activity">
-                    <i class="fas fa-plus me-2"></i>
+                <a href="{% url 'activities:create_activity' %}" class="btn-create">
+                    <i class="fas fa-plus"></i>
                     Yeni Aktivitə Yarat
                 </a>
             </div>
         </div>
     </div>
-</section>
-
-<!-- Breadcrumb -->
-<div class="container">
-    <nav aria-label="breadcrumb" class="breadcrumb-modern">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'accounts:profile' %}">Profil</a></li>
-            <li class="breadcrumb-item active">Təşkil Etdiyim Aktivitələr</li>
-        </ol>
-    </nav>
-</div>
-
-<!-- Activities Section -->
-{% if activities %}
-<section class="my-activities-section py-5">
+    
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-bar">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'accounts:profile' %}">Profil</a></li>
+                    <li class="breadcrumb-item active">Təşkil Etdiyim Aktivitələr</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
     <div class="container">
-        <div class="row g-4">
-            {% for activity in activities %}
-            <div class="col-lg-6 col-xl-4">
-                <div class="my-activity-card">
-                    <!-- Activity Image -->
-                    <div class="activity-image-container">
-                        {% if activity.main_image %}
-                            <img src="{{ activity.main_image.url }}" alt="{{ activity.title }}" class="activity-card-image">
-                        {% else %}
-                            <div class="activity-placeholder-image">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                        {% endif %}
-                        
-                        <!-- Status Badge -->
-                        <div class="status-badge-overlay">
-                            <span class="status-badge {% if activity.is_upcoming %}status-upcoming{% elif activity.is_ongoing %}status-ongoing{% else %}status-past{% endif %}">
-                                {% if activity.is_upcoming %}
-                                    <i class="fas fa-clock me-1"></i>Gələcək
-                                {% elif activity.is_ongoing %}
-                                    <i class="fas fa-play-circle me-1"></i>Davam edir
-                                {% else %}
-                                    <i class="fas fa-check-circle me-1"></i>Bitib
-                                {% endif %}
-                            </span>
-                        </div>
-                        
-                        <!-- Category Badge -->
-                        <div class="category-badge-overlay">
-                            <span class="category-badge" style="background-color: {{ activity.category.color|default:'#5DD3BE' }};">
-                                <i class="{{ activity.category.icon|default:'fas fa-calendar' }} me-1"></i>{{ activity.category.name }}
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <!-- Activity Content -->
-                    <div class="activity-card-body">
-                        <h5 class="activity-card-title">
-                            <a href="{{ activity.get_absolute_url }}">{{ activity.title }}</a>
-                        </h5>
-                        
-                        <p class="activity-card-description">{{ activity.short_description|truncatewords:20 }}</p>
-                        
-                        <!-- Activity Meta Info -->
-                        <div class="activity-meta-info">
-                            <div class="meta-info-item">
-                                <i class="fas fa-calendar-alt text-primary"></i>
-                                <span>{{ activity.start_date|date:"d M Y, H:i" }}</span>
-                            </div>
-                            <div class="meta-info-item">
-                                <i class="fas fa-map-marker-alt text-danger"></i>
-                                <span>{{ activity.get_district_display }}</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Activity Stats -->
-                        <div class="activity-stats-grid">
-                            <div class="stat-box">
-                                <div class="stat-icon">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <div class="stat-content">
-                                    <div class="stat-number">{{ activity.participants_count }}</div>
-                                    <div class="stat-label">İştirakçı</div>
-                                </div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-icon">
-                                    <i class="fas fa-user-friends"></i>
-                                </div>
-                                <div class="stat-content">
-                                    <div class="stat-number">{{ activity.max_participants }}</div>
-                                    <div class="stat-label">Maksimum</div>
-                                </div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-icon">
-                                    <i class="fas fa-chair"></i>
-                                </div>
-                                <div class="stat-content">
-                                    <div class="stat-number">{{ activity.available_spots }}</div>
-                                    <div class="stat-label">Boş yer</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Action Buttons -->
-                        <div class="activity-card-actions">
-                            <a href="{{ activity.get_absolute_url }}" class="btn btn-view">
-                                <i class="fas fa-eye me-1"></i>
-                                Bax
-                            </a>
-                            <button type="button" class="btn btn-edit" onclick="editActivity({{ activity.pk }})">
-                                <i class="fas fa-edit me-1"></i>
-                                Redaktə
-                            </button>
-                            <button type="button" class="btn btn-delete" onclick="confirmDelete({{ activity.pk }}, '{{ activity.title|escapejs }}')">
-                                <i class="fas fa-trash me-1"></i>
-                                Sil
-                            </button>
-                        </div>
-                    </div>
+        {% if activities %}
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="number">{{ activities|length }}</div>
+                    <div class="label">Ümumi</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">{{ upcoming_count|default:0 }}</div>
+                    <div class="label">Gələcək</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">{{ ongoing_count|default:0 }}</div>
+                    <div class="label">Davam Edir</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">{{ past_count|default:0 }}</div>
+                    <div class="label">Bitmiş</div>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-{% else %}
-<!-- Empty State -->
-<section class="empty-state-section py-5">
-    <div class="container">
-        <div class="empty-state-content">
-            <div class="empty-state-icon">
-                <i class="fas fa-calendar-plus"></i>
+            
+            <!-- Activity Grid -->
+            <div class="activity-grid">
+                {% for activity in activities %}
+                    <div class="activity-card">
+                        <div class="card-image">
+                            {% if activity.main_image %}
+                                <img src="{{ activity.main_image.url }}" alt="{{ activity.title }}">
+                            {% else %}
+                                <div class="card-image-placeholder">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-badges">
+                                <span class="status-badge {% if activity.is_upcoming %}upcoming{% elif activity.is_ongoing %}ongoing{% else %}past{% endif %}">
+                                    {% if activity.is_upcoming %}
+                                        <i class="fas fa-clock me-1"></i>Gələcək
+                                    {% elif activity.is_ongoing %}
+                                        <i class="fas fa-play me-1"></i>Davam edir
+                                    {% else %}
+                                        <i class="fas fa-check me-1"></i>Bitib
+                                    {% endif %}
+                                </span>
+                                {% if activity.category %}
+                                    <span class="category-badge" style="background-color: {{ activity.category.color|default:'#6c5ce7' }};">
+                                        {{ activity.category.name }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="card-content">
+                            <h3 class="card-title">
+                                <a href="{{ activity.get_absolute_url }}">{{ activity.title }}</a>
+                            </h3>
+                            <p class="card-description">{{ activity.short_description|truncatewords:15 }}</p>
+                            
+                            <div class="card-meta">
+                                <div class="meta-row">
+                                    <i class="far fa-calendar"></i>
+                                    <span>{{ activity.start_date|date:"d M Y, H:i" }}</span>
+                                </div>
+                                <div class="meta-row">
+                                    <i class="fas fa-map-pin"></i>
+                                    <span>{{ activity.get_district_display }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="card-stats">
+                                <div class="card-stat">
+                                    <div class="card-stat-value">{{ activity.participants_count }}</div>
+                                    <div class="card-stat-label">İştirakçı</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="card-stat-value">{{ activity.max_participants }}</div>
+                                    <div class="card-stat-label">Maksimum</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="card-stat-value">{{ activity.available_spots }}</div>
+                                    <div class="card-stat-label">Boş Yer</div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-actions">
+                                <a href="{{ activity.get_absolute_url }}" class="btn-action btn-view">
+                                    <i class="fas fa-eye"></i> Bax
+                                </a>
+                                <button type="button" class="btn-action btn-edit" onclick="editActivity({{ activity.pk }})">
+                                    <i class="fas fa-edit"></i> Redaktə
+                                </button>
+                                <button type="button" class="btn-action btn-delete" onclick="confirmDelete({{ activity.pk }}, '{{ activity.title|escapejs }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-            <h3 class="empty-state-title">Hələ aktivitə yaratmamısınız</h3>
-            <p class="empty-state-text">İlk aktivitənizi yaradın və insanlarla tanış olun!</p>
-            <a href="{% url 'activities:create_activity' %}" class="btn btn-create-first">
-                <i class="fas fa-plus me-2"></i>
-                İlk Aktivitəmi Yarat
-            </a>
-        </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <h3 class="empty-title">Hələ aktivitə yaratmamısınız</h3>
+                <p class="empty-desc">İlk aktivitənizi yaradın və insanlarla tanış olun!</p>
+                <a href="{% url 'activities:create_activity' %}" class="btn-primary-custom">
+                    <i class="fas fa-plus"></i>
+                    İlk Aktivitəmi Yarat
+                </a>
+            </div>
+        {% endif %}
     </div>
-</section>
-{% endif %}
+</div>
 
 <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content delete-modal-content">
-            <div class="modal-header delete-modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">
+        <div class="modal-content">
+            <div class="modal-header delete-header">
+                <h5 class="modal-title">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     Aktivitəni Sil
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body delete-modal-body">
+            <div class="modal-body">
                 <p>Bu aktivitəni silmək istədiyinizə əminsiniz?</p>
-                <p class="activity-name-delete"><strong id="activityNameDelete"></strong></p>
+                <p class="fw-bold" id="activityNameDelete"></p>
                 <div class="alert alert-warning">
                     <i class="fas fa-info-circle me-2"></i>
-                    Bu əməliyyat geri alına bilməz. Aktivitə və bütün məlumatları silinəcək.
+                    Bu əməliyyat geri alına bilməz.
                 </div>
             </div>
-            <div class="modal-footer delete-modal-footer">
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-1"></i>
-                    Ləğv et
-                </button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ləğv et</button>
                 <form id="deleteForm" method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-confirm-delete">
-                        <i class="fas fa-trash me-1"></i>
-                        Bəli, Sil
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i> Sil
                     </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-/* Header Section */
-.my-activities-header {
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    padding: 4rem 0 3rem;
-    margin-top: -76px;
-    padding-top: calc(76px + 4rem);
-    color: white;
-    position: relative;
-    overflow: hidden;
-}
-
-.my-activities-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
-    opacity: 0.3;
-}
-
-.header-content {
-    position: relative;
-    z-index: 1;
-}
-
-.header-icon {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.page-title-main {
-    font-size: 3rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.page-subtitle {
-    font-size: 1.2rem;
-    opacity: 0.95;
-    margin: 0;
-}
-
-.btn-create-activity {
-    background: white;
-    color: #5DD3BE;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 1.1rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.btn-create-activity:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
-    color: #4BC5AA;
-}
-
-/* Breadcrumb */
-.breadcrumb-modern {
-    padding: 1.5rem 0 0;
-}
-
-.breadcrumb-modern .breadcrumb-item a {
-    color: #5DD3BE;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.breadcrumb-modern .breadcrumb-item a:hover {
-    text-decoration: underline;
-}
-
-.breadcrumb-modern .breadcrumb-item.active {
-    color: #6c757d;
-}
-
-/* Activity Cards */
-.my-activities-section {
-    background: #f8fafc;
-}
-
-.my-activity-card {
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid #f1f5f9;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.my-activity-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(93, 211, 190, 0.2);
-}
-
-.activity-image-container {
-    position: relative;
-    height: 220px;
-    overflow: hidden;
-}
-
-.activity-card-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.my-activity-card:hover .activity-card-image {
-    transform: scale(1.1);
-}
-
-.activity-placeholder-image {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 4rem;
-}
-
-.status-badge-overlay {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-}
-
-.status-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: white;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.status-upcoming {
-    background: rgba(13, 110, 253, 0.9);
-}
-
-.status-ongoing {
-    background: rgba(25, 135, 84, 0.9);
-}
-
-.status-past {
-    background: rgba(108, 117, 125, 0.9);
-}
-
-.category-badge-overlay {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-}
-
-.category-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: white;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.activity-card-body {
-    padding: 1.5rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.activity-card-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    line-height: 1.3;
-}
-
-.activity-card-title a {
-    color: #212529;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.activity-card-title a:hover {
-    color: #5DD3BE;
-}
-
-.activity-card-description {
-    color: #6c757d;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin-bottom: 1rem;
-    flex: 1;
-}
-
-.activity-meta-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.meta-info-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    color: #6c757d;
-}
-
-.meta-info-item i {
-    width: 18px;
-    text-align: center;
-}
-
-.activity-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-}
-
-.stat-box {
-    background: #f8fafc;
-    border-radius: 12px;
-    padding: 0.75rem;
-    text-align: center;
-    border: 1px solid #e9ecef;
-    transition: all 0.3s ease;
-}
-
-.stat-box:hover {
-    background: #f1f5f9;
-    transform: translateY(-2px);
-}
-
-.stat-icon {
-    color: #5DD3BE;
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-}
-
-.stat-number {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #212529;
-    margin-bottom: 0.25rem;
-}
-
-.stat-label {
-    font-size: 0.75rem;
-    color: #6c757d;
-    font-weight: 500;
-}
-
-.activity-card-actions {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.btn-view, .btn-edit, .btn-delete {
-    flex: 1;
-    min-width: 80px;
-    padding: 0.6rem 1rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    border: none;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-view {
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    color: white;
-}
-
-.btn-view:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(93, 211, 190, 0.3);
-    color: white;
-}
-
-.btn-edit {
-    background: #f8f9fa;
-    color: #495057;
-    border: 2px solid #e9ecef;
-}
-
-.btn-edit:hover {
-    background: #e9ecef;
-    transform: translateY(-2px);
-    color: #212529;
-}
-
-.btn-delete {
-    background: #fff5f5;
-    color: #dc3545;
-    border: 2px solid #fee2e2;
-}
-
-.btn-delete:hover {
-    background: #fee2e2;
-    transform: translateY(-2px);
-    color: #dc3545;
-    border-color: #fecaca;
-}
-
-/* Empty State */
-.empty-state-section {
-    background: #f8fafc;
-}
-
-.empty-state-content {
-    text-align: center;
-    padding: 4rem 2rem;
-}
-
-.empty-state-icon {
-    width: 150px;
-    height: 150px;
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 2rem;
-    font-size: 4rem;
-    color: white;
-    box-shadow: 0 10px 40px rgba(93, 211, 190, 0.3);
-}
-
-.empty-state-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #212529;
-    margin-bottom: 1rem;
-}
-
-.empty-state-text {
-    font-size: 1.1rem;
-    color: #6c757d;
-    margin-bottom: 2rem;
-}
-
-.btn-create-first {
-    background: linear-gradient(135deg, #5DD3BE 0%, #4BC5AA 100%);
-    color: white;
-    border: none;
-    padding: 1rem 2.5rem;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 1.1rem;
-    box-shadow: 0 8px 25px rgba(93, 211, 190, 0.3);
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.btn-create-first:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(93, 211, 190, 0.4);
-    color: white;
-}
-
-/* Delete Modal */
-.delete-modal-content {
-    border-radius: 20px;
-    border: none;
-    overflow: hidden;
-}
-
-.delete-modal-header {
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-    color: white;
-    border: none;
-    padding: 1.5rem;
-}
-
-.delete-modal-header .btn-close {
-    filter: brightness(0) invert(1);
-}
-
-.delete-modal-body {
-    padding: 2rem;
-}
-
-.delete-modal-body p {
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-    color: #212529;
-}
-
-.activity-name-delete {
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 10px;
-    margin: 1rem 0;
-    border-left: 4px solid #dc3545;
-}
-
-.delete-modal-footer {
-    border: none;
-    padding: 1.5rem;
-    background: #f8f9fa;
-}
-
-.btn-cancel {
-    background: white;
-    color: #6c757d;
-    border: 2px solid #e9ecef;
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.btn-cancel:hover {
-    background: #f8f9fa;
-    border-color: #dee2e6;
-    color: #495057;
-}
-
-.btn-confirm-delete {
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.btn-confirm-delete:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-    color: white;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .page-title-main {
-        font-size: 2rem;
-    }
-    
-    .page-subtitle {
-        font-size: 1rem;
-    }
-    
-    .header-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 2rem;
-    }
-    
-    .btn-create-activity {
-        width: 100%;
-        margin-top: 1rem;
-    }
-    
-    .activity-card-actions {
-        flex-direction: column;
-    }
-    
-    .btn-view, .btn-edit, .btn-delete {
-        width: 100%;
-    }
-    
-    .activity-stats-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.5rem;
-    }
-    
-    .stat-box {
-        padding: 0.5rem;
-    }
-}
-</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -726,8 +737,7 @@ function confirmDelete(activityId, activityTitle) {
 }
 
 function editActivity(activityId) {
-    // TODO: Implement edit functionality
-    alert('Redaktə funksionallığı tezliklə əlavə ediləcək.');
+    window.location.href = `/activities/${activityId}/edit/`;
 }
 </script>
 {% endblock %}

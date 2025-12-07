@@ -5,328 +5,767 @@
 
 {% block extra_css %}
 <style>
-.page-header {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    padding: 3rem 0;
-    margin-bottom: 2rem;
-}
-
-.participation-card {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    margin-bottom: 1.5rem;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.participation-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-.participation-header {
-    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%);
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.participation-content {
-    padding: 1.5rem;
-}
-
-.activity-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 0.5rem;
-}
-
-.activity-organizer {
-    color: #28a745;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.participation-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    color: #6c757d;
-}
-
-.joined-badge {
-    background: #28a745;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.activity-status {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.status-upcoming {
-    background: #d1ecf1;
-    color: #0c5460;
-}
-
-.status-ongoing {
-    background: #d4edda;
-    color: #155724;
-}
-
-.status-completed {
-    background: #f8d7da;
-    color: #721c24;
-}
-
-.participation-actions {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.btn-action {
-    padding: 0.4rem 0.8rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.btn-primary-custom {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    border: none;
-}
-
-.btn-primary-custom:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-    color: white;
-}
-
-.participation-info {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 0.75rem;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: #6c757d;
-}
-
-.empty-state-icon {
-    font-size: 5rem;
-    margin-bottom: 1.5rem;
-    opacity: 0.5;
-}
-
-.breadcrumb-custom {
-    background: transparent;
-    padding: 0;
-    margin-bottom: 2rem;
-}
-
-.breadcrumb-custom .breadcrumb-item a {
-    color: #28a745;
-    text-decoration: none;
-}
-
-.breadcrumb-custom .breadcrumb-item.active {
-    color: #6c757d;
-}
-
-.filter-tabs {
-    background: white;
-    border-radius: 10px;
-    padding: 1rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.filter-tabs .nav-link {
-    color: #6c757d;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    margin-right: 0.5rem;
-}
-
-.filter-tabs .nav-link.active {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-}
+    :root {
+        --bg-primary: #fafbfc;
+        --bg-card: #ffffff;
+        --bg-subtle: #f4f6f8;
+        --text-primary: #1a1d21;
+        --text-secondary: #5e6c84;
+        --text-muted: #97a0af;
+        --border-color: #e4e8eb;
+        --accent: #00b894;
+        --accent-hover: #00a384;
+        --accent-light: rgba(0, 184, 148, 0.1);
+        --purple: #6c5ce7;
+        --purple-light: rgba(108, 92, 231, 0.1);
+        --orange: #f39c12;
+        --orange-light: rgba(243, 156, 18, 0.1);
+        --blue: #0984e3;
+        --blue-light: rgba(9, 132, 227, 0.1);
+        --red: #e74c3c;
+        --red-light: rgba(231, 76, 60, 0.1);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+        --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+    }
+    
+    body.dark-mode {
+        --bg-primary: #0d1117;
+        --bg-card: #161b22;
+        --bg-subtle: #21262d;
+        --text-primary: #f0f6fc;
+        --text-secondary: #8b949e;
+        --text-muted: #6e7681;
+        --border-color: #30363d;
+    }
+    
+    .activities-page {
+        background: var(--bg-primary);
+        min-height: 100vh;
+        padding-bottom: 4rem;
+    }
+    
+    /* Hero Header */
+    .page-hero {
+        background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 50%, #dfe6e9 100%);
+        padding: 3rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+    
+    .hero-text h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: white;
+        margin: 0 0 0.5rem;
+    }
+    
+    .hero-text p {
+        color: rgba(255,255,255,0.9);
+        margin: 0;
+        font-size: 1rem;
+    }
+    
+    .hero-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        margin-bottom: 1rem;
+    }
+    
+    .btn-discover {
+        background: white;
+        color: var(--purple);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: var(--shadow-md);
+    }
+    
+    .btn-discover:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: #5b4cdb;
+    }
+    
+    /* Breadcrumb */
+    .breadcrumb-bar {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 0;
+    }
+    
+    .breadcrumb-bar .breadcrumb {
+        margin: 0;
+        padding: 0;
+        background: none;
+    }
+    
+    .breadcrumb-bar .breadcrumb-item a {
+        color: var(--purple);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .breadcrumb-bar .breadcrumb-item.active {
+        color: var(--text-muted);
+    }
+    
+    /* Filter Tabs */
+    .filter-tabs {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        padding: 0.5rem;
+        margin: 2rem 0;
+        display: inline-flex;
+        gap: 0.5rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+    }
+    
+    .filter-tab {
+        padding: 0.6rem 1.25rem;
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filter-tab:hover {
+        background: var(--bg-subtle);
+    }
+    
+    .filter-tab.active {
+        background: var(--purple);
+        color: white;
+    }
+    
+    .filter-tab .count {
+        background: rgba(0,0,0,0.1);
+        padding: 0.15rem 0.5rem;
+        border-radius: 10px;
+        font-size: 0.75rem;
+    }
+    
+    .filter-tab.active .count {
+        background: rgba(255,255,255,0.2);
+    }
+    
+    /* Participation Card */
+    .participation-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .participation-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+    
+    .participation-card:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--purple);
+    }
+    
+    .card-layout {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+    }
+    
+    .card-image {
+        height: 100%;
+        min-height: 180px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .card-image-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--purple) 0%, #a29bfe 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+    }
+    
+    .participation-badge {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .badge-approved {
+        background: var(--accent);
+        color: white;
+    }
+    
+    .badge-pending {
+        background: var(--orange);
+        color: white;
+    }
+    
+    .badge-rejected {
+        background: var(--red);
+        color: white;
+    }
+    
+    .card-content {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .card-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        line-height: 1.3;
+    }
+    
+    .card-title a {
+        color: inherit;
+        text-decoration: none;
+    }
+    
+    .card-title a:hover {
+        color: var(--purple);
+    }
+    
+    .status-badge {
+        padding: 0.3rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        flex-shrink: 0;
+    }
+    
+    .status-upcoming {
+        background: var(--blue-light);
+        color: var(--blue);
+    }
+    
+    .status-ongoing {
+        background: var(--accent-light);
+        color: var(--accent);
+    }
+    
+    .status-completed {
+        background: var(--bg-subtle);
+        color: var(--text-muted);
+    }
+    
+    .organizer-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+        color: var(--purple);
+        font-weight: 500;
+    }
+    
+    .organizer-info i {
+        font-size: 0.8rem;
+    }
+    
+    .card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+    
+    .meta-item i {
+        color: var(--purple);
+        font-size: 0.8rem;
+    }
+    
+    .card-description {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        margin-bottom: 1rem;
+        flex: 1;
+    }
+    
+    .card-footer-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+        margin-top: auto;
+    }
+    
+    .join-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .join-date {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+    
+    .participants-info {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+    
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-action {
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        text-decoration: none;
+    }
+    
+    .btn-view {
+        background: var(--purple);
+        color: white;
+    }
+    
+    .btn-view:hover {
+        background: #5b4cdb;
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .btn-leave {
+        background: var(--red-light);
+        color: var(--red);
+    }
+    
+    .btn-leave:hover {
+        background: var(--red);
+        color: white;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--bg-card);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border-color);
+        margin-top: 2rem;
+    }
+    
+    .empty-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, var(--purple) 0%, #a29bfe 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2.5rem;
+        color: white;
+    }
+    
+    .empty-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-desc {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+    
+    .btn-primary-custom {
+        background: var(--purple);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-primary-custom:hover {
+        background: #5b4cdb;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .card-layout {
+            grid-template-columns: 1fr;
+        }
+        
+        .card-image {
+            height: 160px;
+            min-height: auto;
+        }
+        
+        .card-footer-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .card-actions {
+            width: 100%;
+        }
+        
+        .btn-action {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+    
+    @media (max-width: 575px) {
+        .activities-page {
+            padding-bottom: 5rem;
+        }
+        
+        .hero-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .btn-discover {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .hero-text h1 {
+            font-size: 1.5rem;
+        }
+        
+        .filter-tabs {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        
+        .filter-tab {
+            flex: 1;
+            justify-content: center;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col">
-                <h1 class="mb-2">{{ page_title }}</h1>
-                <p class="mb-0 opacity-90">Qoşulduğunuz bütün aktivitələr</p>
+<div class="activities-page">
+    <!-- Hero Header -->
+    <div class="page-hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="hero-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h1>{{ page_title }}</h1>
+                    <p>Qoşulduğunuz bütün aktivitələr</p>
+                </div>
+                <a href="{% url 'activities:activities_list' %}" class="btn-discover">
+                    <i class="fas fa-compass"></i>
+                    Daha Çox Aktivitə Tap
+                </a>
             </div>
         </div>
     </div>
-</div>
-
-<div class="container">
+    
     <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb breadcrumb-custom">
-            <li class="breadcrumb-item"><a href="{% url 'accounts:profile' %}">Profil</a></li>
-            <li class="breadcrumb-item active">Qoşulduğum Aktivitələr</li>
-        </ol>
-    </nav>
-
-    <!-- Filter Tabs -->
-    <div class="filter-tabs">
-        <ul class="nav nav-pills">
-            <li class="nav-item">
-                <a class="nav-link active" href="#all" data-bs-toggle="pill">
-                    <i class="fas fa-list me-1"></i>
-                    Hamısı
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#upcoming" data-bs-toggle="pill">
-                    <i class="fas fa-clock me-1"></i>
-                    Gələcək
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#completed" data-bs-toggle="pill">
-                    <i class="fas fa-check me-1"></i>
-                    Tamamlanmış
-                </a>
-            </li>
-        </ul>
+    <div class="breadcrumb-bar">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'accounts:profile' %}">Profil</a></li>
+                    <li class="breadcrumb-item active">Qoşulduğum Aktivitələr</li>
+                </ol>
+            </nav>
+        </div>
     </div>
-
-    {% if participations %}
-        <div class="row">
-            {% for participation in participations %}
-                <div class="col-12">
-                    <div class="participation-card">
-                        <div class="participation-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="joined-badge">
-                                        <i class="fas fa-check me-1"></i>
-                                        Qoşulmuş
+    
+    <div class="container">
+        {% if participations %}
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">
+                    <i class="fas fa-list"></i>
+                    Hamısı
+                    <span class="count">{{ participations|length }}</span>
+                </button>
+                <button class="filter-tab" data-filter="upcoming">
+                    <i class="fas fa-clock"></i>
+                    Gələcək
+                </button>
+                <button class="filter-tab" data-filter="completed">
+                    <i class="fas fa-check"></i>
+                    Tamamlanmış
+                </button>
+            </div>
+            
+            <!-- Participation List -->
+            <div class="participation-list">
+                {% for participation in participations %}
+                    <div class="participation-card" data-status="{% if participation.activity.is_upcoming %}upcoming{% elif participation.activity.is_ongoing %}ongoing{% else %}completed{% endif %}">
+                        <div class="card-layout">
+                            <div class="card-image">
+                                {% if participation.activity.main_image %}
+                                    <img src="{{ participation.activity.main_image.url }}" alt="{{ participation.activity.title }}">
+                                {% else %}
+                                    <div class="card-image-placeholder">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                {% endif %}
+                                <span class="participation-badge {% if participation.status == 'approved' %}badge-approved{% elif participation.status == 'pending' %}badge-pending{% else %}badge-rejected{% endif %}">
+                                    {% if participation.status == 'approved' %}
+                                        <i class="fas fa-check me-1"></i>Təsdiqlənib
+                                    {% elif participation.status == 'pending' %}
+                                        <i class="fas fa-clock me-1"></i>Gözləyir
+                                    {% else %}
+                                        <i class="fas fa-times me-1"></i>Rədd edilib
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            <div class="card-content">
+                                <div class="card-header-row">
+                                    <h3 class="card-title">
+                                        <a href="{{ participation.activity.get_absolute_url }}">{{ participation.activity.title }}</a>
+                                    </h3>
+                                    <span class="status-badge {% if participation.activity.is_upcoming %}status-upcoming{% elif participation.activity.is_ongoing %}status-ongoing{% else %}status-completed{% endif %}">
+                                        {% if participation.activity.is_upcoming %}
+                                            Gələcək
+                                        {% elif participation.activity.is_ongoing %}
+                                            Davam edir
+                                        {% else %}
+                                            Tamamlandı
+                                        {% endif %}
                                     </span>
                                 </div>
-                                <div class="text-muted small">
-                                    Qoşulma tarixi: {{ participation.join_requested_at|date:"d M Y, H:i" }}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="participation-content">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <h5 class="activity-title">{{ participation.activity.title }}</h5>
-                                    <p class="activity-organizer">
-                                        <i class="fas fa-user me-1"></i>
-                                        Təşkilatçı: {{ participation.activity.organizer.get_full_name|default:participation.activity.organizer.phone }}
-                                    </p>
-                                    
-                                    <div class="participation-meta">
-                                        <span>
-                                            <i class="fas fa-calendar me-1"></i>
-                                            {{ participation.activity.start_date|date:"d M Y, H:i" }}
-                                        </span>
-                                        <span>
-                                            <i class="fas fa-map-marker-alt me-1"></i>
-                                            {{ participation.activity.address|truncatechars:40 }}
-                                        </span>
-                                        <span class="activity-status {% if participation.activity.is_upcoming %}status-upcoming{% elif participation.activity.is_ongoing %}status-ongoing{% else %}status-completed{% endif %}">
-                                            {% if participation.activity.is_upcoming %}
-                                                Gələcək
-                                            {% elif participation.activity.is_ongoing %}
-                                                Davam edir
-                                            {% else %}
-                                                Tamamlandı
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                    
-                                    <p class="text-muted mb-3">{{ participation.activity.short_description|truncatechars:120 }}</p>
+                                
+                                <div class="organizer-info">
+                                    <i class="fas fa-user"></i>
+                                    Təşkilatçı: {{ participation.activity.organizer.get_full_name|default:participation.activity.organizer.phone }}
                                 </div>
                                 
-                                <div class="col-md-4">
-                                    <div class="participation-info">
-                                        <div class="mb-2">
-                                            <strong>İştirakçı sayı:</strong><br>
-                                            {{ participation.activity.participants_count }}/{{ participation.activity.max_participants }}
-                                        </div>
-                                        <div class="mb-2">
-                                            <strong>Status:</strong><br>
-                                            {% if participation.status == 'approved' %}
-                                                <span class="text-success">Təsdiqlənib</span>
-                                            {% elif participation.status == 'pending' %}
-                                                <span class="text-warning">Gözləyir</span>
-                                            {% else %}
-                                                <span class="text-danger">Rədd edilib</span>
-                                            {% endif %}
-                                        </div>
+                                <div class="card-meta">
+                                    <div class="meta-item">
+                                        <i class="far fa-calendar"></i>
+                                        {{ participation.activity.start_date|date:"d M Y, H:i" }}
                                     </div>
-                                    
-                                    <div class="participation-actions mt-3">
-                                        <a href="{{ participation.activity.get_absolute_url }}" class="btn btn-action btn-primary-custom">
-                                            <i class="fas fa-eye me-1"></i>
-                                            Ətraflı
+                                    <div class="meta-item">
+                                        <i class="fas fa-map-pin"></i>
+                                        {{ participation.activity.get_district_display }}
+                                    </div>
+                                    {% if participation.activity.category %}
+                                        <div class="meta-item">
+                                            <i class="{{ participation.activity.category.icon|default:'fas fa-tag' }}"></i>
+                                            {{ participation.activity.category.name }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <p class="card-description">{{ participation.activity.short_description|truncatechars:120 }}</p>
+                                
+                                <div class="card-footer-row">
+                                    <div class="join-info">
+                                        <span class="join-date">
+                                            <i class="fas fa-sign-in-alt me-1"></i>
+                                            Qoşulma: {{ participation.join_requested_at|date:"d M Y" }}
+                                        </span>
+                                        <span class="participants-info">
+                                            <i class="fas fa-users me-1"></i>
+                                            {{ participation.activity.participants_count }}/{{ participation.activity.max_participants }} iştirakçı
+                                        </span>
+                                    </div>
+                                    <div class="card-actions">
+                                        <a href="{{ participation.activity.get_absolute_url }}" class="btn-action btn-view">
+                                            <i class="fas fa-eye"></i> Ətraflı
                                         </a>
-                                        {% if participation.activity.is_upcoming %}
-                                            <a href="#" class="btn btn-action btn-outline-danger">
-                                                <i class="fas fa-times me-1"></i>
-                                                Çıx
-                                            </a>
+                                        {% if participation.activity.is_upcoming and participation.status == 'approved' %}
+                                            <button type="button" class="btn-action btn-leave" onclick="confirmLeave({{ participation.pk }}, '{{ participation.activity.title|escapejs }}')">
+                                                <i class="fas fa-sign-out-alt"></i> Çıx
+                                            </button>
                                         {% endif %}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-        
-        <div class="text-center mt-4">
-            <a href="{% url 'activities:activities_list' %}" class="btn btn-success btn-lg">
-                <i class="fas fa-search me-2"></i>
-                Daha Çox Aktivitə Tap
-            </a>
-        </div>
-    {% else %}
-        <div class="empty-state">
-            <div class="empty-state-icon">
-                <i class="fas fa-calendar-times"></i>
+                {% endfor %}
             </div>
-            <h3>Hələ heç bir aktivitəyə qoşulmamısınız</h3>
-            <p class="mb-4">Maraqlandığınız aktivitələri tapın və qoşulun!</p>
-            <a href="{% url 'activities:activities_list' %}" class="btn btn-success btn-lg">
-                <i class="fas fa-search me-2"></i>
-                Aktivitələri Kəşf Et
-            </a>
-        </div>
-    {% endif %}
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-calendar-times"></i>
+                </div>
+                <h3 class="empty-title">Hələ heç bir aktivitəyə qoşulmamısınız</h3>
+                <p class="empty-desc">Maraqlandığınız aktivitələri tapın və qoşulun!</p>
+                <a href="{% url 'activities:activities_list' %}" class="btn-primary-custom">
+                    <i class="fas fa-compass"></i>
+                    Aktivitələri Kəşf Et
+                </a>
+            </div>
+        {% endif %}
+    </div>
 </div>
+
+<!-- Leave Confirmation Modal -->
+<div class="modal fade" id="leaveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, var(--red) 0%, #c0392b 100%); color: white; border: none;">
+                <h5 class="modal-title">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    Aktivitədən Çıx
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: brightness(0) invert(1);"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bu aktivitədən çıxmaq istədiyinizə əminsiniz?</p>
+                <p class="fw-bold" id="activityNameLeave"></p>
+            </div>
+            <div class="modal-footer" style="background: var(--bg-subtle); border: none;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ləğv et</button>
+                <form id="leaveForm" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt me-1"></i> Bəli, Çıx
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Filter tabs functionality
+document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        // Update active state
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        const filter = this.dataset.filter;
+        
+        // Filter cards
+        document.querySelectorAll('.participation-card').forEach(card => {
+            if (filter === 'all') {
+                card.style.display = 'block';
+            } else if (filter === 'upcoming') {
+                card.style.display = (card.dataset.status === 'upcoming' || card.dataset.status === 'ongoing') ? 'block' : 'none';
+            } else if (filter === 'completed') {
+                card.style.display = card.dataset.status === 'completed' ? 'block' : 'none';
+            }
+        });
+    });
+});
+
+function confirmLeave(participationId, activityTitle) {
+    const modal = new bootstrap.Modal(document.getElementById('leaveModal'));
+    document.getElementById('activityNameLeave').textContent = activityTitle;
+    document.getElementById('leaveForm').action = `/activities/participation/${participationId}/leave/`;
+    modal.show();
+}
+</script>
 {% endblock %}
