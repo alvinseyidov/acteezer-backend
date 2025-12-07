@@ -2498,16 +2498,15 @@
         const darkModeToggle = document.getElementById('darkModeToggle');
         const body = document.body;
         
-        // Check for saved preference or system preference
+        // Check for saved preference only (light mode is default)
         function initDarkMode() {
             const savedMode = localStorage.getItem('darkMode');
+            // Only enable dark mode if explicitly set by user
             if (savedMode === 'true') {
                 body.classList.add('dark-mode');
-            } else if (savedMode === null) {
-                // Check system preference
-                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    body.classList.add('dark-mode');
-                }
+            } else {
+                // Default to light mode
+                body.classList.remove('dark-mode');
             }
         }
         
