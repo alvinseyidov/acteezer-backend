@@ -361,6 +361,88 @@ class Friendship(models.Model):
         return User.objects.filter(id__in=all_friend_ids)
 
 
+class Conversation(models.Model):
+    """Model for direct message conversations between two users"""
+    participant1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conversations_as_participant1')
+    participant2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conversations_as_participant2')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ('participant1', 'participant2')
+        ordering = ['-updated_at']
+    
+    def __str__(self):
+        return f"Conversation: {self.participant1.get_full_name()} ↔ {self.participant2.get_full_name()}"
+    
+    @classmethod
+    def get_or_create_conversation(cls, user1, user2):
+        """Get or create a conversation between two users, ensuring consistent ordering"""
+        # Always order by user ID to ensure unique constraint works
+        if user1.id > user2.id:
+            user1, user2 = user2, user1
+        
+        conversation, created = cls.objects.get_or_create(
+            participant1=user1,
+            participant2=user2
+        )
+        return conversation
+    
+    @classmethod
+    def get_user_conversations(cls, user):
+        """Get all conversations for a user"""
+        return cls.objects.filter(
+            models.Q(participant1=user) | models.Q(participant2=user)
+        )
+    
+    def get_other_participant(self, user):
+        """Get the other participant in the conversation"""
+        if self.participant1 == user:
+            return self.participant2
+        return self.participant1
+    
+    def get_last_message(self):
+        """Get the last message in this conversation"""
+        return self.messages.order_by('-created_at').first()
+    
+    def get_unread_count(self, user):
+        """Get count of unread messages for a user"""
+        return self.messages.filter(is_read=False).exclude(sender=user).count()
+
+
+class DirectMessage(models.Model):
+    """Model for direct messages between users"""
+    MESSAGE_STATUS_CHOICES = [
+        ('sent', 'Göndərildi'),
+        ('delivered', 'Çatdırıldı'),
+        ('read', 'Oxundu'),
+    ]
+    
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
+    message = models.TextField(max_length=2000)
+    status = models.CharField(max_length=10, choices=MESSAGE_STATUS_CHOICES, default='sent')
+    is_read = models.BooleanField(default=False)
+    read_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['created_at']
+    
+    def __str__(self):
+        return f"{self.sender.get_full_name()}: {self.message[:50]}..."
+    
+    def mark_as_read(self):
+        """Mark the message as read"""
+        from django.utils import timezone
+        if not self.is_read:
+            self.is_read = True
+            self.status = 'read'
+            self.read_at = timezone.now()
+            self.save(update_fields=['is_read', 'status', 'read_at'])
+
+
 class Newsletter(models.Model):
     """Model for newsletter subscriptions"""
     email = models.EmailField(unique=True)

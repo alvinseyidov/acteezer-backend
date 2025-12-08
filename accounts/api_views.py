@@ -6,13 +6,15 @@ from django.contrib.auth import authenticate, get_user_model
 from django.db.models import Q
 from .models import (
     Language, Interest, InterestCategory, UserImage, OTPVerification, 
-    Friendship, BlogPost, BlogCategory, NotificationSettings, PushToken, Notification
+    Friendship, BlogPost, BlogCategory, NotificationSettings, PushToken, Notification,
+    Conversation, DirectMessage
 )
 from .serializers import (
     LanguageSerializer, InterestSerializer, InterestCategorySerializer, UserSerializer, UserPublicSerializer,
     UserImageSerializer, OTPSendSerializer, OTPVerifySerializer,
     UserRegistrationSerializer, FriendshipSerializer, BlogPostSerializer, BlogCategorySerializer,
-    NotificationSettingsSerializer, PushTokenSerializer, NotificationSerializer
+    NotificationSettingsSerializer, PushTokenSerializer, NotificationSerializer,
+    ConversationSerializer, DirectMessageSerializer
 )
 
 User = get_user_model()
@@ -644,6 +646,45 @@ class PushTokenViewSet(viewsets.ViewSet):
             'success': False,
             'message': 'Token is required'
         }, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['post'])
+    def test_notification(self, request):
+        """Send a test push notification to the current user"""
+        from .push_service import push_service
+        
+        # Get user's push tokens
+        tokens = push_service.get_user_push_tokens(request.user)
+        
+        if not tokens:
+            return Response({
+                'success': False,
+                'message': 'No push tokens found. Make sure you are logged in on a device.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Send test notification
+        title = request.data.get('title', 'Test Bildirişi 🎉')
+        body = request.data.get('body', 'Bu test bildirişidir. Push notifications işləyir!')
+        
+        result = push_service.send_push_notification(
+            tokens=tokens,
+            title=title,
+            body=body,
+            data={'screen': 'Notifications', 'test': True}
+        )
+        
+        if result.get('success'):
+            return Response({
+                'success': True,
+                'message': 'Test notification sent successfully',
+                'tokens_count': len(tokens),
+                'result': result.get('data')
+            })
+        
+        return Response({
+            'success': False,
+            'message': 'Failed to send notification',
+            'error': result.get('error')
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
@@ -696,4 +737,209 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
             'success': True,
             'message': f'{deleted} bildiriş silindi'
         })
+
+
+class ConversationViewSet(viewsets.ModelViewSet):
+    """ViewSet for direct message conversations"""
+    serializer_class = ConversationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return Conversation.get_user_conversations(self.request.user).order_by('-updated_at')
+    
+    @action(detail=False, methods=['post'])
+    def get_or_create(self, request):
+        """Get or create a conversation with another user"""
+        other_user_id = request.data.get('user_id')
+        
+        if not other_user_id:
+            return Response({
+                'success': False,
+                'message': 'user_id is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            other_user = User.objects.get(id=other_user_id)
+        except User.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'User not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        if other_user == request.user:
+            return Response({
+                'success': False,
+                'message': 'Cannot create conversation with yourself'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if users are friends
+        if not Friendship.are_friends(request.user, other_user):
+            return Response({
+                'success': False,
+                'message': 'You can only message friends'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        conversation = Conversation.get_or_create_conversation(request.user, other_user)
+        serializer = ConversationSerializer(conversation, context={'request': request})
+        
+        return Response({
+            'success': True,
+            'conversation': serializer.data
+        })
+    
+    @action(detail=True, methods=['get'])
+    def messages(self, request, pk=None):
+        """Get messages for a conversation"""
+        try:
+            conversation = self.get_queryset().get(pk=pk)
+        except Conversation.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'Conversation not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        # Mark messages as read
+        conversation.messages.filter(is_read=False).exclude(sender=request.user).update(
+            is_read=True, 
+            status='read'
+        )
+        
+        messages = conversation.messages.order_by('created_at')
+        serializer = DirectMessageSerializer(messages, many=True, context={'request': request})
+        
+        return Response({
+            'success': True,
+            'messages': serializer.data
+        })
+
+
+class DirectMessageViewSet(viewsets.ModelViewSet):
+    """ViewSet for direct messages"""
+    serializer_class = DirectMessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return DirectMessage.objects.filter(
+            Q(conversation__participant1=self.request.user) |
+            Q(conversation__participant2=self.request.user)
+        )
+    
+    def create(self, request):
+        """Send a direct message"""
+        conversation_id = request.data.get('conversation_id')
+        user_id = request.data.get('user_id')
+        message_text = request.data.get('message', '').strip()
+        
+        if not message_text:
+            return Response({
+                'success': False,
+                'message': 'Message text is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if len(message_text) > 2000:
+            return Response({
+                'success': False,
+                'message': 'Message is too long (max 2000 characters)'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Get or create conversation
+        if conversation_id:
+            try:
+                conversation = Conversation.objects.get(
+                    Q(pk=conversation_id) &
+                    (Q(participant1=request.user) | Q(participant2=request.user))
+                )
+            except Conversation.DoesNotExist:
+                return Response({
+                    'success': False,
+                    'message': 'Conversation not found'
+                }, status=status.HTTP_404_NOT_FOUND)
+        elif user_id:
+            try:
+                other_user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                return Response({
+                    'success': False,
+                    'message': 'User not found'
+                }, status=status.HTTP_404_NOT_FOUND)
+            
+            # Check if users are friends
+            if not Friendship.are_friends(request.user, other_user):
+                return Response({
+                    'success': False,
+                    'message': 'You can only message friends'
+                }, status=status.HTTP_403_FORBIDDEN)
+            
+            conversation = Conversation.get_or_create_conversation(request.user, other_user)
+        else:
+            return Response({
+                'success': False,
+                'message': 'conversation_id or user_id is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Create the message
+        message = DirectMessage.objects.create(
+            conversation=conversation,
+            sender=request.user,
+            message=message_text
+        )
+        
+        # Update conversation timestamp
+        conversation.save()  # This updates updated_at
+        
+        # Send push notification to the other user
+        other_user = conversation.get_other_participant(request.user)
+        self._send_message_notification(request.user, other_user, message_text)
+        
+        serializer = DirectMessageSerializer(message, context={'request': request})
+        return Response({
+            'success': True,
+            'message': serializer.data
+        }, status=status.HTTP_201_CREATED)
+    
+    def _send_message_notification(self, sender, recipient, message_text):
+        """Send push notification for new message"""
+        try:
+            from .push_service import push_service
+            
+            # Check if user has new_message notifications enabled
+            settings = NotificationSettings.objects.filter(user=recipient).first()
+            if settings and not settings.new_message:
+                return
+            
+            tokens = push_service.get_user_push_tokens(recipient)
+            if tokens:
+                # Truncate message for notification
+                preview = message_text[:100] + '...' if len(message_text) > 100 else message_text
+                
+                push_service.send_push_notification(
+                    tokens=tokens,
+                    title=f'💬 {sender.get_full_name()}',
+                    body=preview,
+                    data={
+                        'screen': 'Chat',
+                        'userId': sender.id,
+                        'type': 'new_message'
+                    },
+                    channel_id='messages'
+                )
+        except Exception as e:
+            print(f"Failed to send message notification: {e}")
+    
+    @action(detail=True, methods=['post'])
+    def mark_read(self, request, pk=None):
+        """Mark a message as read"""
+        try:
+            message = self.get_queryset().get(pk=pk)
+            if message.sender != request.user:
+                message.mark_as_read()
+            return Response({
+                'success': True,
+                'message': 'Message marked as read'
+            })
+        except DirectMessage.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'Message not found'
+            }, status=status.HTTP_404_NOT_FOUND)
 

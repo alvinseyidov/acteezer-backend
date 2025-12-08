@@ -2,7 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import (
     Language, Interest, InterestCategory, UserImage, OTPVerification, 
-    Friendship, BlogPost, BlogCategory, NotificationSettings, PushToken, Notification
+    Friendship, BlogPost, BlogCategory, NotificationSettings, PushToken, Notification,
+    Conversation, DirectMessage
 )
 
 User = get_user_model()
@@ -330,3 +331,62 @@ class NotificationSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'notification_type', 'title', 'message', 'related_user', 
                           'related_activity_id', 'related_friendship_id', 'data', 'created_at']
 
+
+class DirectMessageSerializer(serializers.ModelSerializer):
+    """Serializer for direct messages"""
+    sender = UserPublicSerializer(read_only=True)
+    is_me = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = DirectMessage
+        fields = [
+            'id', 'conversation', 'sender', 'message', 'status', 
+            'is_read', 'read_at', 'created_at', 'is_me'
+        ]
+        read_only_fields = ['id', 'sender', 'status', 'is_read', 'read_at', 'created_at']
+    
+    def get_is_me(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            return obj.sender == request.user
+        return False
+
+
+class ConversationSerializer(serializers.ModelSerializer):
+    """Serializer for conversations"""
+    other_user = serializers.SerializerMethodField()
+    last_message = serializers.SerializerMethodField()
+    unread_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Conversation
+        fields = [
+            'id', 'other_user', 'last_message', 'unread_count', 
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def get_other_user(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            other = obj.get_other_participant(request.user)
+            return UserPublicSerializer(other, context=self.context).data
+        return None
+    
+    def get_last_message(self, obj):
+        last_msg = obj.get_last_message()
+        if last_msg:
+            return {
+                'id': last_msg.id,
+                'message': last_msg.message,
+                'sender_id': last_msg.sender_id,
+                'is_read': last_msg.is_read,
+                'created_at': last_msg.created_at.isoformat()
+            }
+        return None
+    
+    def get_unread_count(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            return obj.get_unread_count(request.user)
+        return 0
