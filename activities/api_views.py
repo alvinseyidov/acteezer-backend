@@ -114,6 +114,26 @@ class ActivityViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(organizer=self.request.user)
     
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def my_joined(self, request):
+        """Get activities the user has joined (approved participant)"""
+        from .models import ActivityParticipant
+        
+        # Get activities where user is an approved participant
+        participant_activity_ids = ActivityParticipant.objects.filter(
+            user=request.user,
+            status='approved'
+        ).values_list('activity_id', flat=True)
+        
+        activities = Activity.objects.filter(
+            id__in=participant_activity_ids
+        ).exclude(
+            organizer=request.user  # Exclude activities they organized
+        ).order_by('-start_date')
+        
+        serializer = self.get_serializer(activities, many=True)
+        return Response(serializer.data)
+    
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def join(self, request, pk=None):
         """Join an activity"""

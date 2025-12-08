@@ -443,6 +443,71 @@ class DirectMessage(models.Model):
             self.save(update_fields=['is_read', 'status', 'read_at'])
 
 
+class ActivityGroupChat(models.Model):
+    """Group chat for activity participants"""
+    activity = models.OneToOneField('activities.Activity', on_delete=models.CASCADE, related_name='group_chat')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-updated_at']
+        verbose_name = "Activity Group Chat"
+        verbose_name_plural = "Activity Group Chats"
+    
+    def __str__(self):
+        return f"Group Chat: {self.activity.title}"
+    
+    def get_participants(self):
+        """Get all approved participants + organizer"""
+        from activities.models import ActivityParticipant
+        participants = list(ActivityParticipant.objects.filter(
+            activity=self.activity,
+            status='approved'
+        ).values_list('user', flat=True))
+        participants.append(self.activity.organizer_id)
+        return User.objects.filter(id__in=participants)
+    
+    def is_participant(self, user):
+        """Check if user is a participant in this chat"""
+        from activities.models import ActivityParticipant
+        if self.activity.organizer == user:
+            return True
+        return ActivityParticipant.objects.filter(
+            activity=self.activity,
+            user=user,
+            status='approved'
+        ).exists()
+    
+    @classmethod
+    def get_or_create_for_activity(cls, activity):
+        """Get or create group chat for an activity"""
+        chat, created = cls.objects.get_or_create(activity=activity)
+        return chat
+
+
+class ActivityGroupMessage(models.Model):
+    """Message in activity group chat"""
+    MESSAGE_STATUS_CHOICES = [
+        ('sent', 'Göndərildi'),
+        ('delivered', 'Çatdırıldı'),
+    ]
+    
+    group_chat = models.ForeignKey(ActivityGroupChat, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_group_messages')
+    message = models.TextField(max_length=2000)
+    status = models.CharField(max_length=10, choices=MESSAGE_STATUS_CHOICES, default='sent')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['created_at']
+        verbose_name = "Activity Group Message"
+        verbose_name_plural = "Activity Group Messages"
+    
+    def __str__(self):
+        return f"{self.sender.get_full_name()}: {self.message[:50]}..."
+
+
 class Newsletter(models.Model):
     """Model for newsletter subscriptions"""
     email = models.EmailField(unique=True)

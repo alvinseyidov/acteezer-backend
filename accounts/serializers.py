@@ -390,3 +390,61 @@ class ConversationSerializer(serializers.ModelSerializer):
         if request and hasattr(request, 'user'):
             return obj.get_unread_count(request.user)
         return 0
+
+
+class ActivityGroupMessageSerializer(serializers.ModelSerializer):
+    """Serializer for activity group messages"""
+    sender = UserPublicSerializer(read_only=True)
+    is_me = serializers.SerializerMethodField()
+    
+    class Meta:
+        from .models import ActivityGroupMessage
+        model = ActivityGroupMessage
+        fields = [
+            'id', 'group_chat', 'sender', 'message', 'status', 
+            'created_at', 'is_me'
+        ]
+        read_only_fields = ['id', 'sender', 'status', 'created_at']
+    
+    def get_is_me(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            return obj.sender == request.user
+        return False
+
+
+class ActivityGroupChatSerializer(serializers.ModelSerializer):
+    """Serializer for activity group chats"""
+    activity_title = serializers.CharField(source='activity.title', read_only=True)
+    activity_image = serializers.SerializerMethodField()
+    participants_count = serializers.SerializerMethodField()
+    last_message = serializers.SerializerMethodField()
+    
+    class Meta:
+        from .models import ActivityGroupChat
+        model = ActivityGroupChat
+        fields = [
+            'id', 'activity', 'activity_title', 'activity_image',
+            'participants_count', 'last_message', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def get_activity_image(self, obj):
+        if obj.activity.images.exists():
+            return obj.activity.images.first().image_url
+        return None
+    
+    def get_participants_count(self, obj):
+        return obj.get_participants().count()
+    
+    def get_last_message(self, obj):
+        last_msg = obj.messages.order_by('-created_at').first()
+        if last_msg:
+            return {
+                'id': last_msg.id,
+                'message': last_msg.message,
+                'sender_name': last_msg.sender.get_full_name(),
+                'sender_id': last_msg.sender_id,
+                'created_at': last_msg.created_at.isoformat()
+            }
+        return None

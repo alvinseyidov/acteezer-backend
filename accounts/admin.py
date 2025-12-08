@@ -4,7 +4,8 @@ from django.utils.html import format_html
 from .models import (
     User, UserImage, Language, Interest, InterestCategory, OTPVerification, 
     BlogCategory, BlogPost, BlogTag, BlogPostTag, Newsletter, Friendship,
-    NotificationSettings, PushToken, Notification, Conversation, DirectMessage
+    NotificationSettings, PushToken, Notification, Conversation, DirectMessage,
+    ActivityGroupChat, ActivityGroupMessage
 )
 
 
@@ -376,3 +377,49 @@ class DirectMessageAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('conversation', 'conversation__participant1', 'conversation__participant2', 'sender')
+
+
+class ActivityGroupMessageInline(admin.TabularInline):
+    model = ActivityGroupMessage
+    extra = 0
+    readonly_fields = ['sender', 'message', 'status', 'created_at']
+    ordering = ['-created_at']
+
+
+@admin.register(ActivityGroupChat)
+class ActivityGroupChatAdmin(admin.ModelAdmin):
+    list_display = ['id', 'activity_title', 'participants_count', 'message_count', 'created_at', 'updated_at']
+    list_filter = ['created_at', 'updated_at']
+    search_fields = ['activity__title']
+    ordering = ['-updated_at']
+    readonly_fields = ['created_at', 'updated_at']
+    inlines = [ActivityGroupMessageInline]
+    
+    def activity_title(self, obj):
+        return obj.activity.title
+    activity_title.short_description = "Activity"
+    
+    def participants_count(self, obj):
+        return obj.get_participants().count()
+    participants_count.short_description = "Participants"
+    
+    def message_count(self, obj):
+        return obj.messages.count()
+    message_count.short_description = "Messages"
+
+
+@admin.register(ActivityGroupMessage)
+class ActivityGroupMessageAdmin(admin.ModelAdmin):
+    list_display = ['id', 'group_chat_info', 'sender', 'message_preview', 'status', 'created_at']
+    list_filter = ['status', 'created_at']
+    search_fields = ['sender__first_name', 'sender__last_name', 'message']
+    ordering = ['-created_at']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    def group_chat_info(self, obj):
+        return obj.group_chat.activity.title
+    group_chat_info.short_description = "Activity"
+    
+    def message_preview(self, obj):
+        return obj.message[:50] + "..." if len(obj.message) > 50 else obj.message
+    message_preview.short_description = "Message"

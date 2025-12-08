@@ -4,10 +4,11 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, get_user_model
 from django.db.models import Q
+from activities.models import Activity
 from .models import (
     Language, Interest, InterestCategory, UserImage, OTPVerification, 
     Friendship, BlogPost, BlogCategory, NotificationSettings, PushToken, Notification,
-    Conversation, DirectMessage
+    Conversation, DirectMessage, ActivityGroupChat, ActivityGroupMessage
 )
 from .serializers import (
     LanguageSerializer, InterestSerializer, InterestCategorySerializer, UserSerializer, UserPublicSerializer,
@@ -350,6 +351,13 @@ class UserViewSet(viewsets.ModelViewSet):
         """Get user's friends"""
         user = self.get_object()
         friends = Friendship.get_friends(user)
+        serializer = UserPublicSerializer(friends, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], url_path='my-friends', permission_classes=[permissions.IsAuthenticated])
+    def my_friends(self, request):
+        """Get current user's friends"""
+        friends = Friendship.get_friends(request.user)
         serializer = UserPublicSerializer(friends, many=True, context={'request': request})
         return Response(serializer.data)
 
@@ -889,7 +897,7 @@ class DirectMessageViewSet(viewsets.ModelViewSet):
         
         # Send push notification to the other user
         other_user = conversation.get_other_participant(request.user)
-        self._send_message_notification(request.user, other_user, message_text)
+        self._send_message_notification(request.user, other_user, message_text, conversation)
         
         serializer = DirectMessageSerializer(message, context={'request': request})
         return Response({
@@ -897,34 +905,44 @@ class DirectMessageViewSet(viewsets.ModelViewSet):
             'message': serializer.data
         }, status=status.HTTP_201_CREATED)
     
-    def _send_message_notification(self, sender, recipient, message_text):
+    def _send_message_notification(self, sender, recipient, message_text, conversation):
         """Send push notification for new message"""
         try:
             from .push_service import push_service
+            import logging
+            logger = logging.getLogger(__name__)
             
             # Check if user has new_message notifications enabled
             settings = NotificationSettings.objects.filter(user=recipient).first()
             if settings and not settings.new_message:
+                logger.info(f"Skipping message notification for {recipient.id} - notifications disabled")
                 return
             
             tokens = push_service.get_user_push_tokens(recipient)
+            logger.info(f"Sending message notification to {recipient.id}, tokens: {len(tokens)}")
+            
             if tokens:
                 # Truncate message for notification
                 preview = message_text[:100] + '...' if len(message_text) > 100 else message_text
                 
-                push_service.send_push_notification(
+                result = push_service.send_push_notification(
                     tokens=tokens,
                     title=f'💬 {sender.get_full_name()}',
                     body=preview,
                     data={
                         'screen': 'Chat',
+                        'conversationId': conversation.id,
                         'userId': sender.id,
                         'type': 'new_message'
                     },
                     channel_id='messages'
                 )
+                logger.info(f"Push notification result: {result}")
+            else:
+                logger.warning(f"No push tokens for user {recipient.id}")
         except Exception as e:
-            print(f"Failed to send message notification: {e}")
+            import logging
+            logging.getLogger(__name__).error(f"Failed to send message notification: {e}", exc_info=True)
     
     @action(detail=True, methods=['post'])
     def mark_read(self, request, pk=None):
@@ -942,4 +960,158 @@ class DirectMessageViewSet(viewsets.ModelViewSet):
                 'success': False,
                 'message': 'Message not found'
             }, status=status.HTTP_404_NOT_FOUND)
+
+
+class ActivityGroupChatViewSet(viewsets.ModelViewSet):
+    """ViewSet for activity group chats"""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_serializer_class(self):
+        from .serializers import ActivityGroupChatSerializer, ActivityGroupMessageSerializer
+        if self.action == 'messages' or self.action == 'send_message':
+            return ActivityGroupMessageSerializer
+        return ActivityGroupChatSerializer
+    
+    def get_queryset(self):
+        """Get group chats where user is a participant"""
+        from activities.models import ActivityParticipant
+        
+        # Get activities where user is organizer
+        organizer_activities = list(Activity.objects.filter(
+            organizer=self.request.user
+        ).values_list('id', flat=True))
+        
+        # Get activities where user is approved participant
+        participant_activities = list(ActivityParticipant.objects.filter(
+            user=self.request.user,
+            status='approved'
+        ).values_list('activity_id', flat=True))
+        
+        all_activities = set(organizer_activities + participant_activities)
+        
+        return ActivityGroupChat.objects.filter(activity_id__in=all_activities)
+    
+    @action(detail=False, methods=['get'], url_path='for-activity/(?P<activity_id>[^/.]+)')
+    def for_activity(self, request, activity_id=None):
+        """Get or create group chat for a specific activity"""
+        try:
+            activity = Activity.objects.get(id=activity_id)
+        except Activity.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'Activity not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        # Check if user can access this chat
+        from activities.models import ActivityParticipant
+        is_organizer = activity.organizer == request.user
+        is_participant = ActivityParticipant.objects.filter(
+            activity=activity,
+            user=request.user,
+            status='approved'
+        ).exists()
+        
+        if not is_organizer and not is_participant:
+            return Response({
+                'success': False,
+                'message': 'You are not a participant of this activity'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        group_chat = ActivityGroupChat.get_or_create_for_activity(activity)
+        from .serializers import ActivityGroupChatSerializer
+        serializer = ActivityGroupChatSerializer(group_chat, context={'request': request})
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])
+    def messages(self, request, pk=None):
+        """Get messages for a group chat"""
+        group_chat = self.get_object()
+        
+        if not group_chat.is_participant(request.user):
+            return Response({
+                'success': False,
+                'message': 'You are not a participant of this chat'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        messages = group_chat.messages.select_related('sender').order_by('created_at')
+        from .serializers import ActivityGroupMessageSerializer
+        serializer = ActivityGroupMessageSerializer(messages, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def send_message(self, request, pk=None):
+        """Send a message to the group chat"""
+        group_chat = self.get_object()
+        
+        if not group_chat.is_participant(request.user):
+            return Response({
+                'success': False,
+                'message': 'You are not a participant of this chat'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        message_text = request.data.get('message', '').strip()
+        
+        if not message_text:
+            return Response({
+                'success': False,
+                'message': 'Message text is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if len(message_text) > 2000:
+            return Response({
+                'success': False,
+                'message': 'Message is too long (max 2000 characters)'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Create the message
+        message = ActivityGroupMessage.objects.create(
+            group_chat=group_chat,
+            sender=request.user,
+            message=message_text
+        )
+        
+        # Update group chat timestamp
+        group_chat.save()
+        
+        # Send push notifications to other participants
+        self._send_group_message_notification(request.user, group_chat, message_text)
+        
+        from .serializers import ActivityGroupMessageSerializer
+        serializer = ActivityGroupMessageSerializer(message, context={'request': request})
+        return Response({
+            'success': True,
+            'message': serializer.data
+        }, status=status.HTTP_201_CREATED)
+    
+    def _send_group_message_notification(self, sender, group_chat, message_text):
+        """Send push notification to all participants except sender"""
+        try:
+            from .push_service import push_service
+            
+            participants = group_chat.get_participants().exclude(id=sender.id)
+            
+            for participant in participants:
+                # Check if user has message notifications enabled
+                settings = NotificationSettings.objects.filter(user=participant).first()
+                if settings and not settings.new_message:
+                    continue
+                
+                tokens = push_service.get_user_push_tokens(participant)
+                if tokens:
+                    preview = message_text[:100] + '...' if len(message_text) > 100 else message_text
+                    
+                    push_service.send_push_notification(
+                        tokens=tokens,
+                        title=f'💬 {group_chat.activity.title}',
+                        body=f'{sender.get_full_name()}: {preview}',
+                        data={
+                            'screen': 'ActivityGroupChat',
+                            'activityId': group_chat.activity.id,
+                            'groupChatId': group_chat.id,
+                            'type': 'group_message'
+                        },
+                        channel_id='messages'
+                    )
+        except Exception as e:
+            print(f"Failed to send group message notification: {e}")
 
