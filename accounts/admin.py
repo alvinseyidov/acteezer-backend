@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from .models import (
     User, UserImage, Language, Interest, InterestCategory, OTPVerification, 
     BlogCategory, BlogPost, BlogTag, BlogPostTag, Newsletter, Friendship,
-    NotificationSettings, PushToken, Notification
+    NotificationSettings, PushToken, Notification, Conversation, DirectMessage
 )
 
 
@@ -324,3 +324,55 @@ class NotificationAdmin(admin.ModelAdmin):
         updated = queryset.update(is_read=False)
         self.message_user(request, f"{updated} notifications marked as unread.")
     mark_as_unread.short_description = "Mark selected notifications as unread"
+
+
+class DirectMessageInline(admin.TabularInline):
+    model = DirectMessage
+    extra = 0
+    readonly_fields = ['sender', 'message', 'status', 'is_read', 'created_at']
+    ordering = ['-created_at']
+
+
+@admin.register(Conversation)
+class ConversationAdmin(admin.ModelAdmin):
+    list_display = ['id', 'participant1', 'participant2', 'last_message_preview', 'message_count', 'created_at', 'updated_at']
+    list_filter = ['created_at', 'updated_at']
+    search_fields = ['participant1__first_name', 'participant1__last_name', 'participant1__phone',
+                     'participant2__first_name', 'participant2__last_name', 'participant2__phone']
+    ordering = ['-updated_at']
+    readonly_fields = ['created_at', 'updated_at']
+    inlines = [DirectMessageInline]
+    
+    def last_message_preview(self, obj):
+        last_msg = obj.get_last_message()
+        if last_msg:
+            return f"{last_msg.sender.first_name}: {last_msg.message[:50]}..."
+        return "No messages"
+    last_message_preview.short_description = "Last Message"
+    
+    def message_count(self, obj):
+        return obj.messages.count()
+    message_count.short_description = "Messages"
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('participant1', 'participant2')
+
+
+@admin.register(DirectMessage)
+class DirectMessageAdmin(admin.ModelAdmin):
+    list_display = ['id', 'conversation_info', 'sender', 'message_preview', 'status', 'is_read', 'created_at']
+    list_filter = ['status', 'is_read', 'created_at']
+    search_fields = ['sender__first_name', 'sender__last_name', 'message']
+    ordering = ['-created_at']
+    readonly_fields = ['created_at', 'updated_at', 'read_at']
+    
+    def conversation_info(self, obj):
+        return f"{obj.conversation.participant1.first_name} ↔ {obj.conversation.participant2.first_name}"
+    conversation_info.short_description = "Conversation"
+    
+    def message_preview(self, obj):
+        return obj.message[:50] + "..." if len(obj.message) > 50 else obj.message
+    message_preview.short_description = "Message"
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('conversation', 'conversation__participant1', 'conversation__participant2', 'sender')
