@@ -140,12 +140,99 @@ class ActivityViewSet(viewsets.ModelViewSet):
                 'message': 'You have already requested to join this activity'
             }, status=status.HTTP_400_BAD_REQUEST)
         
+        # Send push notification to organizer
+        self._send_join_request_notification(activity, request.user)
+        
         serializer = ActivityParticipantSerializer(participant, context={'request': request})
         return Response({
             'success': True,
             'message': 'Join request sent successfully',
             'participant': serializer.data
         }, status=status.HTTP_201_CREATED)
+    
+    def _send_join_request_notification(self, activity, requester):
+        """Send push notification to activity organizer about new join request"""
+        try:
+            from accounts.push_service import push_service
+            from accounts.models import NotificationSettings, Notification
+            
+            organizer = activity.organizer
+            
+            # Check if organizer has this notification type enabled
+            settings = NotificationSettings.objects.filter(user=organizer).first()
+            if settings and not settings.activity_join_request:
+                return
+            
+            # Create notification in database
+            Notification.objects.create(
+                user=organizer,
+                notification_type='activity_join_request',
+                title='Yeni qoşulma sorğusu 🙋',
+                message=f'{requester.get_full_name()} "{activity.title}" aktivitəsinə qoşulmaq istəyir',
+                related_user=requester,
+                related_activity_id=activity.id,
+                data={'activity_id': activity.id, 'requester_id': requester.id}
+            )
+            
+            # Send push notification
+            tokens = push_service.get_user_push_tokens(organizer)
+            if tokens:
+                push_service.send_push_notification(
+                    tokens=tokens,
+                    title='Yeni qoşulma sorğusu 🙋',
+                    body=f'{requester.get_full_name()} "{activity.title}" aktivitəsinə qoşulmaq istəyir',
+                    data={
+                        'screen': 'ActivityDetail',
+                        'activityId': activity.id,
+                        'type': 'activity_join_request'
+                    },
+                    channel_id='default'
+                )
+        except Exception as e:
+            print(f"Failed to send join request notification: {e}")
+    
+    def _send_participant_status_notification(self, activity, participant_user, status_type):
+        """Send push notification to participant about their request status"""
+        try:
+            from accounts.push_service import push_service
+            from accounts.models import NotificationSettings, Notification
+            
+            # Determine notification type and message
+            if status_type == 'approved':
+                notification_type = 'activity_participant_joined'
+                title = 'Qoşulma sorğunuz qəbul edildi! 🎉'
+                message = f'"{activity.title}" aktivitəsinə qoşuldunuz!'
+            else:
+                notification_type = 'activity_update'
+                title = 'Qoşulma sorğunuz rədd edildi'
+                message = f'"{activity.title}" aktivitəsinə qoşulma sorğunuz rədd edildi'
+            
+            # Create notification in database
+            Notification.objects.create(
+                user=participant_user,
+                notification_type=notification_type,
+                title=title,
+                message=message,
+                related_activity_id=activity.id,
+                data={'activity_id': activity.id, 'status': status_type}
+            )
+            
+            # Send push notification
+            tokens = push_service.get_user_push_tokens(participant_user)
+            if tokens:
+                push_service.send_push_notification(
+                    tokens=tokens,
+                    title=title,
+                    body=message,
+                    data={
+                        'screen': 'ActivityDetail',
+                        'activityId': activity.id,
+                        'type': notification_type
+                    },
+                    channel_id='default'
+                )
+        except Exception as e:
+            print(f"Failed to send participant status notification: {e}")
     
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def cancel_join(self, request, pk=None):
@@ -216,8 +303,10 @@ class ActivityViewSet(viewsets.ModelViewSet):
                         'message': 'Activity is full'
                     }, status=status.HTTP_400_BAD_REQUEST)
                 participant.status = 'approved'
+                self._send_participant_status_notification(activity, participant.user, 'approved')
             elif action_type == 'reject':
                 participant.status = 'rejected'
+                self._send_participant_status_notification(activity, participant.user, 'rejected')
             else:
                 return Response({
                     'success': False,
